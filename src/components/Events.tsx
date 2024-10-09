@@ -1,11 +1,6 @@
+import { Card, Text, Button } from "@radix-ui/themes";
+import Image from "next/image";
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Button,
-} from "@mui/material";
 
 interface CardEventsProps {
   title: string;
@@ -16,16 +11,20 @@ interface CardEventsProps {
 const CardEvents = ({ title, description, image }: CardEventsProps) => {
   return (
     <Card className="w-80 mx-auto my-4">
-      <CardMedia component="img" height="140" image={image} alt={title} />
-      <CardContent>
-        <Typography variant="h6">{title}</Typography>
-        <Typography variant="body2" color="textSecondary">
+      <Image
+        src={image}
+        alt={title}
+        className="w-full h-36 object-cover"
+        width={"100"}
+        height={"100"}
+      />
+      <div className="p-4">
+        <Text className="text-lg font-semibold">{title}</Text>
+        <Text as="p" className="text-sm text-gray-600 mt-2">
           {description}
-        </Typography>
-        <Button variant="contained" className="bg-gray-800 mt-2">
-          Ver Mais
-        </Button>
-      </CardContent>
+        </Text>
+        <Button>Ver Mais</Button>
+      </div>
     </Card>
   );
 };
@@ -36,17 +35,17 @@ const Events = () => {
       <CardEvents
         title="Evento 1"
         description="Descrição do evento"
-        image="https://as2.ftcdn.net/v2/jpg/03/54/94/49/1000_F_354944901_SzU5v3KbpDM0752i9d7C3gSMjFexisw1.jpg"
+        image="/images/sea.jpg"
       />
       <CardEvents
         title="Evento 2"
         description="Descrição do evento"
-        image="https://cdn.pixabay.com/photo/2015/12/01/20/28/road-1072823_1280.jpg"
+        image="/images/sea.jpg"
       />
       <CardEvents
         title="Evento 3"
         description="Descrição do evento"
-        image="https://as2.ftcdn.net/v2/jpg/03/54/94/49/1000_F_354944901_SzU5v3KbpDM0752i9d7C3gSMjFexisw1.jpg"
+        image="/images/sea.jpg"
       />
     </div>
   );

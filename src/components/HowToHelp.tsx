@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Text } from "@radix-ui/themes";
 import { BiSolidContact } from "react-icons/bi";
 import { FaPeopleLine } from "react-icons/fa6";
 import { MdVolunteerActivism } from "react-icons/md";
@@ -24,19 +24,13 @@ const HowToHelp = () => {
 
   return (
     <div className="text-center my-12">
-      <Typography variant="h4" className="mb-8">
-        Como Ajudar?
-      </Typography>
+      <Text className="mb-8">Como Ajudar?</Text>
       <div className="flex justify-around">
         {helpers.map((helper, index) => (
           <div key={index} className="max-w-xs">
             <div className="flex justify-center">{helper.icon}</div>
-            <Typography variant="h6" className="mt-4">
-              {helper.title}
-            </Typography>
-            <Typography variant="body2" className="text-gray-600">
-              {helper.description}
-            </Typography>
+            <Text className="mt-4">{helper.title}</Text>
+            <Text className="text-gray-600">{helper.description}</Text>
           </div>
         ))}
       </div>
