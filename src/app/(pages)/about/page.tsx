@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function About() {
   return (
     <>
-      <Banner imagePath="/images/Rectangle.png" />
+      <Banner imagePath="/images/carousel3.png" />
       <article className="flex flex-col items-start px-4 py-8 md:px-16 lg:px-36">
         <div className="flex flex-col self-center text-center">
           <h1 className="title mt-8 mb-2">Sobre</h1>
