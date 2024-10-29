@@ -11,30 +11,39 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-[#d0e7f1] p-6 flex flex-col md:flex-row md:justify-around items-center text-center md:text-left">
-      {/* Logo e Redes Sociais */}
       <div className="flex flex-col items-center md:items-start gap-2 mb-6 md:mb-0">
         <Image src="/images/logo.svg" alt="Logo" width={240} height={240} />
         <div className="flex gap-3 mt-2">
-          <FacebookLogo
-            size={30}
-            className="cursor-pointer text-black hover:text-blue-600 transition-colors"
-          />
-          <InstagramLogo
-            size={30}
-            className="cursor-pointer text-black hover:text-pink-500 transition-colors"
-          />
-          <YoutubeLogo
-            size={30}
-            className="cursor-pointer text-black hover:text-red-600 transition-colors"
-          />
-          <LinkedinLogo
-            size={30}
-            className="cursor-pointer text-black hover:text-blue-700 transition-colors"
-          />
+          <div className="cursor-pointer group transition-colors">
+            <FacebookLogo
+              size={30}
+              weight="regular"
+              className="text-black group-hover:text-blue-600"
+            />
+          </div>
+          <div className="cursor-pointer group transition-colors">
+            <InstagramLogo
+              size={30}
+              weight="regular"
+              className="text-black group-hover:text-pink-500"
+            />
+          </div>
+          <div className="cursor-pointer group transition-colors">
+            <YoutubeLogo
+              size={30}
+              weight="fill"
+              className="text-black group-hover:text-red-600"
+            />
+          </div>
+          <div className="cursor-pointer group transition-colors">
+            <LinkedinLogo
+              size={30}
+              weight="fill"
+              className="text-black group-hover:text-blue-700"
+            />
+          </div>
         </div>
       </div>
-
-      {/* Links de navegação */}
       <div className="flex flex-col md:flex-row gap-6 md:gap-16 mb-6 md:mb-0">
         <div>
           <h3 className="font-semibold text-lg mb-2">Home</h3>
@@ -61,8 +70,6 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-
-      {/* Botão de login */}
       <div className="flex justify-center md:justify-end w-full md:w-auto">
         <Link href={"/login"}>
           <button className="btn-primary">Login</button>

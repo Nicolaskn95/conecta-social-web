@@ -2,15 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.font-montserrat {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 200;
-}
-
-.font-nunito {
-  font-family: "Nunito";
-}
-
 body {
   color: rgb(var(--foreground-rgb));
 }
@@ -38,6 +29,10 @@ h3 {
     @apply max-w-7xl mx-auto px-10;
   }
 
+  .title {
+    @apply font-bold text-[#090934] text-4xl;
+  }
+
   .sub-title {
     @apply text-[#387AA1] text-xl;
     font-family: "Montserrat", sans-serif;
@@ -50,7 +45,7 @@ h3 {
 
   .card-effect {
     @apply card;
-    @apply transition-transform duration-300 hover:bg-gray-200 cursor-pointer hover:shadow-lg;
+    @apply transition-transform duration-300 hover:bg-gray-100 cursor-pointer hover:shadow-lg;
   }
 
   .input {

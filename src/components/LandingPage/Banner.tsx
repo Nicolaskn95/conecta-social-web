@@ -1,10 +1,14 @@
 import Image from "next/image";
 
-export default function Banner() {
+interface BannerProps {
+  imagePath: string;
+}
+
+export default function Banner({ imagePath }: BannerProps) {
   return (
     <div className="relative w-full h-[300px]">
       <Image
-        src={"/images/Rectangle.png"}
+        src={imagePath}
         alt="Banner image"
         fill={true}
         objectFit="cover"
