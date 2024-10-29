@@ -1,62 +1,79 @@
-@import "tailwindcss/base";
-@import "@radix-ui/themes/styles.css";
-
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import "@radix-ui/colors/blue-dark.css";
-
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 240, 248, 255; /* Alice Blue */
-  --background-end-rgb: 255, 255, 255;
-  --primary-color: 0, 123, 255; /* Blue */
-  --secondary-color: 40, 167, 69; /* Green */
-  --accent-color: 220, 53, 69; /* Red */
+.font-montserrat {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 200;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 31, 63; /* Dark Blue */
-    --background-end-rgb: 0, 0, 0;
-    --primary-color: 0, 123, 255; /* Blue */
-    --secondary-color: 40, 167, 69; /* Green */
-    --accent-color: 220, 53, 69; /* Red */
-  }
+.font-nunito {
+  font-family: "Nunito";
 }
 
-/* .button {
-  background-color: var(--blue-1);
-  color: var(--blue-11);
-  border-color: var(--blue-7);
-}
-.button:hover {
-  background-color: var(--blue-5);
-  border-color: var(--blue-8);
-} */
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-    to bottom,
-    rgb(var(--background-start-rgb)),
-    rgb(var(--background-end-rgb))
-  );
 }
 
 p,
-span,
+span {
+  color: #090934;
+}
+
 h1,
 h2,
-h3,
-h4,
-h5,
-h6 {
+h3 {
+  font-weight: bold;
   color: #090934;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer components {
+  .container {
+    @apply max-w-7xl mx-auto px-10;
+  }
+
+  .sub-title {
+    @apply text-[#387AA1] text-xl;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 100;
+  }
+
+  .card {
+    @apply border-[#387AA1] border rounded-lg p-6;
+  }
+
+  .card-effect {
+    @apply card;
+    @apply transition-transform duration-300 hover:bg-gray-200 cursor-pointer hover:shadow-lg;
+  }
+
+  .input {
+    @apply w-full border-2 border-b-gray-200 rounded-md p-3  focus:outline-none focus:border-[#387AA1];
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-md border-[2px] w-full;
+    font-family: "Montserrat", sans-serif;
+  }
+
+  .btn-primary {
+    @apply btn;
+    @apply bg-[#387AA1] border-[#4AA1D3] hover:bg-[#4AA1D3] text-[white] hover:border-[#387AA1] font-bold;
+  }
+
+  .btn-secondary {
+    @apply btn;
+    @apply bg-[#FFFFFF] hover:bg-[#BCD4E1] border-[#387AA1] text-[#387AA1] font-bold;
+  }
+
+  .btn-danger {
+    @apply btn;
+    @apply bg-[#A13838] hover:bg[#E1BCBC] hover:border-[#A13838] font-bold;
   }
 }
