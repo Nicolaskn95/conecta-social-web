@@ -19,24 +19,53 @@ h3 {
 }
 
 @layer utilities {
+  li {
+    @apply text-[#090934] hover:underline hover:text-[#387AA1] mb-1;
+  }
   .text-balance {
     text-wrap: balance;
+  }
+  .hover-facebook {
+    @apply group-hover:text-blue-600 text-[#090934];
+  }
+  .hover-instagram {
+    @apply group-hover:text-pink-500 text-[#090934];
+  }
+  .hover-youtube {
+    @apply group-hover:text-red-600 text-[#090934];
+  }
+  .hover-linkedin {
+    @apply group-hover:text-blue-700 text-[#090934];
+  }
+  .hover-x {
+    @apply group-hover:text-sky-700 text-[#090934];
+  }
+  .hover-whatsapp {
+    @apply group-hover:text-green-600 text-[#090934];
+  }
+  .header-color {
+    @apply bg-[#D2E6EF];
+  }
+  .header-hover-text {
+    @apply hover:text-[#387AA1];
+  }
+  .title-gradient {
+    @apply font-bold text-transparent bg-clip-text text-7xl;
+    background-image: linear-gradient(to right, #40789b, #1ea1ff);
+  }
+  .title {
+    @apply font-bold text-[#090934] text-4xl;
+  }
+  .sub-title {
+    @apply text-[#387AA1] text-xl;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 100;
   }
 }
 
 @layer components {
   .container {
     @apply max-w-7xl mx-auto px-10;
-  }
-
-  .title {
-    @apply font-bold text-[#090934] text-4xl;
-  }
-
-  .sub-title {
-    @apply text-[#387AA1] text-xl;
-    font-family: "Montserrat", sans-serif;
-    font-weight: 100;
   }
 
   .card {
