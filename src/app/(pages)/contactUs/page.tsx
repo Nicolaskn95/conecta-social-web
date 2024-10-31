@@ -9,6 +9,7 @@ import {
   YoutubeLogo,
 } from "@phosphor-icons/react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ContactUs() {
   return (
@@ -16,8 +17,11 @@ export default function ContactUs() {
       <Banner imagePath="/images/contactUs1.png" />
       <div className="flex flex-col items-center px-4 py-8 md:px-16 lg:px-52">
         <h1 className="title text-center mb-8">Localização</h1>
-        <section className="flex flex-col md:flex-row items-center justify-center gap-8 w-full mb-12">
-          <div className="card-effect flex-col items-center justify-items-center w-full text-center md:w-1/2">
+        <section
+          id="location"
+          className="flex flex-col md:flex-row items-center justify-center gap-8 w-full mb-12"
+        >
+          <div className="card flex-col items-center justify-items-center w-full text-center md:w-1/2">
             <MapPin size={50} weight="fill" color="#BCD4E1" className="mb-2" />
             <p className="font-semibold text-gray-800 mb-2">Visite-nos!</p>
             <p className="text-gray-600">
@@ -39,35 +43,56 @@ export default function ContactUs() {
         </section>
         <h2 className="title text-center mb-2">Fale Conosco</h2>
         <p className="sub-title text-center mb-12">Contatos</p>
-        <section className="flex flex-col md:flex-row items-start justify-center gap-12">
-          <div className="card-effect flex-1 flex-col items-center justify-items-center w-full text-center h-72">
+        <section className="flex flex-col lg:flex-row items-start justify-center gap-12 w-full">
+          <div className="card flex flex-1 justify-center flex-col items-center text-center p-4 md:p-6 w-full lg:w-1/2 min-h-[300px] lg:min-h-[350px] flex-grow">
             <p className="font-semibold text-gray-800 mb-4">
               Nos siga nas redes sociais:
             </p>
             <div className="flex flex-col gap-2 items-start justify-between">
-              <div className="flex items-start justify-between gap-4">
-                <XLogo size={32} />
-                <p>@conectasocial</p>
-              </div>
-              <div className="flex items-center justify-around gap-4">
-                <InstagramLogo size={30} />
-                <p>@conectasocial</p>
-              </div>
-              <div className="flex items-center justify-around gap-4">
-                <YoutubeLogo size={30} weight="fill" />
-                <p>@conectasocial</p>
-              </div>
-              <div className="flex items-center justify-around gap-4">
-                <LinkedinLogo size={30} weight="fill" />
-                <p>@conectasocial</p>
-              </div>
-              <div className="flex items-center justify-around gap-4">
-                <Phone size={30} weight="fill" />
-                <p>+55 (15) 99999-9999</p>
-              </div>
+              <Link href={"#"} className="cursor-pointer">
+                <div className="flex items-center justify-between group gap-4">
+                  <XLogo size={32} weight="duotone" className="hover-x" />
+                  <p className="hover-x">@conectasocial</p>
+                </div>
+              </Link>
+              <Link href={"#"} className="cursor-pointer">
+                <div className="flex items-center justify-around group gap-4">
+                  <InstagramLogo size={30} className="hover-instagram" />
+                  <p className="hover-instagram">@conectasocial</p>
+                </div>
+              </Link>
+              <Link href={"#"} className="cursor-pointer">
+                <div className="flex items-center justify-around group gap-4">
+                  <YoutubeLogo
+                    size={30}
+                    weight="fill"
+                    className="hover-youtube"
+                  />
+                  <p className="hover-youtube">@conectasocial</p>
+                </div>
+              </Link>
+              <Link href={"#"} className="cursor-pointer">
+                <div className="flex items-center justify-around group gap-4">
+                  <LinkedinLogo
+                    size={30}
+                    weight="fill"
+                    className="hover-linkedin"
+                  />
+                  <p className="hover-linkedin">@conectasocial</p>
+                </div>
+              </Link>
+              <Link href={"#"} className="cursor-pointer">
+                <div className="flex items-center justify-around group gap-4">
+                  <Phone size={30} weight="fill" className="hover-whatsapp" />
+                  <p className="hover-whatsapp">+55 (15) 99999-9999</p>
+                </div>
+              </Link>
             </div>
           </div>
-          <div className="card-effect flex-1 flex flex-col items-center text-center h-72">
+          <div
+            id="donation-pix"
+            className="card flex flex-1 justify-center flex-col items-center text-center p-4 md:p-6 w-full lg:w-1/2 min-h-[300px] lg:min-h-[350px] flex-grow"
+          >
             <p className="font-semibold text-gray-800 mb-4">Faça uma doação!</p>
             <p className="text-gray-600 mb-4">
               Gostou do nosso trabalho? Junte-se a nós e contribua agora mesmo.
