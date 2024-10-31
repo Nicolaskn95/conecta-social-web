@@ -17,11 +17,10 @@ export default function Footer() {
   ];
   const about = [
     { value: "Nossa História", link: "/about/#our-history" },
-    { value: "Fale Conosco", link: "/contactUs" },
+    { value: "Fale Conosco", link: "/contactUs/#contacts" },
     { value: "Localização", link: "/contactUs/#location" },
     { value: "Doação por pix", link: "/contactUs/#donation-pix" },
   ];
-  const partners = [{ value: "Credenciados", link: "/" }];
   return (
     <footer className="bg-[#d0e7f1] p-6 flex flex-col md:flex-row md:justify-around items-center text-center md:text-left">
       <div className="flex flex-col lg:items-start items-center lg:self-start md:self-center gap-2 mb-6 md:mb-0">

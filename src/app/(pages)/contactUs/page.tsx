@@ -41,7 +41,9 @@ export default function ContactUs() {
             ></iframe>
           </div>
         </section>
-        <h2 className="title text-center mb-2">Fale Conosco</h2>
+        <h2 id="contacts" className="title text-center mb-2">
+          Fale Conosco
+        </h2>
         <p className="sub-title text-center mb-12">Contatos</p>
         <section className="flex flex-col lg:flex-row items-start justify-center gap-12 w-full">
           <div className="card flex flex-1 justify-center flex-col items-center text-center p-4 md:p-6 w-full lg:w-1/2 min-h-[300px] lg:min-h-[350px] flex-grow">
