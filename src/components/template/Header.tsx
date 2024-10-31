@@ -9,9 +9,11 @@ const Header = () => {
 
   return (
     <header className="header-color flex justify-between items-center p-4 shadow-md sticky top-0 z-50">
-      <div>
-        <Image src="/images/logo.svg" width={180} height={160} alt="logo" />
-      </div>
+      <Link href={"/"}>
+        <div>
+          <Image src="/images/logo.svg" width={180} height={160} alt="logo" />
+        </div>
+      </Link>
       <nav className="hidden md:flex items-center gap-10 mr-10">
         <Link href="/" passHref>
           <p className="header-hover-text hover:underline cursor-pointer">
