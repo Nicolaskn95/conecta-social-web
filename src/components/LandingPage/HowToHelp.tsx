@@ -4,7 +4,7 @@ import { howToHelpData } from "./HowToHelpData";
 
 const HowToHelp = () => {
   return (
-    <section className="text-center py-10 px-4">
+    <section id="how-to-help" className="text-center py-10 px-4">
       <h2 className="text-2xl font-bold mb-2">Como ajudar?</h2>
       <p className="sub-title mb-4">Fale conosco</p>
       <div className="grid gap-6 md:grid-cols-3">

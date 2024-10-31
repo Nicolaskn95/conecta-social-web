@@ -2,7 +2,7 @@ import { instagramHTML } from "../InstagramHTML";
 
 const Events = () => {
   return (
-    <div className="flex flex-col justify-items-center my-12">
+    <section id="events" className="flex flex-col justify-items-center my-12">
       <div className="flex flex-col mb-4 text-center">
         <h1 className="text-3xl mb-2">Eventos</h1>
         <p className="text-[#387AA1] text-xl">Últimos Eventos</p>
@@ -16,7 +16,7 @@ const Events = () => {
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
