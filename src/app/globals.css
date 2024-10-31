@@ -20,7 +20,7 @@ h3 {
 
 @layer utilities {
   li {
-    @apply text-[#090934] hover:underline hover:text-[#387AA1] mb-1;
+    @apply text-[#090934] hover:underline hover:text-[#387AA1] mb-2;
   }
   .text-balance {
     text-wrap: balance;
