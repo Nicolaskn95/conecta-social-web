@@ -2,7 +2,7 @@ import React from "react";
 
 function OurJob() {
   return (
-    <article className="flex flex-col items-center py-10 px-36">
+    <article className="flex flex-col items-center py-10 ">
       <h1 className="text-3xl">Nosso Trabalho</h1>
       <p className="font-montserrat text-[#387AA1]">Nosso Trabalho</p>
       <p>

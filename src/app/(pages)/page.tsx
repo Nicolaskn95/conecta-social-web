@@ -11,12 +11,14 @@ export default function Home() {
     "/images/carousel1.png",
   ];
   return (
-    <div>
+    <>
       <Carousel images={carouselImage} />
-      <OurJob />
-      <Events />
-      <HowToHelp />
-      <Calendar />
-    </div>
+      <div className="flex flex-col items-center px-4 sm:px-8 lg:px-36 md:px-16 mb-10">
+        <OurJob />
+        <Events />
+        <HowToHelp />
+        <Calendar />
+      </div>
+    </>
   );
 }

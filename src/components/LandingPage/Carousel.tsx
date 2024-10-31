@@ -44,15 +44,15 @@ const Carousel: React.FC<CarouselProps> = ({
               width={width}
               height={height}
               alt={`Slide ${index + 1}`}
-              className="w-full object-contain"
+              className="w-full object-contain opacity-55"
             />
           </div>
         ))}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white bg-opacity-10"></div>
-      <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 rounded-md bg-black bg-opacity-50 p-4 text-center">
-        <h1 className="text-6xl text-white ">Conecta Social</h1>
-        <p className="text-white ">
+      <div className="absolute inset-0 h-full bg-gradient-to-b from-transparent via-transparent to-white bg-opacity-100"></div>
+      <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 rounded-md bg-opacity-50 p-4 text-center">
+        <h1 className="title-gradient">Conecta Social</h1>
+        <p className="text-[#090934] ">
           Conectando tecnologia com projetos sociais
         </p>
       </div>
