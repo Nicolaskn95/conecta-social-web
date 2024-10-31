@@ -6,7 +6,7 @@ export default function About() {
     <>
       <Banner imagePath="/images/carousel3.png" />
       <article className="flex flex-col items-start px-4 py-8 md:px-16 lg:px-36">
-        <div className="flex flex-col self-center text-center">
+        <div id="our-history" className="flex flex-col self-center text-center">
           <h1 className="title mt-8 mb-2">Sobre</h1>
           <p className="sub-title mb-4">História</p>
         </div>

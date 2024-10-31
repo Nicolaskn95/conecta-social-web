@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
 
 export default function Login() {
@@ -12,7 +11,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center my-14">
-      <Image width={350} height={350} alt="logo" src="/images/logoName.png" />
+      <h3 className="title-gradient">Conecta Social</h3>
 
       <div className="card w-full max-w-md bg-white shadow-md rounded-lg p-8 mt-6">
         <p className="font-semibold mb-2">E-Mail</p>
