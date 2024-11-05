@@ -1,4 +1,4 @@
-import { instagramHTML } from "../InstagramHTML";
+import { instagramHTML } from "@/core/constants";
 
 const Events = () => {
   return (

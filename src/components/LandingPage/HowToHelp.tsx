@@ -1,6 +1,6 @@
 "use client";
+import { howToHelpData } from "@/core/constants";
 import Image from "next/image";
-import { howToHelpData } from "./HowToHelpData";
 
 const HowToHelp = () => {
   return (
