@@ -1,12 +1,27 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, EyeSlash } from "@phosphor-icons/react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const router = useRouter();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const onSubmit = () => {
+    if (!password && !email) {
+      toast.error("Erro: informe um email ou senha");
+    } else {
+      toast.success("login realizado com sucesso!");
+      router.push("/admin");
+    }
   };
 
   return (
@@ -19,6 +34,7 @@ export default function Login() {
           type="email"
           className="input mb-4"
           placeholder="Digite seu e-mail"
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <p className="font-semibold mb-2">Senha</p>
@@ -27,6 +43,7 @@ export default function Login() {
             type={showPassword ? "text" : "password"}
             className="input"
             placeholder="Digite sua senha"
+            onChange={(e) => setPassword(e.target.value)}
           />
           <button
             type="button"
@@ -41,7 +58,11 @@ export default function Login() {
           </button>
         </div>
 
-        <button type="submit" className="btn-primary w-full mt-4">
+        <button
+          type="submit"
+          onClick={onSubmit}
+          className="btn-primary w-full mt-4"
+        >
           Entrar
         </button>
 
@@ -49,6 +70,11 @@ export default function Login() {
           Esqueci minha senha
         </p>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+      />
     </div>
   );
 }

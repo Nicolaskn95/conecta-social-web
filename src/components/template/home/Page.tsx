@@ -16,7 +16,7 @@ function Page(props: PageProps) {
       }}
     >
       <div className="flex-1 flex flex-col w-screen">
-        {!props.noHeader && <Header />}
+        {!props.noHeader && <Header logged={false} />}
         <main className={`flex-1 flex flex-col ${props.className ?? ""}`}>
           {props.children}
         </main>

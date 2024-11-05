@@ -2,11 +2,21 @@
 import React from "react";
 import Lottie from "lottie-react";
 import loading from "@public/animations/loading.json";
+import WIP from "@public/animations/WIP.json";
 
-function LottieAnimation() {
+interface LottieAnimationProps {
+  status: "loading" | "WIP";
+}
+
+function LottieAnimation({ status }: LottieAnimationProps) {
   return (
     <div className="flex justify-center mb-4">
-      <Lottie animationData={loading} className="w-64 h-64" loop autoplay />;
+      <Lottie
+        animationData={status === "loading" ? loading : WIP}
+        className="w-auto h-auto"
+        loop
+        autoplay
+      />
     </div>
   );
 }
