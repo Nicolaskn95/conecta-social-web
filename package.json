@@ -12,6 +12,7 @@
     "@emotion/react": "^11.13.3",
     "@phosphor-icons/react": "^2.1.7",
     "autoprefixer": "^10.4.20",
+    "lottie-react": "^2.4.0",
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18"
