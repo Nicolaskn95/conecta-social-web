@@ -5,7 +5,7 @@ import Page from "@/components/template/manager/Page";
 
 const nunito = Nunito({
   subsets: ["latin"],
-  weight: ["200", "300", "500", "700"],
+  weight: ["200", "300", "500", "700", "900"],
   preload: true,
 });
 

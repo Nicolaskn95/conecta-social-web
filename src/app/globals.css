@@ -20,28 +20,52 @@ h3 {
 
 @layer utilities {
   li {
-    @apply text-[#090934] hover:underline hover:text-[#387AA1] mb-2;
+    @apply text-text_color hover:underline hover:text-[#387AA1] mb-2;
+  }
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  tr td:first-child {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+  }
+
+  tr td:last-child {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+
+  .row-data {
+    @apply text-primary border-red-500 hover:bg-secondary hover:text-white transition-all duration-200;
+  }
+  .row-title {
+    @apply text-text_color;
+  }
+  .primary-color {
+    @apply text-primary;
   }
   .text-balance {
     text-wrap: balance;
   }
   .hover-facebook {
-    @apply group-hover:text-blue-600 text-[#090934];
+    @apply group-hover:text-blue-600 text-text_color;
   }
   .hover-instagram {
-    @apply group-hover:text-pink-500 text-[#090934];
+    @apply group-hover:text-pink-500 text-text_color;
   }
   .hover-youtube {
-    @apply group-hover:text-red-600 text-[#090934];
+    @apply group-hover:text-red-600 text-text_color;
   }
   .hover-linkedin {
-    @apply group-hover:text-blue-700 text-[#090934];
+    @apply group-hover:text-blue-700 text-text_color;
   }
   .hover-x {
-    @apply group-hover:text-sky-700 text-[#090934];
+    @apply group-hover:text-sky-700 text-text_color;
   }
   .hover-whatsapp {
-    @apply group-hover:text-green-600 text-[#090934];
+    @apply group-hover:text-green-600 text-text_color;
   }
   .header-color {
     @apply bg-[#D2E6EF];
@@ -54,7 +78,7 @@ h3 {
     background-image: linear-gradient(to right, #40789b, #1ea1ff);
   }
   .title {
-    @apply font-bold text-[#090934] text-4xl;
+    @apply font-bold text-text_color text-4xl;
   }
   .sub-title {
     @apply text-[#387AA1] text-xl;
@@ -77,14 +101,16 @@ h3 {
   .card {
     @apply border-[#387AA1] border rounded-lg p-6;
   }
-
+  .search-input {
+    @apply text-text_color placeholder-primary placeholder-opacity-30;
+  }
   .card-effect {
     @apply card;
     @apply transition-transform duration-300 hover:bg-gray-100 cursor-pointer hover:shadow-lg;
   }
 
   .input {
-    @apply w-full border-2 border-b-gray-200 rounded-md p-3  focus:outline-none focus:border-[#387AA1];
+    @apply w-full border-2 border-b-gray-200 rounded-md p-2  focus:outline-none focus:border-[#387AA1];
   }
 
   .btn {
@@ -104,6 +130,6 @@ h3 {
 
   .btn-danger {
     @apply btn;
-    @apply bg-[#A13838] hover:bg[#E1BCBC] hover:border-[#A13838] font-bold;
+    @apply bg-[#A13838] hover:bg-[#E1BCBC] hover:border-[#A13838] font-bold;
   }
 }
