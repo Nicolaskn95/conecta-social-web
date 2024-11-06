@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import colors from "./src/core/color/colors.json";
 
 const config: Config = {
   content: [
@@ -6,6 +7,20 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  theme: {
+    extend: {
+      colors: {
+        primary: colors.primary,
+        secondary: colors.secondary,
+        tertiary: colors.tertiary,
+        text_color: colors.text,
+        danger: colors.danger,
+        danger_hover: colors.danger_light,
+        success: colors.success,
+        success_light: colors.success_light,
+      },
+    },
+  },
   plugins: [],
 };
 export default config;
