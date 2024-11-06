@@ -43,7 +43,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className=" sidebar-color w-64 h-auto flex flex-col justify-between p-4">
+    <aside className="sidebar-color w-64 h-auto flex flex-col justify-between p-4">
       <div>
         {sidebarTopics.map((topic, index) => (
           <Link
