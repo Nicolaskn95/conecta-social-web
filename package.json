@@ -10,19 +10,20 @@
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
-    "@mui/material": "^6.0.2",
-    "next": "14.2.5",
+    "@phosphor-icons/react": "^2.1.7",
+    "autoprefixer": "^10.4.20",
+    "lottie-react": "^2.4.0",
+    "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
-    "react-icons": "^5.3.0"
+    "react-toastify": "^10.0.6"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.2.5",
+    "eslint-config-next": "14.2.15",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

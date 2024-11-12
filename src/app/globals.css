@@ -2,32 +2,134 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+}
+
+p,
+span {
+  color: #090934;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: bold;
+  color: #090934;
 }
 
 @layer utilities {
+  li {
+    @apply text-text_color hover:underline hover:text-[#387AA1] mb-2;
+  }
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  tr td:first-child {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+  }
+
+  tr td:last-child {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+
+  .row-data {
+    @apply text-primary border-red-500 hover:bg-secondary hover:text-white transition-all duration-200;
+  }
+  .row-title {
+    @apply text-text_color;
+  }
+  .primary-color {
+    @apply text-primary;
+  }
   .text-balance {
     text-wrap: balance;
+  }
+  .hover-facebook {
+    @apply group-hover:text-blue-600 text-text_color;
+  }
+  .hover-instagram {
+    @apply group-hover:text-pink-500 text-text_color;
+  }
+  .hover-youtube {
+    @apply group-hover:text-red-600 text-text_color;
+  }
+  .hover-linkedin {
+    @apply group-hover:text-blue-700 text-text_color;
+  }
+  .hover-x {
+    @apply group-hover:text-sky-700 text-text_color;
+  }
+  .hover-whatsapp {
+    @apply group-hover:text-green-600 text-text_color;
+  }
+  .header-color {
+    @apply bg-[#D2E6EF];
+  }
+  .header-hover-text {
+    @apply hover:text-[#387AA1];
+  }
+  .title-gradient {
+    @apply font-bold text-transparent bg-clip-text text-7xl;
+    background-image: linear-gradient(to right, #40789b, #1ea1ff);
+  }
+  .title {
+    @apply font-bold text-text_color text-4xl;
+  }
+  .sub-title {
+    @apply text-[#387AA1] text-xl;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 100;
+  }
+  .sidebar-color {
+    @apply bg-[#D2E6EF] border-[#387AA1] border;
+  }
+  .sidebar-menu {
+    @apply text-[#387AA1] hover:bg-[#4AA1D3] hover:text-[white];
+  }
+}
+
+@layer components {
+  .container {
+    @apply max-w-7xl mx-auto px-10;
+  }
+
+  .card {
+    @apply border-[#387AA1] border rounded-lg p-6;
+  }
+  .search-input {
+    @apply text-text_color placeholder-primary placeholder-opacity-30;
+  }
+  .card-effect {
+    @apply card;
+    @apply transition-transform duration-300 hover:bg-gray-100 cursor-pointer hover:shadow-lg;
+  }
+
+  .input {
+    @apply w-full border-2 border-b-gray-200 rounded-md p-2  focus:outline-none focus:border-[#387AA1];
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-md border-[2px] w-full;
+    font-family: "Montserrat", sans-serif;
+  }
+
+  .btn-primary {
+    @apply btn;
+    @apply bg-[#387AA1] border-[#4AA1D3] hover:bg-[#4AA1D3] text-[white] hover:border-[#387AA1] font-bold;
+  }
+
+  .btn-secondary {
+    @apply btn;
+    @apply bg-[#FFFFFF] hover:bg-[#BCD4E1] border-[#387AA1] text-[#387AA1] font-bold;
+  }
+
+  .btn-danger {
+    @apply btn;
+    @apply bg-[#A13838] hover:bg-[#E1BCBC] hover:border-[#A13838] font-bold;
   }
 }
