@@ -20,7 +20,9 @@ export default function Login() {
       toast.error("Erro: informe um email ou senha");
     } else {
       toast.success("login realizado com sucesso!");
-      router.push("/admin");
+      setTimeout(() => {
+        router.push("/admin");
+      }, 3000);
     }
   };
 
