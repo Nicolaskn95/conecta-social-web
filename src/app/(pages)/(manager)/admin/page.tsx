@@ -1,8 +1,9 @@
+import LottieAnimation from "@/components/LottieAnimation";
 import Sidebar from "@/components/template/manager/SideBar";
 import React from "react";
 
 function Admin() {
-  return <div>Pagina Inicial do Administrador BEM VINDO ADM</div>;
+  return <LottieAnimation status="WIP" />;
 }
 
 export default Admin;
