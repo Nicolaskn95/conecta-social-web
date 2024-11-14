@@ -12,8 +12,10 @@ import {
   UsersThree,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
+  const pathname = usePathname();
   const sidebarTopics = [
     {
       description: "Dashboard",
@@ -45,16 +47,24 @@ export default function Sidebar() {
   return (
     <aside className="sidebar-color w-64 h-auto flex flex-col justify-between p-4">
       <div>
-        {sidebarTopics.map((topic, index) => (
-          <Link
-            key={index}
-            href={topic.link}
-            className="sidebar-menu flex items-center gap-2 p-2 mb-4 cursor-pointer rounded-lg"
-          >
-            {topic.icon}
-            {topic.description}
-          </Link>
-        ))}
+        {sidebarTopics.map((topic, index) => {
+          const isActive =
+            topic.link === "/admin"
+              ? pathname === topic.link
+              : pathname.startsWith(topic.link);
+          return (
+            <Link
+              key={index}
+              href={topic.link}
+              className={`sidebar-menu flex items-center gap-2 p-2 mb-4 cursor-pointer rounded-lg ${
+                isActive ? "sidebar-menu-selected" : ""
+              }`}
+            >
+              {topic.icon}
+              {topic.description}
+            </Link>
+          );
+        })}
       </div>
       <div className="flex items-center gap-2 p-2 hover:bg-[#A13838] hover:text-white text-[#387AA1] cursor-pointer rounded-lg">
         <SignOut size={24} />

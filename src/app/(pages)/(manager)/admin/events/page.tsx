@@ -6,7 +6,7 @@ import React from "react";
 function Events() {
   const router = useRouter();
   const register = () => {
-    router.push("/admin/register");
+    router.push("/admin/events/register");
   };
 
   return (
