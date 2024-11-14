@@ -91,6 +91,9 @@ h3 {
   .sidebar-menu {
     @apply text-[#387AA1] hover:bg-[#4AA1D3] hover:text-[white];
   }
+  .sidebar-menu-selected {
+    @apply bg-primary text-white;
+  }
 }
 
 @layer components {
