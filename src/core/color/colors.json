@@ -6,5 +6,6 @@
     "danger":"#A13838",
     "danger_light":"#E1BCBC",
     "success":"#38A13C",
-    "success_light":"#BCE1C6"
+    "success_light":"#BCE1C6",
+    "header_sidebar_color": "#D2E6EF"
 }
