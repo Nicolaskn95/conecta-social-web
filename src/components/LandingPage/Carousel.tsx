@@ -50,7 +50,7 @@ const Carousel: React.FC<CarouselProps> = ({
         ))}
       </div>
       <div className="absolute inset-0 h-full bg-gradient-to-b from-transparent via-transparent to-white bg-opacity-100"></div>
-      <div className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 rounded-md bg-opacity-50 p-4 text-center">
+      <div className="absolute bottom-1/4 left-1/2 transform -translate-x-1/2 rounded-md bg-opacity-50 p-4 text-center">
         <h1 className="title-gradient">Conecta Social</h1>
         <p className="text-[#090934] ">
           Conectando tecnologia com projetos sociais

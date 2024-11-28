@@ -19,7 +19,7 @@ export default function Footer() {
     { value: "Nossa História", link: "/about/#our-history" },
     { value: "Fale Conosco", link: "/contactUs/#contacts" },
     { value: "Localização", link: "/contactUs/#location" },
-    { value: "Doação por pix", link: "/contactUs/#donation-pix" },
+    { value: "Doação via pix", link: "/contactUs/#donation-pix" },
   ];
   return (
     <footer className="bg-[#d0e7f1] p-6 flex flex-col md:flex-row md:justify-around items-center text-center md:text-left">
