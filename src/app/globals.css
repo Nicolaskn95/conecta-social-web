@@ -20,7 +20,7 @@ h3 {
 
 @layer utilities {
   li {
-    @apply text-text_color hover:underline hover:text-[#387AA1] mb-2;
+    @apply text-text_color hover:underline hover:text-primary mb-2;
   }
   table {
     border-collapse: separate;
@@ -68,28 +68,28 @@ h3 {
     @apply group-hover:text-green-600 text-text_color;
   }
   .header-color {
-    @apply bg-[#D2E6EF];
+    @apply bg-header_sidebar_color;
   }
   .header-hover-text {
-    @apply hover:text-[#387AA1];
+    @apply hover:text-primary;
   }
   .title-gradient {
-    @apply font-bold text-transparent bg-clip-text text-7xl;
+    @apply font-bold text-transparent bg-clip-text md:text-7xl text-5xl;
     background-image: linear-gradient(to right, #40789b, #1ea1ff);
   }
   .title {
     @apply font-bold text-text_color text-4xl;
   }
   .sub-title {
-    @apply text-[#387AA1] text-xl;
+    @apply text-primary text-xl;
     font-family: "Montserrat", sans-serif;
     font-weight: 100;
   }
   .sidebar-color {
-    @apply bg-[#D2E6EF] border-[#387AA1] border;
+    @apply bg-header_sidebar_color border-primary border;
   }
   .sidebar-menu {
-    @apply text-[#387AA1] hover:bg-[#4AA1D3] hover:text-[white];
+    @apply text-primary hover:bg-secondary hover:text-[white];
   }
   .sidebar-menu-selected {
     @apply bg-primary text-white;
@@ -102,7 +102,7 @@ h3 {
   }
 
   .card {
-    @apply border-[#387AA1] border rounded-lg p-6;
+    @apply border-primary border rounded-lg p-6;
   }
   .search-input {
     @apply text-text_color placeholder-primary placeholder-opacity-30;
@@ -113,7 +113,7 @@ h3 {
   }
 
   .input {
-    @apply w-full border-2 border-b-gray-200 rounded-md p-2  focus:outline-none focus:border-[#387AA1];
+    @apply w-full border-2 border-b-gray-200 rounded-md p-2  focus:outline-none focus:border-primary;
   }
 
   .btn {
@@ -123,16 +123,16 @@ h3 {
 
   .btn-primary {
     @apply btn;
-    @apply bg-[#387AA1] border-[#4AA1D3] hover:bg-[#4AA1D3] text-[white] hover:border-[#387AA1] font-bold;
+    @apply bg-primary border-secondary hover:bg-secondary text-[white] hover:border-primary font-bold;
   }
 
   .btn-secondary {
     @apply btn;
-    @apply bg-[#FFFFFF] hover:bg-[#BCD4E1] border-[#387AA1] text-[#387AA1] font-bold;
+    @apply bg-[#FFFFFF] hover:bg-tertiary border-primary text-primary font-bold;
   }
 
   .btn-danger {
     @apply btn;
-    @apply bg-[#A13838] hover:bg-[#E1BCBC] hover:border-[#A13838] font-bold;
+    @apply bg-danger hover:bg-danger_hover hover:border-danger font-bold;
   }
 }

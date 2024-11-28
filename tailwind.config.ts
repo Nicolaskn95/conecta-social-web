@@ -18,6 +18,7 @@ const config: Config = {
         danger_hover: colors.danger_light,
         success: colors.success,
         success_light: colors.success_light,
+        header_sidebar_color: colors.header_sidebar_color,
       },
     },
   },
