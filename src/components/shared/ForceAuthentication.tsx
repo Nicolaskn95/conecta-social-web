@@ -15,8 +15,6 @@ export default function ForceAuthentication({
    const path = usePathname();
 
    if (loading && !user?.email) {
-      console.log(loading);
-      console.log(user?.email);
       return <LottieAnimation status="loading" />;
    }
    if (!user?.email) {

@@ -19,9 +19,7 @@ function Register() {
 
    const { httpPost } = useAPI();
 
-   const submit: SubmitHandler<IEvent> = (data) => {
-      console.log(data);
-   };
+   const submit: SubmitHandler<IEvent> = (data) => {};
 
    return (
       <div className="min-h-screen p-4 bg-gray-100">
