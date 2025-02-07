@@ -1,4 +1,4 @@
-import LottieAnimation from "@/components/LottieAnimation";
+import LottieAnimation from "@/components/shared/LottieAnimation";
 import React from "react";
 
 function Families() {

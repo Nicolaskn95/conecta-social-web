@@ -1,8 +1,10 @@
+"use client";
 import Calendar from "@/components/LandingPage/Calendar";
 import Events from "@/components/LandingPage/Events";
 import HowToHelp from "@/components/LandingPage/HowToHelp";
 import OurJob from "@/components/LandingPage/OurJob";
 import Carousel from "@/components/LandingPage/Carousel";
+import Page from "@/components/template/manager/Page";
 
 export default function Home() {
   const carouselImage = [
