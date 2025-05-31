@@ -1,7 +1,7 @@
 'use client';
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, EyeSlash } from '@phosphor-icons/react';
+import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
 import useAPI from '@/data/hooks/useAPI';
 import useAuth from '@/data/hooks/useAuth';
 import LottieAnimation from '@/components/shared/LottieAnimation';
@@ -10,7 +10,7 @@ export default function Login() {
    const [showPassword, setShowPassword] = useState<boolean>(false);
    const [password, setPassword] = useState<string>('');
    const [email, setEmail] = useState<string>('');
-   const { httpPost } = useAPI();
+   const { post } = useAPI();
    const { user, login } = useAuth();
    const router = useRouter();
    const param = useSearchParams();
@@ -32,8 +32,16 @@ export default function Login() {
          password,
       };
 
-      const token = await httpPost('auth/login', dataLogin);
-      login(token);
+      const response: any = await post('auth/login', dataLogin);
+
+      const accessToken = response?.data?.access_token;
+      login(accessToken);
+
+      if (accessToken) {
+         login(accessToken);
+      } else {
+         console.error('Access token não encontrado na resposta:', response);
+      }
    };
 
    return (
@@ -62,9 +70,9 @@ export default function Login() {
                   className="absolute inset-y-0 right-0 flex items-center pr-3"
                >
                   {showPassword ? (
-                     <Eye size={20} className="text-gray-500" />
+                     <EyeIcon size={20} className="text-gray-500" />
                   ) : (
-                     <EyeSlash size={20} className="text-gray-500" />
+                     <EyeSlashIcon size={20} className="text-gray-500" />
                   )}
                </button>
             </div>

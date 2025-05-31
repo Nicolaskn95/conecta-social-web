@@ -14,7 +14,7 @@ export default function useAPI() {
       return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
    };
 
-   async function httpGet(path: string) {
+   async function get(path: string) {
       const completeUrl = buildUrl(path);
 
       if (!token) {
@@ -47,7 +47,7 @@ export default function useAPI() {
       }
    }
 
-   async function httpPost(path: string, body: LoginReqBody) {
+   async function post(path: string, body: LoginReqBody) {
       const completeUrl = buildUrl(path);
 
       try {
@@ -69,11 +69,11 @@ export default function useAPI() {
          }
 
          const text = await response.text();
-         return text;
+         return JSON.parse(text);
       } catch (error) {
          throw error;
       }
    }
 
-   return { httpGet, httpPost };
+   return { get, post };
 }
