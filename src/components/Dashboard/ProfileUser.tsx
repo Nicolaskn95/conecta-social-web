@@ -8,8 +8,8 @@ function ProfileUser() {
    const { user, logout } = useAuth();
 
    // Verifica se o usuário está disponível e se o nome não é undefined
-   const firstname = user?.name.split(' ')[0];
-   const lastname = user?.name.split(' ')[user?.name.split(' ').length - 1];
+   const firstname = user?.name;
+   const lastname = user?.surname;
    const nameParts = user?.name ? user.name.split(' ') : [];
    const firstnameLetter =
       nameParts.length > 0 ? nameParts[0][0].toUpperCase() : '';
