@@ -1,5 +1,5 @@
 'use client';
-import { IPrivateUser } from '@/core/privateUser';
+import { IEmployee } from '@/core/employee';
 import {
    createContext,
    ReactNode,
@@ -16,13 +16,13 @@ interface AuthProviderProps {
 
 interface Session {
    token: string | null;
-   user: IPrivateUser | null;
+   user: Partial<IEmployee> | null;
 }
 
 interface AuthContextProps {
    loading: boolean;
    token: string | null;
-   user: IPrivateUser | null;
+   user: Partial<IEmployee> | null;
    login: (token: string) => void;
    logout: () => void;
 }
@@ -39,6 +39,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
    function login(token: string) {
       cookies.set(cookieName, token, { expires: 1 });
       const session = getSession();
+      console.log('session', session);
       setAuth(session);
       setLoading(false);
    }
@@ -64,6 +65,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
    function getSession(): Session {
       const token = cookies.get(cookieName);
+      console.log('token', token);
 
       if (!token) {
          return { token: null, user: null };
@@ -71,6 +73,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       try {
          const payload: any = jwtDecode(token);
+         console.log('payload', payload);
          const isValid = payload.exp! > Date.now() / 1000;
 
          if (!isValid) {
@@ -80,9 +83,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
          return {
             token,
             user: {
-               id: payload.id,
-               name: payload.name,
+               id: payload.sub,
                email: payload.email,
+               name: payload.name,
+               surname: payload.surname,
             },
          };
       } catch (error) {
