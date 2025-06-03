@@ -18,9 +18,9 @@ export interface IEvent {
    number: string;
    uf: string;
    complement: string;
+   status: string;
 
    // active:
-   status: string;
    logs: ILogEmployeeEvent[];
 }
 

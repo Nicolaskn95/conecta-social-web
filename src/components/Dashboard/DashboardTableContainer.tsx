@@ -34,7 +34,7 @@ export default function DashboardTableContainer({
    actions = [],
    onSearch,
 }: DashboardTableContainerProps) {
-   const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState<number>(1);
    const itemsPerPage = 10;
    const totalPages = Math.ceil(data.length / itemsPerPage);
 
@@ -54,7 +54,10 @@ export default function DashboardTableContainer({
                <thead>
                   <tr>
                      {columns.map((column, index) => (
-                        <th key={index} className="px-4 py-2 text-start">
+                        <th
+                           key={index}
+                           className="px-4 py-2 text-start text-primary font-bold"
+                        >
                            {column.label}
                         </th>
                      ))}

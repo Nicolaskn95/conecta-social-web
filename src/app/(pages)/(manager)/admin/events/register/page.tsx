@@ -54,6 +54,7 @@ function Register() {
          if (cepData.logradouro) setValue('street', cepData.logradouro);
          if (cepData.bairro) setValue('neighborhood', cepData.bairro);
          if (cepData.complemento) setValue('complement', cepData.complemento);
+         if (cepData.estado) setValue('state', cepData.estado);
       }
    }, [cepData, setValue]);
 
@@ -62,7 +63,21 @@ function Register() {
    };
 
    const submit: SubmitHandler<IEvent> = async (data) => {
-      console.log(data);
+      setIsLoading(true);
+      try {
+         console.log(data);
+         console.log(watch('status'));
+         await post('/events', data);
+         toast.success('Evento cadastrado com sucesso!');
+         router.push('/admin/events');
+      } catch (error: any) {
+         toast.error(
+            error?.response?.data?.message ||
+               'Erro ao cadastrar evento. Tente novamente.'
+         );
+      } finally {
+         setIsLoading(false);
+      }
    };
 
    return (
@@ -131,8 +146,7 @@ function Register() {
                               htmlFor="capacidade"
                               className="font-semibold mb-1"
                            >
-                              Capacidade de Participantes{' '}
-                              <span className="text-red-500">*</span>
+                              Capacidade de Participantes
                            </label>
                            <input
                               type="number"
@@ -145,6 +159,29 @@ function Register() {
                            {errors.attendance && (
                               <p className="text-red-500 text-sm">
                                  {errors.attendance.message}
+                              </p>
+                           )}
+                        </div>
+
+                        <div className="flex flex-col flex-1 min-w-[250px]">
+                           <label
+                              htmlFor="status"
+                              className="font-semibold mb-1"
+                           >
+                              Status <span className="text-red-500">*</span>
+                           </label>
+                           <select
+                              id="status"
+                              className="input"
+                              {...register('status')}
+                              defaultValue="ativo"
+                           >
+                              <option value="ativo">Ativo</option>
+                              <option value="inativo">Inativo</option>
+                           </select>
+                           {errors.status && (
+                              <p className="text-red-500 text-sm">
+                                 {errors.status.message}
                               </p>
                            )}
                         </div>
