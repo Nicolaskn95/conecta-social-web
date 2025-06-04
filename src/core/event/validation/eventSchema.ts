@@ -62,4 +62,5 @@ export const eventSchema = object({
       .refine((val) => ['ativo', 'inativo'].includes(val), {
          message: 'Status deve ser "ativo" ou "inativo"',
       }),
+   greeting_description: string().nullable().optional(),
 });

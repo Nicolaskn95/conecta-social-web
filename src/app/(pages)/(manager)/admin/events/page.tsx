@@ -4,12 +4,17 @@ import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import useAPI from '@/data/hooks/useAPI';
+import { PencilIcon, TrashIcon } from '@phosphor-icons/react';
+import Modal from '@/components/Modal/Modal';
+import { toast } from 'react-toastify';
+import { IEvent } from '@/core/event';
+import { useEvents } from '@/data/hooks/useEvents';
 
 function Events() {
    const router = useRouter();
-   const { get } = useAPI();
-   const [data, setData] = useState<any[]>([]);
-   const [loading, setLoading] = useState<boolean>(true);
+   const { del } = useAPI();
+   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+   const { events, loadEvent } = useEvents();
 
    const register = () => {
       router.push('/admin/events/register');
@@ -50,27 +55,52 @@ function Events() {
       { key: 'city', label: 'Cidade' },
    ];
 
-   useEffect(() => {
-      async function fetchEvents() {
-         setLoading(true);
-         try {
-            const events = await get('/events');
-            console.log(events);
-            setData(events.data);
-         } catch (error) {
-            console.error('Erro ao buscar eventos:', error);
-         } finally {
-            setLoading(false);
-         }
+   const handleEdit = (event: any) => {
+      router.push(`/admin/events/${event.id}`);
+   };
+
+   const [selectedEvent, setSelectedEvent] = useState<any>(null);
+
+   const handleDelete = (event: IEvent) => {
+      setSelectedEvent(event);
+      setIsDeleteModalOpen(true);
+   };
+
+   const handleDeleteConfirm = async () => {
+      try {
+         await del(`/events/${selectedEvent.id}`);
+         toast.success('Evento excluído com sucesso!');
+         setIsDeleteModalOpen(false);
+         // Update the events list by filtering out the deleted event
+         loadEvent();
+      } catch (error) {
+         toast.error('Erro ao excluir evento');
+         console.error('Erro ao excluir evento:', error);
       }
-      fetchEvents();
-   }, []);
+   };
 
    const actions = [
       {
          key: 'edit',
          label: 'Editar',
-         icon: <span className="material-icons">edit</span>,
+         icon: (
+            <div className="rounded-md p-2 text-primary bg-tertiary hover:bg-primary hover:text-white">
+               <PencilIcon size={24} />
+            </div>
+         ),
+         onClick: handleEdit,
+         className: '',
+      },
+      {
+         key: 'delete',
+         label: 'Deletar',
+         icon: (
+            <div className="text-danger hover:text-white bg-danger_hover rounded-md p-2 hover:bg-danger">
+               <TrashIcon size={24} />
+            </div>
+         ),
+         onClick: handleDelete,
+         className: '',
       },
    ];
 
@@ -94,15 +124,33 @@ function Events() {
          <DashboardTableContainer
             title="Todos os Eventos"
             columns={columns}
-            data={data}
-            // loading={loading}
-            actions={actions.map((action) => ({
-               ...action,
-               onClick: () => {}, // placeholder, replace with actual handler
-               className: '',
-            }))}
+            data={events}
+            actions={actions}
             onSearch={onSearch}
          />
+         <Modal
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            title="Confirmar Exclusão"
+         >
+            <div className="space-y-4">
+               <p>
+                  Tem certeza que deseja excluir o evento "{selectedEvent?.name}
+                  "?
+               </p>
+               <div className="flex justify-end space-x-3">
+                  <button
+                     onClick={() => setIsDeleteModalOpen(false)}
+                     className="btn-secondary"
+                  >
+                     Cancelar
+                  </button>
+                  <button onClick={handleDeleteConfirm} className="btn-danger">
+                     Excluir
+                  </button>
+               </div>
+            </div>
+         </Modal>
       </div>
    );
 }

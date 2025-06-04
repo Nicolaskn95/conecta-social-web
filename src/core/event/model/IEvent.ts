@@ -24,6 +24,11 @@ export interface IEvent {
    logs: ILogEmployeeEvent[];
 }
 
+// Interface for form handling where date is a string
+export interface IEventForm extends Omit<IEvent, 'date'> {
+   date: string;
+}
+
 export interface ILogEmployeeEvent {
    id: string;
    event_id: string;
