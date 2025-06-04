@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify';
 import useAuth from './useAuth';
+import { useCallback } from 'react';
 
 interface ApiOptions {
    headers?: Record<string, string>;
@@ -70,15 +71,20 @@ export default function useAPI() {
    }
 
    // READ
-   async function get<T = any>(path: string, options?: ApiOptions): Promise<T> {
+
+   const get = useCallback(async function <T = any>(
+      path: string,
+      options?: ApiOptions
+   ): Promise<T> {
       const completeUrl = buildUrl(path);
-      console.log(completeUrl);
+
       try {
+         console.log(completeUrl);
          const response = await fetch(completeUrl, {
             method: 'GET',
             headers: buildHeaders(options),
          });
-         console.log(response);
+
          return handleResponse<T>(response);
       } catch (error) {
          toast.error(
@@ -86,7 +92,8 @@ export default function useAPI() {
          );
          throw error;
       }
-   }
+   },
+   []);
 
    // UPDATE
    async function put<T = any, U = any>(
