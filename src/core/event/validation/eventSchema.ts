@@ -55,4 +55,12 @@ export const eventSchema = object({
          message: 'Código de embed inválido',
       })
       .optional(),
+
+   status: string()
+      .min(5, 'Status é obrigatório')
+      .max(20, 'Status não pode ter mais de 20 caracteres')
+      .refine((val) => ['ativo', 'inativo'].includes(val), {
+         message: 'Status deve ser "ativo" ou "inativo"',
+      }),
+   greeting_description: string().nullable().optional(),
 });

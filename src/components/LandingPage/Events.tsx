@@ -28,7 +28,7 @@ const Events = () => {
          }
       }
       fetchEvents();
-   }, []);
+   }, [get]);
 
    useEffect(() => {
       if (

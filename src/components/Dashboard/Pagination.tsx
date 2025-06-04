@@ -33,7 +33,7 @@ export default function Pagination({
    return (
       <div className="flex gap-2 justify-center mt-4">
          <button
-            className="px-3 py-1 rounded bg-blue-100 text-blue-700 disabled:opacity-50"
+            className="px-3 py-1 rounded bg-tertiary text-primary disabled:opacity-50"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
          >
@@ -49,8 +49,8 @@ export default function Pagination({
                   key={idx}
                   className={`px-3 py-1 rounded ${
                      page === currentPage
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-blue-100 text-blue-700'
+                        ? 'bg-secondary text-white'
+                        : 'bg-secondary text-secondary'
                   }`}
                   onClick={() => onPageChange(Number(page))}
                >
@@ -59,7 +59,7 @@ export default function Pagination({
             )
          )}
          <button
-            className="px-3 py-1 rounded bg-blue-100 text-blue-700 disabled:opacity-50"
+            className="px-3 py-1 rounded bg-tertiary text-primary disabled:opacity-50"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
          >

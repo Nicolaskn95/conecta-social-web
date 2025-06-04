@@ -1,7 +1,6 @@
 // components/DashboardTableContainer.tsx
 'use client';
 
-import { PencilIcon, TrashIcon } from '@phosphor-icons/react';
 import SearchInput from './SearchInput';
 import Status from './Status';
 import React, { useState } from 'react';
@@ -17,12 +16,13 @@ interface Action {
    icon: React.ReactNode;
    onClick: (item: any) => void;
    className: string;
+   label: string;
 }
 
 interface DashboardTableContainerProps {
    title: string;
    columns: Column[];
-   data: any[];
+   data?: any[];
    actions?: Action[];
    onSearch?: (value: string) => void;
 }
@@ -34,14 +34,13 @@ export default function DashboardTableContainer({
    actions = [],
    onSearch,
 }: DashboardTableContainerProps) {
-   const [currentPage, setCurrentPage] = useState(1);
+   const [currentPage, setCurrentPage] = useState<number>(1);
    const itemsPerPage = 10;
-   const totalPages = Math.ceil(data.length / itemsPerPage);
+   const totalPages = data ? Math.ceil(data.length / itemsPerPage) : 0;
 
-   const paginatedData = data.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-   );
+   const paginatedData = data
+      ? data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+      : [];
 
    return (
       <div className="p-4 bg-white rounded-3xl shadow-md border border-[#4AA1D3]">
@@ -54,13 +53,21 @@ export default function DashboardTableContainer({
                <thead>
                   <tr>
                      {columns.map((column, index) => (
-                        <th key={index} className="px-4 py-2 text-start">
+                        <th
+                           key={index}
+                           className="px-4 py-2 text-start text-primary font-bold"
+                        >
                            {column.label}
                         </th>
                      ))}
-                     {actions.length > 0 && (
-                        <th className="px-4 py-2 text-start">Ações</th>
-                     )}
+                     {actions.map((action, index) => (
+                        <th
+                           key={index}
+                           className="px-4 py-2 text-primary font-bold"
+                        >
+                           {action.label}
+                        </th>
+                     ))}
                   </tr>
                </thead>
                <tbody>
@@ -73,22 +80,22 @@ export default function DashboardTableContainer({
                                  : item[column.key]}
                            </td>
                         ))}
-                        {actions.length > 0 && (
-                           <td className="px-4 py-2 text-center">
-                              <div className="flex gap-2 justify-center">
-                                 {actions.map((action, actionIndex) => (
-                                    <button
-                                       key={actionIndex}
-                                       onClick={() => action.onClick(item)}
-                                    >
-                                       <div className={action.className}>
-                                          {action.icon}
-                                       </div>
-                                    </button>
-                                 ))}
-                              </div>
+                        {actions.map((action, actionIndex) => (
+                           <td
+                              key={actionIndex}
+                              className="px-4 py-2 text-center"
+                           >
+                              <button
+                                 onClick={() => {
+                                    action.onClick(item);
+                                 }}
+                              >
+                                 <div className={action.className}>
+                                    {action.icon}
+                                 </div>
+                              </button>
                            </td>
-                        )}
+                        ))}
                      </tr>
                   ))}
                </tbody>

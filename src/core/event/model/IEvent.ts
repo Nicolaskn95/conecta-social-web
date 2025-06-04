@@ -18,10 +18,15 @@ export interface IEvent {
    number: string;
    uf: string;
    complement: string;
+   status: string;
 
    // active:
-   status: string;
    logs: ILogEmployeeEvent[];
+}
+
+// Interface for form handling where date is a string
+export interface IEventForm extends Omit<IEvent, 'date'> {
+   date: string;
 }
 
 export interface ILogEmployeeEvent {

@@ -11,7 +11,7 @@ export default function Layout({
    return (
       <>
          <Suspense fallback={<LottieAnimation status="loading" />}>
-            <>{children}</>;
+            <>{children}</>
          </Suspense>
       </>
    );
