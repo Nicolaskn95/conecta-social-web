@@ -135,8 +135,9 @@ function Events() {
          >
             <div className="space-y-4">
                <p>
-                  Tem certeza que deseja excluir o evento "{selectedEvent?.name}
-                  "?
+                  Tem certeza que deseja excluir o evento &quot;
+                  {selectedEvent?.name}
+                  &quot;?
                </p>
                <div className="flex justify-end space-x-3">
                   <button
