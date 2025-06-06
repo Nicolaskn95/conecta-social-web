@@ -22,7 +22,7 @@ export default function ContactUs() {
           className="flex flex-col md:flex-row items-center justify-center gap-8 w-full mb-12"
         >
           <div className="card flex-col items-center justify-items-center w-full text-center md:w-1/2">
-            <MapPin size={50} weight="fill" color="#BCD4E1" className="mb-2" />
+            <MapPin size={50} weight="fill" color="#BCD4E1" className="mb-2 m-auto" />
             <p className="font-semibold text-gray-800 mb-2">Visite-nos!</p>
             <p className="text-gray-600">
               Rua Lorem Ipsum, 4923 - Sorocaba - São Paulo - Brasil

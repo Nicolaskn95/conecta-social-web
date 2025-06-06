@@ -13,7 +13,7 @@ const Events = () => {
          setLoading(true);
          try {
             // Get only active events for the landing page
-            const response = await get('/events/actives');
+            const response = await get('/events/recent-with-instagram?limit=3');
             // If your API returns { data: [...] }
             const events = response?.data || response || [];
             // Filter and map only events with embedded_instagram
