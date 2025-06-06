@@ -1,15 +1,15 @@
-import { Check, CheckCircle, Info, XCircle } from "@phosphor-icons/react";
+import { CheckIcon } from '@phosphor-icons/react';
 interface StatusProps {
-  status: string;
+   status: string;
 }
 
 function Status({ status }: StatusProps) {
-  return (
-    <div className="flex justify-center self-center py-1 text-sm text-success bg-success_light rounded-md">
-      <Check size={20} className="text-success" />
-      {status}
-    </div>
-  );
+   return (
+      <div className="flex justify-center self-center py-1 text-sm text-success bg-success_light rounded-md">
+         <CheckIcon size={20} className="text-success" />
+         {status}
+      </div>
+   );
 }
 
 export default Status;

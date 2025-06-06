@@ -22,7 +22,7 @@ export default function Footer() {
     { value: "Doação via pix", link: "/contactUs/#donation-pix" },
   ];
   return (
-    <footer className="bg-[#d0e7f1] p-6 flex flex-col md:flex-row md:justify-around items-center text-center md:text-left">
+    <footer className="bg-[#d0e7f1] p-6 flex flex-col md:flex-row md:justify-evenly items-center text-center md:text-left">
       <div className="flex flex-col lg:items-start items-center lg:self-start md:self-center gap-2 mb-6 md:mb-0">
         <Image src="/images/logo.svg" alt="Logo" width={240} height={240} />
         <div className="flex gap-3 mt-2">
@@ -72,17 +72,17 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold text-lg mb-6">Parceiros</h3>
           <ul>
-            <Link href={"#"}>
+            <Link href={"/login"}>
               <li>Credenciados</li>
             </Link>
           </ul>
         </div>
       </div>
-      <div className="flex justify-center md:justify-end w-full md:w-auto">
-        <Link href={"/login"}>
+      {/* <div className="flex justify-center md:justify-end w-full md:w-auto"> */}
+        {/* <Link href={"/login"}>
           <button className="btn-primary">Login</button>
-        </Link>
-      </div>
+        </Link> */}
+      {/* </div> */}
     </footer>
   );
 }
