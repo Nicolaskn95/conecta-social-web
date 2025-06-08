@@ -43,12 +43,10 @@ function ProfileUser() {
    };
 
    const handleProfileClick = () => {
-      // router.push('/admin/profile');
       setIsDropdownOpen(false);
    };
 
    const handleSettingsClick = () => {
-      // router.push('/admin/settings');
       setIsDropdownOpen(false);
    };
 
