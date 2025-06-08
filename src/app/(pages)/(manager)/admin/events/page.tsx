@@ -9,6 +9,8 @@ import Modal from '@/components/Modal/Modal';
 import { toast } from 'react-toastify';
 import { IEvent } from '@/core/event';
 import { useEvents } from '@/data/hooks/useEvents';
+import { Status } from '@/components/shared/Status';
+import { EventStatus } from '@/core/event/model/IEvent';
 
 function Events() {
    const router = useRouter();
@@ -53,6 +55,11 @@ function Events() {
                : '',
       },
       { key: 'city', label: 'Cidade' },
+      {
+         key: 'status',
+         label: 'Status',
+         render: (value: string) => <Status status={value as EventStatus} />,
+      },
    ];
 
    const handleEdit = (event: any) => {

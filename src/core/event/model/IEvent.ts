@@ -36,3 +36,9 @@ export interface ILogEmployeeEvent {
    created_at: Date;
    updated_at: Date;
 }
+
+export enum EventStatus {
+   CANCELADO = 'Cancelado',
+   ABERTO = 'Aberto',
+   CONCLUIDO = 'Concluído',
+}
