@@ -103,6 +103,7 @@ export default function EditEventPage() {
          await put(`/events/${id}`, apiData);
          toast.success('Evento atualizado com sucesso!');
          router.push('/admin/events');
+         loadEvent();
       } catch (error: any) {
          toast.error(
             error?.response?.data?.message ||
