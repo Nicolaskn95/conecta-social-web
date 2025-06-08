@@ -59,8 +59,8 @@ export const eventSchema = object({
    status: string()
       .min(5, 'Status é obrigatório')
       .max(20, 'Status não pode ter mais de 20 caracteres')
-      .refine((val) => ['ativo', 'inativo'].includes(val), {
-         message: 'Status deve ser "ativo" ou "inativo"',
+      .refine((val) => ['Aberto', 'Cancelado', 'Concluído'].includes(val), {
+         message: 'Status deve ser "Aberto", "Cancelado" ou "Concluído"',
       }),
    greeting_description: string().nullable().optional(),
 });
