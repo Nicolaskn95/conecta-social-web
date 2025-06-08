@@ -30,7 +30,7 @@ function Page(props: PageProps) {
             {!props.noHeader &&
                (isPublicRoute ? <Header logged={false} /> : null)}
 
-            {path.startsWith('/admin') ? (
+            {path.startsWith('/dashboard') ? (
                <div
                   className="flex flex-col min-h-screen h-screen"
                   style={{

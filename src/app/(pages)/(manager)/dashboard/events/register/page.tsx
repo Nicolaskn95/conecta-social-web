@@ -24,9 +24,9 @@ function Register() {
    } = useCEP();
 
    const breadcrumbItems = [
-      { label: 'Início', href: '/admin' },
-      { label: 'Eventos', href: '/admin/events' },
-      { label: 'Cadastro', href: '/admin/events/register' },
+      { label: 'Início', href: 'dashboard' },
+      { label: 'Eventos', href: 'dashboard/events' },
+      { label: 'Cadastro', href: 'dashboard/events/register' },
    ];
 
    const {
@@ -59,7 +59,7 @@ function Register() {
    }, [cepData, setValue]);
 
    const handleCancel = () => {
-      router.push('/admin/events');
+      router.push('dashboard/events');
    };
 
    const submit: SubmitHandler<IEvent> = async (data) => {
@@ -69,7 +69,7 @@ function Register() {
          console.log(watch('status'));
          await post('/events', data);
          toast.success('Evento cadastrado com sucesso!');
-         router.push('/admin/events');
+         router.push('dashboard/events');
       } catch (error: any) {
          toast.error(
             error?.response?.data?.message ||

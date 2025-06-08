@@ -27,7 +27,7 @@ interface DashboardTableContainerProps {
    onSearch?: (value: string) => void;
 }
 
-export default function DashboardTableContainer({
+export default function TableContainer({
    title,
    columns,
    data,
