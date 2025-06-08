@@ -2,7 +2,6 @@
 'use client';
 
 import SearchInput from './SearchInput';
-import Status from './Status';
 import React, { useState } from 'react';
 import Pagination from './Pagination';
 
