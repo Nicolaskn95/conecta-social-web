@@ -19,7 +19,7 @@ export default function Login() {
    useEffect(() => {
       if (user?.email) {
          const destination = param.get('destination');
-         router.push(destination ? destination : '/admin');
+         router.push(destination ? destination : '/dashboard');
       }
    }, [router, user, param]);
 

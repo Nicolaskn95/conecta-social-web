@@ -1,5 +1,5 @@
 'use client';
-import DashboardTableContainer from '@/components/Dashboard/DashboardTableContainer';
+import TableContainer from '@/components/Panel/TableContainer';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -19,11 +19,11 @@ function Events() {
    const { events, loadEvent } = useEvents();
 
    const register = () => {
-      router.push('/admin/events/register');
+      router.push('/dashboard/events/register');
    };
 
    const breadcrumbItems = [
-      { label: 'Início', href: '/admin' },
+      { label: 'Início', href: '/dashboard' },
       { label: 'Eventos' },
    ];
 
@@ -63,7 +63,7 @@ function Events() {
    ];
 
    const handleEdit = (event: any) => {
-      router.push(`/admin/events/${event.id}`);
+      router.push(`dashboard/events/${event.id}`);
    };
 
    const [selectedEvent, setSelectedEvent] = useState<any>(null);
@@ -128,7 +128,7 @@ function Events() {
                Novo Evento
             </button>
          </div>
-         <DashboardTableContainer
+         <TableContainer
             title="Todos os Eventos"
             columns={columns}
             data={events}
