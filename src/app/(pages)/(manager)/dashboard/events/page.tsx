@@ -1,5 +1,5 @@
 'use client';
-import DashboardTableContainer from '@/components/Dashboard/DashboardTableContainer';
+import TableContainer from '@/components/Panel/TableContainer';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -121,7 +121,7 @@ function Events() {
                Novo Evento
             </button>
          </div>
-         <DashboardTableContainer
+         <TableContainer
             title="Todos os Eventos"
             columns={columns}
             data={events}
