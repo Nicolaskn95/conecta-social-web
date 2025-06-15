@@ -174,10 +174,11 @@ function Register() {
                               id="status"
                               className="input"
                               {...register('status')}
-                              defaultValue="ativo"
+                              defaultValue="Aberto"
                            >
-                              <option value="ativo">Ativo</option>
-                              <option value="inativo">Inativo</option>
+                              <option value="Cancelado">Cancelado</option>
+                              <option value="Aberto">Aberto</option>
+                              <option value="Concluído">Concluído</option>
                            </select>
                            {errors.status && (
                               <p className="text-red-500 text-sm">

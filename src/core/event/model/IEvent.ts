@@ -21,7 +21,7 @@ export interface IEvent {
    status: string;
 
    // active:
-   logs: ILogEmployeeEvent[];
+   logs?: ILogEmployeeEvent[];
 }
 
 // Interface for form handling where date is a string
