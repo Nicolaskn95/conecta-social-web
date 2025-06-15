@@ -1,7 +1,7 @@
 // components/Sidebar.js
 'use client';
 import {
-   HouseIcon,
+   GaugeIcon,
    UsersIcon,
    HandHeartIcon,
    CalendarIcon,
@@ -17,7 +17,7 @@ export default function Sidebar() {
       {
          description: 'Dashboard',
          link: '/dashboard',
-         icon: <HouseIcon size={24} />,
+         icon: <GaugeIcon size={24} />,
       },
       {
          description: 'Famílias',
