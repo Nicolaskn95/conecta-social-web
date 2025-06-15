@@ -1,20 +1,36 @@
-import { XIcon, CheckIcon, ExclamationMarkIcon } from '@phosphor-icons/react';
+import {
+   XIcon,
+   CheckIcon,
+   ExclamationMarkIcon,
+   ShoppingCartIcon,
+   RobotIcon,
+   TShirtIcon,
+} from '@phosphor-icons/react';
 import { EventStatus } from '@/core/event/model/IEvent';
 import { FamilyStatus } from '@/core/family/model/IFamily';
+import { Category } from '@/core/donation/model/IDonation';
 
 interface StatusProps {
-   status: EventStatus | FamilyStatus;
+   status: EventStatus | FamilyStatus | Category;
    selected?: boolean;
 }
 
 // Type guards
 const isEventStatus = (
-   status: EventStatus | FamilyStatus
+   status: EventStatus | FamilyStatus | Category
 ): status is EventStatus => {
    return Object.values(EventStatus).includes(status as EventStatus);
 };
 
-const getStatusStyles = (status: EventStatus | FamilyStatus): string => {
+const isCategory = (
+   status: EventStatus | FamilyStatus | Category
+): status is Category => {
+   return Object.values(Category).includes(status as Category);
+};
+
+const getStatusStyles = (
+   status: EventStatus | FamilyStatus | Category
+): string => {
    if (isEventStatus(status)) {
       switch (status) {
          case EventStatus.CANCELADO:
@@ -22,6 +38,17 @@ const getStatusStyles = (status: EventStatus | FamilyStatus): string => {
          case EventStatus.ABERTO:
             return 'bg-tertiary text-primary border border-tertiary';
          case EventStatus.CONCLUIDO:
+            return 'bg-success_light text-success border border-success_light';
+         default:
+            return 'bg-gray-100 text-gray-800';
+      }
+   } else if (isCategory(status)) {
+      switch (status) {
+         case Category.ALIMENTO:
+            return 'bg-warning_light text-warning border border-warning_light';
+         case Category.BRINQUEDO:
+            return 'bg-tertiary text-primary border border-tertiary';
+         case Category.VESTIMENTA:
             return 'bg-success_light text-success border border-success_light';
          default:
             return 'bg-gray-100 text-gray-800';
@@ -38,7 +65,7 @@ const getStatusStyles = (status: EventStatus | FamilyStatus): string => {
    }
 };
 
-const getStatusIcon = (status: EventStatus | FamilyStatus) => {
+const getStatusIcon = (status: EventStatus | FamilyStatus | Category) => {
    if (isEventStatus(status)) {
       switch (status) {
          case EventStatus.CANCELADO:
@@ -52,6 +79,17 @@ const getStatusIcon = (status: EventStatus | FamilyStatus) => {
          default:
             return null;
       }
+   } else if (isCategory(status)) {
+      switch (status) {
+         case Category.ALIMENTO:
+            return <ShoppingCartIcon size={20} className="text-primary mr-1" />;
+         case Category.BRINQUEDO:
+            return <RobotIcon size={20} className="text-primary mr-1" />;
+         case Category.VESTIMENTA:
+            return <TShirtIcon size={20} className="text-primary mr-1" />;
+         default:
+            return null;
+      }
    } else {
       switch (status) {
          case FamilyStatus.ATIVO:
@@ -64,7 +102,9 @@ const getStatusIcon = (status: EventStatus | FamilyStatus) => {
    }
 };
 
-const getStatusText = (status: EventStatus | FamilyStatus): string => {
+const getStatusText = (
+   status: EventStatus | FamilyStatus | Category
+): string => {
    if (isEventStatus(status)) {
       switch (status) {
          case EventStatus.CANCELADO:
@@ -73,6 +113,17 @@ const getStatusText = (status: EventStatus | FamilyStatus): string => {
             return 'Aberto';
          case EventStatus.CONCLUIDO:
             return 'Concluído';
+         default:
+            return 'Desconhecido';
+      }
+   } else if (isCategory(status)) {
+      switch (status) {
+         case Category.ALIMENTO:
+            return 'Alimento';
+         case Category.BRINQUEDO:
+            return 'Brinquedo';
+         case Category.VESTIMENTA:
+            return 'Vestimenta';
          default:
             return 'Desconhecido';
       }
