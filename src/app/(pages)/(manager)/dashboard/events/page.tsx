@@ -63,7 +63,7 @@ function Events() {
    ];
 
    const handleEdit = (event: any) => {
-      router.push(`dashboard/events/${event.id}`);
+      router.push(`/dashboard/events/${event.id}`);
    };
 
    const [selectedEvent, setSelectedEvent] = useState<any>(null);
@@ -122,7 +122,7 @@ function Events() {
          <div className="flex justify-between items-center mb-6">
             <Breadcrumb items={breadcrumbItems} />
             <button
-               className="btn-primary flex text-nowrap w-32 text-center"
+               className="btn-primary justify-center flex text-nowrap w-32 text-center"
                onClick={register}
             >
                Novo Evento

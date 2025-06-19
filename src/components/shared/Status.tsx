@@ -34,33 +34,33 @@ const getStatusStyles = (
    if (isEventStatus(status)) {
       switch (status) {
          case EventStatus.CANCELADO:
-            return 'bg-warning_light text-danger border border-warning_light';
+            return 'bg-warning_light text-danger border border-warning_light ';
          case EventStatus.ABERTO:
             return 'bg-tertiary text-primary border border-tertiary';
          case EventStatus.CONCLUIDO:
             return 'bg-success_light text-success border border-success_light';
          default:
-            return 'bg-gray-100 text-gray-800';
+            return 'bg-gray-100 text-gray-800 hover:text-gray-800';
       }
    } else if (isCategory(status)) {
       switch (status) {
          case Category.ALIMENTO:
-            return 'bg-warning_light text-warning border border-warning_light';
+            return 'bg-success_light text-success border border-success_light ';
          case Category.BRINQUEDO:
-            return 'bg-tertiary text-primary border border-tertiary';
+            return 'bg-danger_hover text-danger border border-danger_hover ';
          case Category.VESTIMENTA:
-            return 'bg-success_light text-success border border-success_light';
+            return 'bg-tertiary text-primary border border-tertiary ';
          default:
-            return 'bg-gray-100 text-gray-800';
+            return 'bg-gray-100 text-gray-800 hover:text-gray-800';
       }
    } else {
       switch (status) {
          case FamilyStatus.ATIVO:
-            return 'bg-success_light text-success border border-success_light';
+            return 'bg-success_light text-success border border-success_light ';
          case FamilyStatus.CANCELADO:
-            return 'bg-warning_light text-danger border border-warning_light';
+            return 'bg-warning_light text-danger border border-warning_light ';
          default:
-            return 'bg-gray-100 text-gray-800';
+            return 'bg-gray-100 text-gray-800 hover:text-gray-800';
       }
    }
 };
@@ -82,9 +82,15 @@ const getStatusIcon = (status: EventStatus | FamilyStatus | Category) => {
    } else if (isCategory(status)) {
       switch (status) {
          case Category.ALIMENTO:
-            return <ShoppingCartIcon size={20} className="text-primary mr-1" />;
+            return (
+               <ShoppingCartIcon
+                  size={20}
+                  className="text-success mr-1"
+                  weight="fill"
+               />
+            );
          case Category.BRINQUEDO:
-            return <RobotIcon size={20} className="text-primary mr-1" />;
+            return <RobotIcon size={20} className="text-danger mr-1" />;
          case Category.VESTIMENTA:
             return <TShirtIcon size={20} className="text-primary mr-1" />;
          default:
@@ -142,7 +148,7 @@ const getStatusText = (
 export function Status({ status, selected }: StatusProps) {
    return (
       <div
-         className={`flex items-center justify-center gap-1 px-3 py-1 rounded-md font-medium text-sm mb-2 w-32 ${getStatusStyles(
+         className={`flex items-center justify-center text-center gap-1 py-1 rounded-md font-medium text-sm w-32 ${getStatusStyles(
             status
          )} ${selected ? 'ring-2 ring-blue-400' : ''}`}
          style={{ minWidth: '8rem', maxWidth: '10rem' }}

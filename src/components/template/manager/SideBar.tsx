@@ -3,6 +3,8 @@
 import {
    GaugeIcon,
    UsersIcon,
+   UserIcon,
+   UserSquareIcon,
    HandHeartIcon,
    CalendarIcon,
    SignOutIcon,
@@ -25,6 +27,11 @@ export default function Sidebar() {
          icon: <UsersIcon size={24} />,
       },
       {
+         description: 'Beneficiários',
+         link: '/dashboard/beneficiaries',
+         icon: <UserSquareIcon size={24} />,
+      },
+      {
          description: 'Doações',
          link: '/dashboard/donations',
          icon: <HandHeartIcon size={24} />,
@@ -35,7 +42,7 @@ export default function Sidebar() {
          icon: <CalendarIcon size={24} />,
       },
       {
-         description: 'Administrador',
+         description: 'Voluntários',
          link: '/dashboard/managers',
          icon: <IdentificationBadgeIcon size={24} />,
       },

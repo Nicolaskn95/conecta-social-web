@@ -9,11 +9,13 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import Breadcrumb from '@/components/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
+import { useEvents } from '@/data/hooks/useEvents';
 
 function Register() {
    const router = useRouter();
    const [isLoading, setIsLoading] = useState(false);
    const { post } = useAPI();
+   const { loadEvent } = useEvents();
 
    // useCEP hook
    const {
@@ -65,10 +67,9 @@ function Register() {
    const submit: SubmitHandler<IEvent> = async (data) => {
       setIsLoading(true);
       try {
-         console.log(data);
-         console.log(watch('status'));
          await post('/events', data);
          toast.success('Evento cadastrado com sucesso!');
+         loadEvent();
          router.push('/dashboard/events');
       } catch (error: any) {
          toast.error(
