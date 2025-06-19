@@ -47,6 +47,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       cookies.remove(cookieName);
       setAuth({ token: null, user: null });
       setLoading(false);
+      if (typeof window !== 'undefined') {
+         // Importa dinamicamente o toast para evitar problemas de SSR
+         import('react-toastify').then(({ toast }) => {
+            toast.done('Logout realizado com sucesso!');
+         });
+      }
    }
 
    const sessionLoading = useCallback(function () {
