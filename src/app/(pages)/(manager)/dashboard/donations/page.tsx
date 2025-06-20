@@ -41,8 +41,8 @@ const mockDonations: IDonation[] = [
    {
       id: '3',
       category: Category.BRINQUEDO,
-      name: 'Cadeiras',
-      description: 'Cadeiras de plástico',
+      name: 'Hot Wheels',
+      description: 'Hot Wheels em bom estado',
       initial_quantity: 5,
       current_quantity: 3,
       donator_name: 'Pedro Oliveira',

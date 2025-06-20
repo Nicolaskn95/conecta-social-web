@@ -90,7 +90,7 @@ function Families() {
    ];
 
    const handleEdit = (family: IFamily) => {
-      router.push(`dashboard/families/${family.id}`);
+      router.push(`/dashboard/families/${family.id}`);
    };
 
    const [selectedFamily, setSelectedFamily] = useState<IFamily | null>(null);
