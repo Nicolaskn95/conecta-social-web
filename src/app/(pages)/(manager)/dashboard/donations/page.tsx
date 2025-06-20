@@ -2,60 +2,65 @@
 import TableContainer from '@/components/Panel/TableContainer';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { PencilIcon, TrashIcon } from '@phosphor-icons/react';
 import Modal from '@/components/Modal/Modal';
 import { toast } from 'react-toastify';
 import { Category, IDonation } from '@/core/donation/model/IDonation';
 import Status from '@/components/shared/Status';
 
+const mockDonations: IDonation[] = [
+   {
+      id: '1',
+      category: Category.VESTIMENTA,
+      name: 'Camisetas',
+      description: 'Camisetas em bom estado',
+      initial_quantity: 10,
+      current_quantity: 8,
+      donator_name: 'João Silva',
+      available: true,
+      gender: 'Unissex',
+      size: 'M',
+      active: true,
+      created_at: new Date('2024-07-20'),
+   },
+   {
+      id: '2',
+      category: Category.ALIMENTO,
+      name: 'Arroz',
+      description: 'Pacotes de arroz 5kg',
+      initial_quantity: 20,
+      current_quantity: 15,
+      donator_name: 'Maria Santos',
+      available: true,
+      gender: null,
+      size: null,
+      active: true,
+      created_at: new Date('2024-07-18'),
+   },
+   {
+      id: '3',
+      category: Category.BRINQUEDO,
+      name: 'Cadeiras',
+      description: 'Cadeiras de plástico',
+      initial_quantity: 5,
+      current_quantity: 3,
+      donator_name: 'Pedro Oliveira',
+      available: true,
+      gender: null,
+      size: null,
+      active: true,
+      created_at: new Date('2024-07-15'),
+   },
+];
+
 function Donations() {
    const router = useRouter();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-   const [donations, setDonations] = useState<IDonation[]>([
-      {
-         id: '1',
-         category: Category.VESTIMENTA,
-         name: 'Camisetas',
-         description: 'Camisetas em bom estado',
-         initial_quantity: 10,
-         current_quantity: 8,
-         donator_name: 'João Silva',
-         available: true,
-         gender: 'Unissex',
-         size: 'M',
-         active: true,
-         created_at: new Date(),
-      },
-      {
-         id: '2',
-         category: Category.ALIMENTO,
-         name: 'Arroz',
-         description: 'Pacotes de arroz 5kg',
-         initial_quantity: 20,
-         current_quantity: 15,
-         donator_name: 'Maria Santos',
-         available: true,
-         gender: null,
-         size: null,
-         active: true,
-         created_at: new Date(),
-      },
-      {
-         id: '3',
-         category: Category.BRINQUEDO,
-         name: 'Cadeiras',
-         description: 'Cadeiras de plástico',
-         initial_quantity: 5,
-         current_quantity: 3,
-         donator_name: 'Pedro Oliveira',
-         available: true,
-         gender: null,
-         size: null,
-         active: true,
-         created_at: new Date(),
-      },
-   ]);
+   const [donations, setDonations] = useState<IDonation[]>(mockDonations);
+   const [selectedDonation, setSelectedDonation] = useState<IDonation | null>(
+      null
+   );
 
    const register = () => {
       router.push('/dashboard/donations/register');
@@ -67,9 +72,12 @@ function Donations() {
    ];
 
    const columns = [
-      { key: 'id', label: 'ID' },
       { key: 'name', label: 'Nome' },
-      { key: 'category', label: 'Categoria' },
+      {
+         key: 'category',
+         label: 'Categoria',
+         render: (value: Category) => <Status status={value} />,
+      },
       { key: 'donator_name', label: 'Doador' },
       {
          key: 'current_quantity',
@@ -88,20 +96,11 @@ function Donations() {
                  })
                : '',
       },
-      {
-         key: 'category',
-         label: 'Categoria',
-         render: (value: Category) => <Status status={value} />,
-      },
    ];
 
    const handleEdit = (donation: IDonation) => {
-      router.push(`dashboard/donations/${donation.id}`);
+      router.push(`/dashboard/donations/${donation.id}`);
    };
-
-   const [selectedDonation, setSelectedDonation] = useState<IDonation | null>(
-      null
-   );
 
    const handleDelete = (donation: IDonation) => {
       setSelectedDonation(donation);
@@ -110,10 +109,10 @@ function Donations() {
 
    const handleDeleteConfirm = async () => {
       try {
-         // Mock delete operation
          setDonations(donations.filter((d) => d.id !== selectedDonation?.id));
          toast.success('Doação excluída com sucesso!');
          setIsDeleteModalOpen(false);
+         setSelectedDonation(null);
       } catch (error) {
          toast.error('Erro ao excluir doação');
          console.error('Erro ao excluir doação:', error);
@@ -146,8 +145,21 @@ function Donations() {
    ];
 
    const onSearch = (value: string) => {
-      // Mock search implementation
-      console.log('Searching for:', value);
+      if (!value.trim()) {
+         setDonations(mockDonations);
+         return;
+      }
+
+      const filtered = mockDonations.filter(
+         (donation) =>
+            donation.name.toLowerCase().includes(value.toLowerCase()) ||
+            (donation.donator_name &&
+               donation.donator_name
+                  .toLowerCase()
+                  .includes(value.toLowerCase())) ||
+            donation.category.toLowerCase().includes(value.toLowerCase())
+      );
+      setDonations(filtered);
    };
 
    return (

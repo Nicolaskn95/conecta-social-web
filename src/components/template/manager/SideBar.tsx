@@ -26,11 +26,11 @@ export default function Sidebar() {
          link: '/dashboard/families',
          icon: <UsersIcon size={24} />,
       },
-      {
-         description: 'Beneficiários',
-         link: '/dashboard/beneficiaries',
-         icon: <UserSquareIcon size={24} />,
-      },
+      // {
+      //    description: 'Beneficiários',
+      //    link: '/dashboard/beneficiaries',
+      //    icon: <UserSquareIcon size={24} />,
+      // },
       {
          description: 'Doações',
          link: '/dashboard/donations',
@@ -43,7 +43,7 @@ export default function Sidebar() {
       },
       {
          description: 'Voluntários',
-         link: '/dashboard/managers',
+         link: '/dashboard/volunteers',
          icon: <IdentificationBadgeIcon size={24} />,
       },
    ];

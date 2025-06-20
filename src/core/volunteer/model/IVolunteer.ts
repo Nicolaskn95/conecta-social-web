@@ -1,4 +1,4 @@
-export interface IEmployee {
+export interface IVolunteer {
    id?: string;
    name: string;
    surname: string;
@@ -8,7 +8,7 @@ export interface IEmployee {
    phone: string;
    password: string;
 
-   role: EmployeeRole;
+   role: VolunteerRole;
 
    cep: string;
    street: string;
@@ -22,17 +22,17 @@ export interface IEmployee {
    // active: boolean;
    created_at?: Date;
    updated_at?: Date;
-   logs?: ILogEmployeeEvent[];
+   logs?: ILogVolunteerEvent[];
 }
 
-export interface ILogEmployeeEvent {
+export interface ILogVolunteerEvent {
    id?: string;
-   id_employee: string;
+   id_volunteer: string;
    id_event: string;
    log_message: string;
 }
 
-export enum EmployeeRole {
+export enum VolunteerRole {
    ADMIN = 'ADMIN',
    VOLUNTEER = 'VOLUNTEER',
    MANAGER = 'MANAGER',
