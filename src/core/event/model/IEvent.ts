@@ -21,7 +21,7 @@ export interface IEvent {
    status: string;
 
    // active:
-   logs: ILogEmployeeEvent[];
+   logs?: ILogEmployeeEvent[];
 }
 
 // Interface for form handling where date is a string
@@ -35,4 +35,10 @@ export interface ILogEmployeeEvent {
    employee_id: string;
    created_at: Date;
    updated_at: Date;
+}
+
+export enum EventStatus {
+   CANCELADO = 'Cancelado',
+   ABERTO = 'Aberto',
+   CONCLUIDO = 'Concluído',
 }

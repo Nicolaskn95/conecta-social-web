@@ -1,6 +1,7 @@
-import { object, string, date } from 'zod';
+import { object, string, date, ZodType } from 'zod';
+import { IEventForm } from '../model/IEvent';
 
-export const eventSchema = object({
+export const eventSchema: ZodType<IEventForm> = object({
    name: string()
       .min(3, 'O título deve ter pelo menos 3 caracteres')
       .max(100, 'O título não pode ter mais de 100 caracteres'),
@@ -46,9 +47,10 @@ export const eventSchema = object({
       .min(3, 'Bairro é obrigatório')
       .max(100, 'Bairro não pode ter mais de 100 caracteres'),
 
-   complement: string()
-      .max(100, 'Complemento não pode ter mais de 100 caracteres')
-      .optional(),
+   complement: string().max(
+      100,
+      'Complemento não pode ter mais de 100 caracteres'
+   ),
 
    embedded_instagram: string()
       .regex(/<blockquote class="instagram-media".*<\/blockquote>/, {
@@ -59,8 +61,8 @@ export const eventSchema = object({
    status: string()
       .min(5, 'Status é obrigatório')
       .max(20, 'Status não pode ter mais de 20 caracteres')
-      .refine((val) => ['ativo', 'inativo'].includes(val), {
-         message: 'Status deve ser "ativo" ou "inativo"',
+      .refine((val) => ['Aberto', 'Cancelado', 'Concluído'].includes(val), {
+         message: 'Status deve ser "Aberto", "Cancelado" ou "Concluído"',
       }),
-   greeting_description: string().nullable().optional(),
+   greeting_description: string().optional().default(''),
 });

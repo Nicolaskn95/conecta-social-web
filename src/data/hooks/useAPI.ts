@@ -72,27 +72,28 @@ export default function useAPI() {
 
    // READ
 
-   const get = useCallback(
-      async function <T = any>(path: string, options?: ApiOptions): Promise<T> {
-         const completeUrl = buildUrl(path);
+   const get = useCallback(async function <T = any>(
+      path: string,
+      options?: ApiOptions
+   ): Promise<T> {
+      const completeUrl = buildUrl(path);
 
-         try {
-            console.log(completeUrl);
-            const response = await fetch(completeUrl, {
-               method: 'GET',
-               headers: buildHeaders(options),
-            });
+      try {
+         console.log(completeUrl);
+         const response = await fetch(completeUrl, {
+            method: 'GET',
+            headers: buildHeaders(options),
+         });
 
-            return handleResponse<T>(response);
-         } catch (error) {
-            toast.error(
-               error instanceof Error ? error.message : 'Erro desconhecido'
-            );
-            throw error;
-         }
-      },
-      [buildHeaders, buildUrl]
-   );
+         return handleResponse<T>(response);
+      } catch (error) {
+         toast.error(
+            error instanceof Error ? error.message : 'Erro desconhecido'
+         );
+         throw error;
+      }
+   },
+   []);
 
    // UPDATE
    async function put<T = any, U = any>(

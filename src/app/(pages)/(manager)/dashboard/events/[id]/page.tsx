@@ -49,7 +49,7 @@ export default function EditEventPage() {
             const eventData = events.find((event) => event.id === params.id);
             if (!eventData) {
                toast.error('Evento não encontrado');
-               router.push('dashboard/events');
+               router.push('/dashboard/events');
                return;
             }
             setEvent(eventData);
@@ -89,7 +89,7 @@ export default function EditEventPage() {
    };
 
    const handleCancel = () => {
-      router.push('dashboard/events');
+      router.push('/dashboard/events');
    };
 
    const submit: SubmitHandler<IEventForm> = async (data) => {
@@ -102,7 +102,8 @@ export default function EditEventPage() {
          };
          await put(`/events/${id}`, apiData);
          toast.success('Evento atualizado com sucesso!');
-         router.push('dashboard/events');
+         router.push('/dashboard/events');
+         loadEvent();
       } catch (error: any) {
          toast.error(
             error?.response?.data?.message ||
@@ -114,8 +115,8 @@ export default function EditEventPage() {
    };
 
    const breadcrumbItems = [
-      { label: 'Início', href: 'dashboard' },
-      { label: 'Eventos', href: 'dashboard/events' },
+      { label: 'Início', href: '/dashboard' },
+      { label: 'Eventos', href: '/dashboard/events' },
       { label: event?.name || 'Editar Evento' },
    ];
 

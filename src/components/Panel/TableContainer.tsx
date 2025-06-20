@@ -2,7 +2,6 @@
 'use client';
 
 import SearchInput from './SearchInput';
-import Status from './Status';
 import React, { useState } from 'react';
 import Pagination from './Pagination';
 
@@ -63,7 +62,7 @@ export default function TableContainer({
                      {actions.map((action, index) => (
                         <th
                            key={index}
-                           className="px-4 py-2 text-primary font-bold"
+                           className="px-4 py-2 text-primary font-bold text-center"
                         >
                            {action.label}
                         </th>

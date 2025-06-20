@@ -1,6 +1,7 @@
 'use client';
 
-import { eventSchema, IEvent } from '@/core/event';
+import { familySchema } from '@/core/family/validation/familySchema';
+import { FamilyStatus, IFamily } from '@/core/family/model/IFamily';
 import useAPI from '@/data/hooks/useAPI';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -9,13 +10,11 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import Breadcrumb from '@/components/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
-import { useEvents } from '@/data/hooks/useEvents';
 
-function Register() {
+function RegisterFamily() {
    const router = useRouter();
    const [isLoading, setIsLoading] = useState(false);
    const { post } = useAPI();
-   const { loadEvent } = useEvents();
 
    // useCEP hook
    const {
@@ -27,8 +26,8 @@ function Register() {
 
    const breadcrumbItems = [
       { label: 'Início', href: '/dashboard' },
-      { label: 'Eventos', href: '/dashboard/events' },
-      { label: 'Cadastro', href: '/dashboard/events/register' },
+      { label: 'Famílias', href: '/dashboard/families' },
+      { label: 'Cadastro', href: '/dashboard/families/register' },
    ];
 
    const {
@@ -37,8 +36,8 @@ function Register() {
       setValue,
       formState: { errors },
       watch,
-   } = useForm<IEvent>({
-      resolver: zodResolver(eventSchema),
+   } = useForm<IFamily>({
+      resolver: zodResolver(familySchema),
    });
 
    const cepValue = watch('cep');
@@ -54,27 +53,25 @@ function Register() {
          if (cepData.uf) setValue('uf', cepData.uf);
          if (cepData.localidade) setValue('city', cepData.localidade);
          if (cepData.logradouro) setValue('street', cepData.logradouro);
-         if (cepData.bairro) setValue('neighborhood', cepData.bairro);
-         if (cepData.complemento) setValue('complement', cepData.complemento);
+         if (cepData.bairro) setValue('neighbourhood', cepData.bairro);
          if (cepData.estado) setValue('state', cepData.estado);
       }
    }, [cepData, setValue]);
 
    const handleCancel = () => {
-      router.push('/dashboard/events');
+      router.push('/dashboard/families');
    };
 
-   const submit: SubmitHandler<IEvent> = async (data) => {
+   const submit: SubmitHandler<IFamily> = async (data) => {
       setIsLoading(true);
       try {
-         await post('/events', data);
-         toast.success('Evento cadastrado com sucesso!');
-         loadEvent();
-         router.push('/dashboard/events');
+         await post('/families', data);
+         toast.success('Família cadastrada com sucesso!');
+         router.push('/dashboard/families');
       } catch (error: any) {
          toast.error(
             error?.response?.data?.message ||
-               'Erro ao cadastrar evento. Tente novamente.'
+               'Erro ao cadastrar família. Tente novamente.'
          );
       } finally {
          setIsLoading(false);
@@ -97,73 +94,30 @@ function Register() {
                   {/* Informações Básicas */}
                   <div className="space-y-4">
                      <h2 className="text-xl font-bold text-gray-800">
-                        Informações Básicas
+                        Informações da Família
                      </h2>
                      <div className="flex flex-wrap gap-4">
                         <div className="flex flex-col flex-1 min-w-[250px]">
                            <label
-                              htmlFor="titulo"
+                              htmlFor="family_name"
                               className="font-semibold mb-1"
                            >
-                              Título do evento{' '}
+                              Nome da família{' '}
                               <span className="text-red-500">*</span>
                            </label>
                            <input
                               type="text"
-                              id="titulo"
+                              id="family_name"
                               className="input"
-                              placeholder="Informe o título do evento"
+                              placeholder="Informe o nome da família"
                               {...register('name')}
                            />
                            {errors.name && (
                               <p className="text-red-500 text-sm">
-                                 {errors.name.message}
+                                 {errors.name.message as string}
                               </p>
                            )}
                         </div>
-
-                        <div className="flex flex-col flex-1 min-w-[250px]">
-                           <label htmlFor="data" className="font-semibold mb-1">
-                              Data do Evento{' '}
-                              <span className="text-red-500">*</span>
-                           </label>
-                           <input
-                              type="datetime-local"
-                              id="data"
-                              className="input"
-                              {...register('date')}
-                           />
-                           {errors.date && (
-                              <p className="text-red-500 text-sm">
-                                 {errors.date.message}
-                              </p>
-                           )}
-                        </div>
-                     </div>
-
-                     <div className="flex flex-wrap gap-4">
-                        <div className="flex flex-col flex-1 min-w-[250px]">
-                           <label
-                              htmlFor="capacidade"
-                              className="font-semibold mb-1"
-                           >
-                              Capacidade de Participantes
-                           </label>
-                           <input
-                              type="number"
-                              id="capacidade"
-                              className="input"
-                              placeholder="Número máximo de participantes"
-                              min="1"
-                              {...register('attendance')}
-                           />
-                           {errors.attendance && (
-                              <p className="text-red-500 text-sm">
-                                 {errors.attendance.message}
-                              </p>
-                           )}
-                        </div>
-
                         <div className="flex flex-col flex-1 min-w-[250px]">
                            <label
                               htmlFor="status"
@@ -174,47 +128,29 @@ function Register() {
                            <select
                               id="status"
                               className="input"
+                              defaultValue={FamilyStatus.ATIVO}
                               {...register('status')}
-                              defaultValue="Aberto"
                            >
-                              <option value="Cancelado">Cancelado</option>
-                              <option value="Aberto">Aberto</option>
-                              <option value="Concluído">Concluído</option>
+                              <option value={FamilyStatus.ATIVO}>
+                                 {FamilyStatus.ATIVO}
+                              </option>
+                              <option value={FamilyStatus.CANCELADO}>
+                                 {FamilyStatus.CANCELADO}
+                              </option>
                            </select>
                            {errors.status && (
                               <p className="text-red-500 text-sm">
-                                 {errors.status.message}
+                                 {errors.status.message as string}
                               </p>
                            )}
                         </div>
                      </div>
-
-                     <div className="flex flex-col">
-                        <label
-                           htmlFor="descricao"
-                           className="font-semibold mb-1"
-                        >
-                           Descrição do evento{' '}
-                           <span className="text-red-500">*</span>
-                        </label>
-                        <textarea
-                           id="descricao"
-                           className="input min-h-[100px]"
-                           placeholder="Descreva detalhadamente o evento"
-                           {...register('description')}
-                        />
-                        {errors.description && (
-                           <p className="text-red-500 text-sm">
-                              {errors.description.message}
-                           </p>
-                        )}
-                     </div>
                   </div>
 
-                  {/* Localização */}
+                  {/* Endereço */}
                   <div className="space-y-4">
                      <h2 className="text-xl font-bold text-gray-800">
-                        Localização
+                        Endereço
                      </h2>
                      <div className="flex flex-wrap gap-4">
                         <div className="flex flex-col flex-1 min-w-[250px]">
@@ -240,11 +176,10 @@ function Register() {
                            )}
                            {errors.cep && (
                               <p className="text-red-500 text-sm">
-                                 {errors.cep.message}
+                                 {errors.cep.message as string}
                               </p>
                            )}
                         </div>
-
                         <div className="flex flex-col flex-1 min-w-[250px]">
                            <label htmlFor="uf" className="font-semibold mb-1">
                               UF <span className="text-red-500">*</span>
@@ -255,7 +190,12 @@ function Register() {
                               className="input"
                               placeholder="UF"
                               {...register('uf')}
-                              value={cepData?.uf || watch('uf') || ''}
+                              value={
+                                 typeof cepData?.uf === 'string' &&
+                                 cepData.uf !== ''
+                                    ? cepData.uf
+                                    : watch('uf') || ''
+                              }
                               onChange={(e) =>
                                  setValue('uf', e.target.value.toUpperCase())
                               }
@@ -263,12 +203,11 @@ function Register() {
                            />
                            {errors.uf && (
                               <p className="text-red-500 text-sm">
-                                 {errors.uf.message}
+                                 {errors.uf.message as string}
                               </p>
                            )}
                         </div>
                      </div>
-
                      <div className="flex flex-wrap gap-4">
                         <div className="flex flex-col flex-1 min-w-[250px]">
                            <label
@@ -283,18 +222,22 @@ function Register() {
                               className="input"
                               placeholder="Digite o estado"
                               {...register('state')}
-                              value={cepData?.estado || watch('state') || ''}
+                              value={
+                                 typeof cepData?.estado === 'string' &&
+                                 cepData.estado !== ''
+                                    ? cepData.estado
+                                    : watch('state') || ''
+                              }
                               onChange={(e) =>
                                  setValue('state', e.target.value)
                               }
                            />
                            {errors.state && (
                               <p className="text-red-500 text-sm">
-                                 {errors.state.message}
+                                 {errors.state.message as string}
                               </p>
                            )}
                         </div>
-
                         <div className="flex flex-col flex-1 min-w-[250px]">
                            <label
                               htmlFor="cidade"
@@ -308,17 +251,21 @@ function Register() {
                               className="input"
                               placeholder="Digite a cidade"
                               {...register('city')}
-                              value={cepData?.localidade || watch('city') || ''}
+                              value={
+                                 typeof cepData?.localidade === 'string' &&
+                                 cepData.localidade !== ''
+                                    ? cepData.localidade
+                                    : watch('city') || ''
+                              }
                               onChange={(e) => setValue('city', e.target.value)}
                            />
                            {errors.city && (
                               <p className="text-red-500 text-sm">
-                                 {errors.city.message}
+                                 {errors.city.message as string}
                               </p>
                            )}
                         </div>
                      </div>
-
                      <div className="flex flex-wrap gap-4">
                         <div className="flex flex-col flex-1 min-w-[250px]">
                            <label
@@ -332,22 +279,24 @@ function Register() {
                               id="bairro"
                               className="input"
                               placeholder="Digite o bairro"
-                              {...register('neighborhood')}
+                              {...register('neighbourhood')}
                               value={
-                                 cepData?.bairro || watch('neighborhood') || ''
+                                 typeof cepData?.bairro === 'string' &&
+                                 cepData.bairro !== ''
+                                    ? cepData.bairro
+                                    : watch('neighbourhood') || ''
                               }
                               onChange={(e) =>
-                                 setValue('neighborhood', e.target.value)
+                                 setValue('neighbourhood', e.target.value)
                               }
                            />
-                           {errors.neighborhood && (
+                           {errors.neighbourhood && (
                               <p className="text-red-500 text-sm">
-                                 {errors.neighborhood.message}
+                                 {errors.neighbourhood.message as string}
                               </p>
                            )}
                         </div>
                      </div>
-
                      <div className="flex flex-wrap gap-4">
                         <div className="flex flex-col flex-1 min-w-[250px]">
                            <label htmlFor="rua" className="font-semibold mb-1">
@@ -360,7 +309,10 @@ function Register() {
                               placeholder="Logradouro"
                               {...register('street')}
                               value={
-                                 cepData?.logradouro || watch('street') || ''
+                                 typeof cepData?.logradouro === 'string' &&
+                                 cepData.logradouro !== ''
+                                    ? cepData.logradouro
+                                    : watch('street') || ''
                               }
                               onChange={(e) =>
                                  setValue('street', e.target.value)
@@ -368,11 +320,10 @@ function Register() {
                            />
                            {errors.street && (
                               <p className="text-red-500 text-sm">
-                                 {errors.street?.message}
+                                 {errors.street?.message as string}
                               </p>
                            )}
                         </div>
-
                         <div className="flex flex-col flex-1 min-w-[250px]">
                            <label
                               htmlFor="numero"
@@ -389,63 +340,10 @@ function Register() {
                            />
                            {errors.number && (
                               <p className="text-red-500 text-sm">
-                                 {errors.number?.message}
+                                 {errors.number?.message as string}
                               </p>
                            )}
                         </div>
-                     </div>
-
-                     <div className="flex flex-wrap gap-4">
-                        <div className="flex flex-col flex-1 min-w-[250px]">
-                           <label
-                              htmlFor="complemento"
-                              className="font-semibold mb-1"
-                           >
-                              Complemento
-                           </label>
-                           <input
-                              type="text"
-                              id="complemento"
-                              className="input"
-                              placeholder="Bloco, apartamento..."
-                              {...register('complement')}
-                              value={
-                                 cepData?.complemento ||
-                                 watch('complement') ||
-                                 ''
-                              }
-                              onChange={(e) =>
-                                 setValue('complement', e.target.value)
-                              }
-                           />
-                        </div>
-                     </div>
-                  </div>
-
-                  {/* Mídia Social */}
-                  <div className="space-y-4">
-                     <h2 className="text-xl font-bold text-gray-800">
-                        Mídia Social
-                     </h2>
-                     <div className="flex flex-col">
-                        <label
-                           htmlFor="instagram"
-                           className="font-semibold mb-1"
-                        >
-                           Post do Instagram (embed)
-                        </label>
-                        <input
-                           type="text"
-                           id="instagram"
-                           className="input"
-                           placeholder="Insira o link do post do Instagram"
-                           {...register('embedded_instagram')}
-                        />
-                        {errors.embedded_instagram && (
-                           <p className="text-red-500 text-sm">
-                              {errors.embedded_instagram.message}
-                           </p>
-                        )}
                      </div>
                   </div>
 
@@ -474,4 +372,4 @@ function Register() {
    );
 }
 
-export default Register;
+export default RegisterFamily;

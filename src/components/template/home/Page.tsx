@@ -42,7 +42,7 @@ function Page(props: PageProps) {
                      <Sidebar />
                      <div className="flex-1 flex flex-col">
                         <main
-                           className={`flex-1 flex flex-col ${
+                           className={`flex-1 flex flex-col${
                               props.className ?? ''
                            }`}
                         >
@@ -53,7 +53,9 @@ function Page(props: PageProps) {
                </div>
             ) : (
                <main
-                  className={`flex-1 flex flex-col ${props.className ?? ''}`}
+                  className={`flex-1 flex flex-col place-content-center ${
+                     props.className ?? ''
+                  }`}
                >
                   {props.children}
                </main>

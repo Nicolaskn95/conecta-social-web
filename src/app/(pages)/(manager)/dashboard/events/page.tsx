@@ -9,6 +9,8 @@ import Modal from '@/components/Modal/Modal';
 import { toast } from 'react-toastify';
 import { IEvent } from '@/core/event';
 import { useEvents } from '@/data/hooks/useEvents';
+import { Status } from '@/components/shared/Status';
+import { EventStatus } from '@/core/event/model/IEvent';
 
 function Events() {
    const router = useRouter();
@@ -53,10 +55,15 @@ function Events() {
                : '',
       },
       { key: 'city', label: 'Cidade' },
+      {
+         key: 'status',
+         label: 'Status',
+         render: (value: string) => <Status status={value as EventStatus} />,
+      },
    ];
 
    const handleEdit = (event: any) => {
-      router.push(`dashboard/events/${event.id}`);
+      router.push(`/dashboard/events/${event.id}`);
    };
 
    const [selectedEvent, setSelectedEvent] = useState<any>(null);
@@ -115,7 +122,7 @@ function Events() {
          <div className="flex justify-between items-center mb-6">
             <Breadcrumb items={breadcrumbItems} />
             <button
-               className="btn-primary flex text-nowrap w-32 text-center"
+               className="btn-primary justify-center flex text-nowrap w-32 text-center"
                onClick={register}
             >
                Novo Evento
