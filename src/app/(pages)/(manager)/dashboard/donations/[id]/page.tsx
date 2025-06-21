@@ -37,6 +37,20 @@ const mockDonations: IDonation[] = [
       active: true,
       created_at: new Date('2024-07-18'),
    },
+   {
+      id: '3',
+      category: Category.BRINQUEDO,
+      name: 'Hot Wheels',
+      description: 'Hot Wheels em bom estado',
+      initial_quantity: 5,
+      current_quantity: 3,
+      donator_name: 'Pedro Oliveira',
+      available: true,
+      gender: null,
+      size: null,
+      active: true,
+      created_at: new Date('2024-07-15'),
+   },
 ];
 
 export default function EditDonationPage() {
@@ -278,24 +292,6 @@ export default function EditDonationPage() {
                                  {errors.gender.message}
                               </p>
                            )}
-                        </div>
-                        <div className="flex items-center">
-                           <input
-                              type="checkbox"
-                              id="available"
-                              className="mr-2"
-                              {...register('available')}
-                           />
-                           <label htmlFor="available">Disponível</label>
-                        </div>
-                        <div className="flex items-center">
-                           <input
-                              type="checkbox"
-                              id="active"
-                              className="mr-2"
-                              {...register('active')}
-                           />
-                           <label htmlFor="active">Ativo</label>
                         </div>
                      </div>
                   </div>

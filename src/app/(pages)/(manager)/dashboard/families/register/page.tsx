@@ -39,7 +39,7 @@ function RegisterFamily() {
    } = useForm<IFamily>({
       resolver: zodResolver(familySchema),
    });
-
+   console.log(errors);
    const cepValue = watch('cep');
 
    const handleCepBlur = async () => {
@@ -65,7 +65,8 @@ function RegisterFamily() {
    const submit: SubmitHandler<IFamily> = async (data) => {
       setIsLoading(true);
       try {
-         await post('/families', data);
+         // await post('/families', data);
+         await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
          toast.success('Família cadastrada com sucesso!');
          router.push('/dashboard/families');
       } catch (error: any) {

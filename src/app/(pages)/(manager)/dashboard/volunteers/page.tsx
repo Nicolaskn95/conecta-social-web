@@ -192,7 +192,7 @@ function Volunteers() {
          <div className="flex justify-between items-center mb-6">
             <Breadcrumb items={breadcrumbItems} />
             <button
-               className="btn-primary justify-center flex text-nowrap w-32 text-center"
+               className="btn-primary justify-center flex text-nowrap w-36 text-center px-11"
                onClick={register}
             >
                Novo Voluntário

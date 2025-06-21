@@ -70,10 +70,6 @@ export default function Sidebar() {
                );
             })}
          </div>
-         <div className="flex items-center gap-2 p-2 hover:bg-[#A13838] hover:text-white text-[#387AA1] cursor-pointer rounded-lg">
-            <SignOutIcon size={24} />
-            Logout
-         </div>
       </aside>
    );
 }

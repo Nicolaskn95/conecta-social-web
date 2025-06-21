@@ -1,5 +1,5 @@
-import { object, string, number, boolean, nullable, ZodType, date } from 'zod';
-import { Category, IDonation } from '../model/IDonation';
+import { object, string, number, boolean, date } from 'zod';
+import { Category } from '../model/IDonation';
 
 export const donationSchema = object({
    id: string().optional(),
@@ -35,9 +35,7 @@ export const donationSchema = object({
    size: string()
       .max(20, 'Tamanho não pode ter mais de 20 caracteres')
       .nullable(),
-   active: boolean(),
-   status: string()
-      .min(2, 'Status é obrigatório')
-      .max(50, 'Status não pode ter mais de 50 caracteres'),
+   active: boolean().optional(),
+
    created_at: date().nullable().optional(),
 });

@@ -32,11 +32,11 @@ export default function RegisterDonationPage() {
    const handleCancel = () => {
       router.push('/dashboard/donations');
    };
-
+   console.log(errors);
    const submit: SubmitHandler<IDonation> = async (data) => {
       setIsLoading(true);
       try {
-         console.log('Donation data to register:', data);
+         // console.log('Donation data to register:', data);
          await new Promise((resolve) => setTimeout(resolve, 1000));
          toast.success('Doação cadastrada com sucesso!');
          router.push('/dashboard/donations');
@@ -220,26 +220,6 @@ export default function RegisterDonationPage() {
                                  {errors.gender.message}
                               </p>
                            )}
-                        </div>
-                        <div className="flex items-center">
-                           <input
-                              type="checkbox"
-                              id="available"
-                              className="mr-2"
-                              {...register('available')}
-                              defaultChecked
-                           />
-                           <label htmlFor="available">Disponível</label>
-                        </div>
-                        <div className="flex items-center">
-                           <input
-                              type="checkbox"
-                              id="active"
-                              className="mr-2"
-                              {...register('active')}
-                              defaultChecked
-                           />
-                           <label htmlFor="active">Ativo</label>
                         </div>
                      </div>
                   </div>

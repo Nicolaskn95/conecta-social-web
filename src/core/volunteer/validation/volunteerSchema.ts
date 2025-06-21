@@ -1,6 +1,9 @@
 import { object, string, date, enum as zodEnum, ZodType } from 'zod';
 import { IVolunteer, VolunteerRole } from '../model/IVolunteer';
 
+// Helper function to extract only digits from a string
+const extractDigits = (value: string): string => value.replace(/\D/g, '');
+
 export const volunteerSchema = object({
    id: string().optional(),
 
@@ -32,33 +35,51 @@ export const volunteerSchema = object({
    ),
 
    cpf: string()
-      .length(11, 'CPF deve ter exatamente 11 caracteres')
-      .regex(/^\d{11}$/, 'CPF deve conter apenas números')
       .refine(
          (val) => {
+            const digits = extractDigits(val);
+            return digits.length === 11;
+         },
+         {
+            message: 'CPF deve ter exatamente 11 dígitos',
+         }
+      )
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return /^\d{11}$/.test(digits);
+         },
+         {
+            message: 'CPF deve conter apenas números',
+         }
+      )
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+
             // Basic CPF validation
-            if (val.length !== 11) return false;
+            if (digits.length !== 11) return false;
 
             // Check if all digits are the same
-            if (/^(\d)\1{10}$/.test(val)) return false;
+            if (/^(\d)\1{10}$/.test(digits)) return false;
 
             // Validate first digit
             let sum = 0;
             for (let i = 0; i < 9; i++) {
-               sum += parseInt(val[i]) * (10 - i);
+               sum += parseInt(digits[i]) * (10 - i);
             }
             let remainder = (sum * 10) % 11;
             if (remainder === 10 || remainder === 11) remainder = 0;
-            if (remainder !== parseInt(val[9])) return false;
+            if (remainder !== parseInt(digits[9])) return false;
 
             // Validate second digit
             sum = 0;
             for (let i = 0; i < 10; i++) {
-               sum += parseInt(val[i]) * (11 - i);
+               sum += parseInt(digits[i]) * (11 - i);
             }
             remainder = (sum * 10) % 11;
             if (remainder === 10 || remainder === 11) remainder = 0;
-            if (remainder !== parseInt(val[10])) return false;
+            if (remainder !== parseInt(digits[10])) return false;
 
             return true;
          },
@@ -95,8 +116,24 @@ export const volunteerSchema = object({
    ),
 
    cep: string()
-      .length(8, 'CEP deve ter exatamente 8 caracteres')
-      .regex(/^\d{8}$/, 'CEP deve conter apenas números'),
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return digits.length === 8;
+         },
+         {
+            message: 'CEP deve ter exatamente 8 dígitos',
+         }
+      )
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return /^\d{8}$/.test(digits);
+         },
+         {
+            message: 'CEP deve conter apenas números',
+         }
+      ),
 
    street: string()
       .min(3, 'Rua é obrigatória')
@@ -178,33 +215,51 @@ export const volunteerFormSchema = object({
       ),
 
    cpf: string()
-      .length(11, 'CPF deve ter exatamente 11 caracteres')
-      .regex(/^\d{11}$/, 'CPF deve conter apenas números')
       .refine(
          (val) => {
+            const digits = extractDigits(val);
+            return digits.length === 11;
+         },
+         {
+            message: 'CPF deve ter exatamente 11 dígitos',
+         }
+      )
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return /^\d{11}$/.test(digits);
+         },
+         {
+            message: 'CPF deve conter apenas números',
+         }
+      )
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+
             // Basic CPF validation
-            if (val.length !== 11) return false;
+            if (digits.length !== 11) return false;
 
             // Check if all digits are the same
-            if (/^(\d)\1{10}$/.test(val)) return false;
+            if (/^(\d)\1{10}$/.test(digits)) return false;
 
             // Validate first digit
             let sum = 0;
             for (let i = 0; i < 9; i++) {
-               sum += parseInt(val[i]) * (10 - i);
+               sum += parseInt(digits[i]) * (10 - i);
             }
             let remainder = (sum * 10) % 11;
             if (remainder === 10 || remainder === 11) remainder = 0;
-            if (remainder !== parseInt(val[9])) return false;
+            if (remainder !== parseInt(digits[9])) return false;
 
             // Validate second digit
             sum = 0;
             for (let i = 0; i < 10; i++) {
-               sum += parseInt(val[i]) * (11 - i);
+               sum += parseInt(digits[i]) * (11 - i);
             }
             remainder = (sum * 10) % 11;
             if (remainder === 10 || remainder === 11) remainder = 0;
-            if (remainder !== parseInt(val[10])) return false;
+            if (remainder !== parseInt(digits[10])) return false;
 
             return true;
          },
@@ -241,8 +296,24 @@ export const volunteerFormSchema = object({
    ),
 
    cep: string()
-      .length(8, 'CEP deve ter exatamente 8 caracteres')
-      .regex(/^\d{8}$/, 'CEP deve conter apenas números'),
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return digits.length === 8;
+         },
+         {
+            message: 'CEP deve ter exatamente 8 dígitos',
+         }
+      )
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return /^\d{8}$/.test(digits);
+         },
+         {
+            message: 'CEP deve conter apenas números',
+         }
+      ),
 
    street: string()
       .min(3, 'Rua é obrigatória')
