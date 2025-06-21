@@ -9,7 +9,7 @@ export interface IFamily {
    state: string;
    cep: string;
    status: FamilyStatus;
-   active: boolean;
+   active?: boolean;
    created_at?: Date;
 }
 

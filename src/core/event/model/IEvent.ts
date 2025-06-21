@@ -1,5 +1,3 @@
-import { IEmployee } from '@/core/employee';
-
 export interface IEvent {
    id?: string;
    name: string;
@@ -21,7 +19,7 @@ export interface IEvent {
    status: string;
 
    // active:
-   logs?: ILogEmployeeEvent[];
+   logs?: ILogVolunteerEvent[];
 }
 
 // Interface for form handling where date is a string
@@ -29,10 +27,10 @@ export interface IEventForm extends Omit<IEvent, 'date'> {
    date: string;
 }
 
-export interface ILogEmployeeEvent {
+export interface ILogVolunteerEvent {
    id: string;
    event_id: string;
-   employee_id: string;
+   volunteer_id: string;
    created_at: Date;
    updated_at: Date;
 }

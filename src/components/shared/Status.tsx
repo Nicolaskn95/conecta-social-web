@@ -5,31 +5,40 @@ import {
    ShoppingCartIcon,
    RobotIcon,
    TShirtIcon,
+   UserIcon,
+   IdentificationBadgeIcon,
 } from '@phosphor-icons/react';
 import { EventStatus } from '@/core/event/model/IEvent';
 import { FamilyStatus } from '@/core/family/model/IFamily';
 import { Category } from '@/core/donation/model/IDonation';
+import { VolunteerRole } from '@/core/volunteer/model/IVolunteer';
 
 interface StatusProps {
-   status: EventStatus | FamilyStatus | Category;
+   status: EventStatus | FamilyStatus | Category | VolunteerRole;
    selected?: boolean;
 }
 
 // Type guards
 const isEventStatus = (
-   status: EventStatus | FamilyStatus | Category
+   status: EventStatus | FamilyStatus | Category | VolunteerRole
 ): status is EventStatus => {
    return Object.values(EventStatus).includes(status as EventStatus);
 };
 
 const isCategory = (
-   status: EventStatus | FamilyStatus | Category
+   status: EventStatus | FamilyStatus | Category | VolunteerRole
 ): status is Category => {
    return Object.values(Category).includes(status as Category);
 };
 
+const isVolunteerRole = (
+   status: EventStatus | FamilyStatus | Category | VolunteerRole
+): status is VolunteerRole => {
+   return Object.values(VolunteerRole).includes(status as VolunteerRole);
+};
+
 const getStatusStyles = (
-   status: EventStatus | FamilyStatus | Category
+   status: EventStatus | FamilyStatus | Category | VolunteerRole
 ): string => {
    if (isEventStatus(status)) {
       switch (status) {
@@ -53,6 +62,17 @@ const getStatusStyles = (
          default:
             return 'bg-gray-100 text-gray-800 hover:text-gray-800';
       }
+   } else if (isVolunteerRole(status)) {
+      switch (status) {
+         case VolunteerRole.ADMIN:
+            return 'bg-danger text-white border border-danger';
+         case VolunteerRole.MANAGER:
+            return 'bg-primary text-white border border-primary';
+         case VolunteerRole.VOLUNTEER:
+            return 'bg-orange-200 text-orange-800 border border-orange-300';
+         default:
+            return 'bg-gray-100 text-gray-800 hover:text-gray-800';
+      }
    } else {
       switch (status) {
          case FamilyStatus.ATIVO:
@@ -65,7 +85,9 @@ const getStatusStyles = (
    }
 };
 
-const getStatusIcon = (status: EventStatus | FamilyStatus | Category) => {
+const getStatusIcon = (
+   status: EventStatus | FamilyStatus | Category | VolunteerRole
+) => {
    if (isEventStatus(status)) {
       switch (status) {
          case EventStatus.CANCELADO:
@@ -96,6 +118,8 @@ const getStatusIcon = (status: EventStatus | FamilyStatus | Category) => {
          default:
             return null;
       }
+   } else if (isVolunteerRole(status)) {
+      return <IdentificationBadgeIcon size={20} className="mr-1" />;
    } else {
       switch (status) {
          case FamilyStatus.ATIVO:
@@ -109,7 +133,7 @@ const getStatusIcon = (status: EventStatus | FamilyStatus | Category) => {
 };
 
 const getStatusText = (
-   status: EventStatus | FamilyStatus | Category
+   status: EventStatus | FamilyStatus | Category | VolunteerRole
 ): string => {
    if (isEventStatus(status)) {
       switch (status) {
@@ -130,6 +154,17 @@ const getStatusText = (
             return 'Brinquedo';
          case Category.VESTIMENTA:
             return 'Vestimenta';
+         default:
+            return 'Desconhecido';
+      }
+   } else if (isVolunteerRole(status)) {
+      switch (status) {
+         case VolunteerRole.ADMIN:
+            return 'Admin';
+         case VolunteerRole.MANAGER:
+            return 'Gerente';
+         case VolunteerRole.VOLUNTEER:
+            return 'Voluntário';
          default:
             return 'Desconhecido';
       }
