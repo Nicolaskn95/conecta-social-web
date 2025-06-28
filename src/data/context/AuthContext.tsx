@@ -1,5 +1,5 @@
 'use client';
-import { IEmployee } from '@/core/employee';
+import { IVolunteer } from '@/core/volunteer';
 import {
    createContext,
    ReactNode,
@@ -16,13 +16,13 @@ interface AuthProviderProps {
 
 interface Session {
    token: string | null;
-   user: Partial<IEmployee> | null;
+   user: Partial<IVolunteer> | null;
 }
 
 interface AuthContextProps {
    loading: boolean;
    token: string | null;
-   user: Partial<IEmployee> | null;
+   user: Partial<IVolunteer> | null;
    login: (token: string) => void;
    logout: () => void;
 }

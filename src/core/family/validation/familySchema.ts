@@ -1,6 +1,9 @@
 import { object, string, boolean, enum as zodEnum, ZodType } from 'zod';
 import { IFamily } from '../model/IFamily';
 
+// Helper function to extract only digits from a string
+const extractDigits = (value: string): string => value.replace(/\D/g, '');
+
 export enum FamilyStatus {
    ATIVO = 'Ativo',
    CANCELADO = 'Cancelado',
@@ -38,12 +41,26 @@ export const familySchema: ZodType<IFamily> = object({
       .max(100, 'Estado não pode ter mais de 100 caracteres'),
 
    cep: string()
-      .length(8, 'CEP deve ter exatamente 8 caracteres')
-      .regex(/^\d{8}$/, 'CEP deve conter apenas números'),
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return digits.length === 8;
+         },
+         {
+            message: 'CEP deve ter exatamente 8 dígitos',
+         }
+      )
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return /^\d{8}$/.test(digits);
+         },
+         {
+            message: 'CEP deve conter apenas números',
+         }
+      ),
 
    status: zodEnum([FamilyStatus.ATIVO, FamilyStatus.CANCELADO], {
       errorMap: () => ({ message: 'Status inválido' }),
    }),
-
-   active: boolean(),
 });

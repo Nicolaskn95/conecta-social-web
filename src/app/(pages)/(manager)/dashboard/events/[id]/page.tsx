@@ -18,7 +18,7 @@ import LottieAnimation from '@/components/shared/LottieAnimation';
 export default function EditEventPage() {
    const params = useParams();
    const router = useRouter();
-   const { put } = useAPI();
+   const { put, get } = useAPI();
    const { loadEvent, events } = useEvents();
    const [event, setEvent] = useState<IEvent | null>(null);
    const [loading, setLoading] = useState(true);
@@ -47,30 +47,34 @@ export default function EditEventPage() {
    useEffect(() => {
       const fetchEvent = async () => {
          try {
-            const eventData = events.find((event) => event.id === params.id);
+            const eventData = await get(`/events/${params.id}`);
+            console.log('event', eventData.data);
+
             if (!eventData) {
                toast.error('Evento não encontrado');
                router.push('/dashboard/events');
                return;
             }
-            setEvent(eventData);
+
+            setEvent(eventData.data);
             const formattedEventData: IEventForm = {
-               ...eventData,
-               date: eventData.date
-                  ? new Date(eventData.date).toISOString().slice(0, 16)
+               ...eventData.data,
+               date: eventData.data.date
+                  ? new Date(eventData.data.date).toISOString().slice(0, 16)
                   : '',
             };
             reset(formattedEventData);
          } catch (error) {
             console.error('Error fetching event:', error);
             toast.error('Erro ao carregar evento');
+            router.push('/dashboard/events');
          } finally {
             setLoading(false);
          }
       };
 
       fetchEvent();
-   }, [params.id, loadEvent, router, events, reset]);
+   }, [params.id, loadEvent, router, reset, get]);
 
    useEffect(() => {
       if (cepData) {
