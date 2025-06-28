@@ -13,6 +13,7 @@ import useAPI from '@/data/hooks/useAPI';
 import BasicInfoSection from './components/BasicInfoSection';
 import AddressSection from './components/AddressSection';
 import SocialMediaSection from './components/SocialMediaSection';
+import LottieAnimation from '@/components/shared/LottieAnimation';
 
 export default function EditEventPage() {
    const params = useParams();
@@ -121,7 +122,7 @@ export default function EditEventPage() {
    ];
 
    if (loading) {
-      return <div>Carregando...</div>;
+      return <LottieAnimation status="loading" />;
    }
 
    if (!event) {
