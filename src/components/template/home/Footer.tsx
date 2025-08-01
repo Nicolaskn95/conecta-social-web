@@ -140,8 +140,8 @@ export default function Footer() {
 
          {/* Bottom Bar */}
          <div className="border-t border-blue-200 bg-white">
-            <div className="container mx-auto px-6 py-4 justify-items-center">
-               <div className="flex flex-col md:flex-row  items-center gap-4">
+            <div className="container mx-auto px-4 py-1 justify-items-center">
+               <div className="flex flex-col md:flex-row items-center gap-4">
                   <div className="flex items-center gap-2 text-gray-600 text-sm">
                      <span>Desenvolvido com</span>
                      <HeartIcon

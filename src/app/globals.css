@@ -94,6 +94,53 @@ h3 {
    .sidebar-menu-selected {
       @apply bg-primary text-white;
    }
+
+   /* 3D Perspective Effects */
+   .perspective-1000 {
+      perspective: 1000px;
+   }
+
+   .transform-style-preserve-3d {
+      transform-style: preserve-3d;
+   }
+
+   /* Enhanced Glassmorphism */
+   .glass-effect {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+   }
+
+   /* Floating Animation */
+   .floating {
+      animation: floating 3s ease-in-out infinite;
+   }
+
+   @keyframes floating {
+      0%,
+      100% {
+         transform: translateY(0px);
+      }
+      50% {
+         transform: translateY(-10px);
+      }
+   }
+
+   /* Particle Animation */
+   .particle-float {
+      animation: particle-float 4s ease-in-out infinite;
+   }
+
+   @keyframes particle-float {
+      0%,
+      100% {
+         transform: translateY(0px) scale(1);
+         opacity: 0.2;
+      }
+      50% {
+         transform: translateY(-20px) scale(1.2);
+         opacity: 0.6;
+      }
+   }
 }
 
 @layer components {
