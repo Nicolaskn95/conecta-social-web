@@ -96,13 +96,13 @@ const Carousel: React.FC<CarouselProps> = ({
                      width={width}
                      height={height}
                      alt={`Slide ${index + 1}`}
-                     className="w-full h-full object-cover"
+                     className="w-full h-full object-cover opacity-60"
                      priority={index === 0}
                   />
                   {/* Elegant Gradient Overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-white/70 via-white/10 to-transparent"></div>
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-secondary/20"></div>
-                  <div className="absolute inset-0 bg-gradient-radial from-transparent via-black/5 to-black/50"></div>
+                  <div className="absolute inset-0 bg-gradient-radial from-transparent via-white/5 to-white/50"></div>
                </div>
             ))}
          </div>
@@ -112,9 +112,9 @@ const Carousel: React.FC<CarouselProps> = ({
             <div className="text-center text-white px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
                {/* Main Title with Elegant Glassmorphism */}
                <div className="mb-12 relative">
-                  <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/15 hover:border-white/30">
+                  <div className="backdrop-blur-md bg-white/10 rounded-3xl p-8 border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/15 hover:border-white/30">
                      <h1 className="text-7xl md:text-8xl lg:text-9xl font-black mb-6">
-                        <span className="bg-gradient-to-r from-[#40789b] to-[#1ea1ff] bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(255,255,255,0.9)] animate-pulse">
+                        <span className="bg-gradient-to-r from-[#40789b] to-[#1ea1ff] bg-clip-text text-transparent drop-shadow-[0px_0px_40px_rgba(0,0,0,1)]">
                            Conecta Social
                         </span>
                      </h1>
