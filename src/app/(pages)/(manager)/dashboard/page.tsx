@@ -12,7 +12,6 @@ import {
    PointElement,
    LineElement,
 } from 'chart.js';
-import { Bar, Doughnut } from 'react-chartjs-2';
 import { DonationsChart } from '@/components/Dashboard/DonationsChart';
 import { MonthlyActivityChart } from '@/components/Dashboard/MonthlyActivityChart';
 import { FamiliyIncomeDistributionChart } from '@/components/Dashboard/FamiliyIncomeDistributionChart';
@@ -124,13 +123,10 @@ const familyIncomeData = {
 function Dashboard() {
    return (
       <div className="p-6 bg-[#F7F9FB] h-screen overflow-y-auto pb-28">
-         {/* Top: Bar Chart */}
          <div className="bg-white rounded-xl shadow p-6 mb-6 w-full">
             <TotalDonationsChart />
          </div>
-         {/* Bottom: 3 cards flex, equally filled */}
          <div className="flex flex-col gap-6 w-full">
-            {/* Linha de cima: dois cards grandes */}
             <div className="flex flex-col md:flex-row gap-6 w-full">
                <div className="flex-1 flex min-w-0">
                   <MonthlyActivityChart />
