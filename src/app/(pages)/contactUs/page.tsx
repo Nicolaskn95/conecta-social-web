@@ -1,12 +1,12 @@
 'use client';
 import Banner from '@/components/LandingPage/Banner';
 import {
-   InstagramLogo,
-   LinkedinLogo,
-   MapPin,
-   Phone,
-   XLogo,
-   YoutubeLogo,
+   InstagramLogoIcon,
+   LinkedinLogoIcon,
+   MapPinIcon,
+   PhoneIcon,
+   XLogoIcon,
+   YoutubeLogoIcon,
 } from '@phosphor-icons/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,7 +22,7 @@ export default function ContactUs() {
                className="flex flex-col md:flex-row items-center justify-center gap-8 w-full mb-12"
             >
                <div className="card flex-col items-center justify-items-center w-full text-center md:w-1/2">
-                  <MapPin
+                  <MapPinIcon
                      size={50}
                      weight="fill"
                      color="#BCD4E1"
@@ -60,7 +60,7 @@ export default function ContactUs() {
                   <div className="flex flex-col gap-2 items-start justify-between">
                      <Link href={'#'} className="cursor-pointer">
                         <div className="flex items-center justify-between group gap-4">
-                           <XLogo
+                           <XLogoIcon
                               size={32}
                               weight="duotone"
                               className="hover-x"
@@ -70,7 +70,7 @@ export default function ContactUs() {
                      </Link>
                      <Link href={'#'} className="cursor-pointer">
                         <div className="flex items-center justify-around group gap-4">
-                           <InstagramLogo
+                           <InstagramLogoIcon
                               size={30}
                               className="hover-instagram"
                            />
@@ -79,7 +79,7 @@ export default function ContactUs() {
                      </Link>
                      <Link href={'#'} className="cursor-pointer">
                         <div className="flex items-center justify-around group gap-4">
-                           <YoutubeLogo
+                           <YoutubeLogoIcon
                               size={30}
                               weight="fill"
                               className="hover-youtube"
@@ -89,7 +89,7 @@ export default function ContactUs() {
                      </Link>
                      <Link href={'#'} className="cursor-pointer">
                         <div className="flex items-center justify-around group gap-4">
-                           <LinkedinLogo
+                           <LinkedinLogoIcon
                               size={30}
                               weight="fill"
                               className="hover-linkedin"
@@ -99,7 +99,7 @@ export default function ContactUs() {
                      </Link>
                      <Link href={'#'} className="cursor-pointer">
                         <div className="flex items-center justify-around group gap-4">
-                           <Phone
+                           <PhoneIcon
                               size={30}
                               weight="fill"
                               className="hover-whatsapp"
