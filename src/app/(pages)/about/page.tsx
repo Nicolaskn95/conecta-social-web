@@ -15,7 +15,7 @@ export default function About() {
                      <h1 className="text-2xl md:text-7xl lg:text-7xl font-black mb-6">
                         <span className="text bg-clip-text">Sobre</span>
                      </h1>
-                     {/* <div className="w-32 h-1 bg-gradient-to-r from-[#40789b] to-[#1ea1ff] mx-auto rounded-full shadow-lg"></div> */}
+                     <div className="w-32 h-1 bg-gradient-to-r from-[#40789b] to-[#1ea1ff] mx-auto rounded-full shadow-lg"></div>
                      <p className="text-2xl md:text-3xl text-gray-600 mt-6 font-light">
                         Nossa História de Transformação
                      </p>

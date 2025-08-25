@@ -13,14 +13,14 @@ export default function Home() {
    ];
 
    return (
-      <div className="h-screen overflow-hidden bg-gradient-to-br from-white via-blue-50 to-white">
+      <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-white">
          {/* Hero Section with Carousel */}
          <section className="relative">
             <Carousel images={carouselImage} />
          </section>
 
          {/* Main Content */}
-         <main className="relative z-10 overflow-hidden">
+         <main className="relative z-10 ">
             {/* Our Job Section */}
             <section className="py-20 px-4 sm:px-6 lg:px-8">
                <div className="max-w-7xl mx-auto">
