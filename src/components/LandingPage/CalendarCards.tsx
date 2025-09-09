@@ -62,9 +62,7 @@ export default function CalendarCards() {
       ({ date, view }: { date: Date; view: string }) => {
          if (view === 'month' && hasEvents(date)) {
             return (
-               <div className="relative">
-                  <div className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></div>
-               </div>
+               <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full z-10 pointer-events-none"></div>
             );
          }
          return null;

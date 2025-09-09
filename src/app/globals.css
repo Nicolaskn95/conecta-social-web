@@ -223,8 +223,9 @@ h3 {
 
 .custom-calendar .react-calendar__tile--active {
    background-color: #387aa1 !important;
-   color: white;
+   color: white !important;
    border-radius: 0.5rem;
+   font-weight: 600 !important;
 }
 
 .custom-calendar .react-calendar__tile--now {
@@ -266,6 +267,32 @@ h3 {
 
 .custom-calendar .react-calendar__month-view__days__day--neighboringMonth {
    color: #d1d5db;
+}
+
+/* Indicador de eventos no calendário */
+.custom-calendar .react-calendar__tile {
+   position: relative;
+   overflow: visible;
+}
+
+.custom-calendar .react-calendar__tile > div {
+   position: absolute;
+   top: 2px;
+   right: 2px;
+   width: 8px;
+   height: 8px;
+   background-color: #ef4444;
+   border-radius: 50%;
+   z-index: 10;
+   pointer-events: none;
+}
+
+/* Garantir visibilidade do texto em dias selecionados */
+.custom-calendar .react-calendar__tile--active abbr,
+.custom-calendar .react-calendar__tile--active {
+   color: white !important;
+   text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+   font-weight: 700 !important;
 }
 
 /* Responsividade */
