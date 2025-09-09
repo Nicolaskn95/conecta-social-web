@@ -183,3 +183,99 @@ h3 {
       @apply bg-danger hover:bg-danger_hover hover:border-danger font-bold;
    }
 }
+
+/* Estilos personalizados para o calendário */
+.custom-calendar {
+   width: 100%;
+   max-width: 400px;
+   background: white;
+   border: 1px solid #e5e7eb;
+   border-radius: 1rem;
+   padding: 1rem;
+   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.custom-calendar button {
+   border: none;
+   background: none;
+   padding: 0.5rem;
+   border-radius: 0.5rem;
+   transition: all 0.2s ease;
+}
+
+.custom-calendar button:hover {
+   background-color: #f3f4f6;
+}
+
+.custom-calendar button:focus {
+   outline: 2px solid #387aa1;
+   outline-offset: 2px;
+}
+
+.custom-calendar .react-calendar__tile {
+   position: relative;
+   height: 3rem;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-weight: 500;
+}
+
+.custom-calendar .react-calendar__tile--active {
+   background-color: #387aa1 !important;
+   color: white;
+   border-radius: 0.5rem;
+}
+
+.custom-calendar .react-calendar__tile--now {
+   background-color: #fef3c7;
+   border-radius: 0.5rem;
+}
+
+.custom-calendar .react-calendar__tile.has-events {
+   font-weight: 600;
+   color: #387aa1;
+}
+
+.custom-calendar .react-calendar__tile.has-events:hover {
+   background-color: #dbeafe;
+}
+
+.custom-calendar .react-calendar__navigation button {
+   font-size: 1.1rem;
+   font-weight: 600;
+   color: #374151;
+}
+
+.custom-calendar .react-calendar__navigation button:hover {
+   background-color: #f3f4f6;
+}
+
+.custom-calendar .react-calendar__month-view__weekdays {
+   text-transform: uppercase;
+   font-weight: 600;
+   font-size: 0.875rem;
+   color: #6b7280;
+   margin-bottom: 0.5rem;
+}
+
+.custom-calendar .react-calendar__month-view__weekdays__weekday {
+   padding: 0.5rem;
+   text-align: center;
+}
+
+.custom-calendar .react-calendar__month-view__days__day--neighboringMonth {
+   color: #d1d5db;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+   .custom-calendar {
+      max-width: 100%;
+   }
+
+   .custom-calendar .react-calendar__tile {
+      height: 2.5rem;
+      font-size: 0.875rem;
+   }
+}

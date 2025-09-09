@@ -5,6 +5,7 @@ import Page from '@/components/template/home/Page';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from '@/data/context/AuthContext';
+import { EventProvider } from '@/data/context/EventContext';
 
 const nunito = Nunito({
    subsets: ['latin'],
@@ -25,15 +26,17 @@ export default function RootLayout({
       <html lang="pt-BR">
          <body className={`${nunito.className}`}>
             <AuthProvider>
-               <ToastContainer
-                  position="top-right"
-                  autoClose={5000}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover={false}
-                  theme="colored"
-               />
-               <Page>{children}</Page>
+               <EventProvider>
+                  <ToastContainer
+                     position="top-right"
+                     autoClose={5000}
+                     pauseOnFocusLoss
+                     draggable
+                     pauseOnHover={false}
+                     theme="colored"
+                  />
+                  <Page>{children}</Page>
+               </EventProvider>
             </AuthProvider>
             <script async src="//www.instagram.com/embed.js"></script>
          </body>

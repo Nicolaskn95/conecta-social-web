@@ -8,6 +8,7 @@ export interface EventContextProps {
    search: string;
    setSearch: (search: string) => void;
    loadEvent: () => Promise<void>;
+   publicEvents: () => Promise<void>;
 }
 
 const EventContext = createContext<EventContextProps>({} as any);
@@ -23,9 +24,10 @@ export function EventProvider(props: any) {
       setEvents(events.data ?? []);
    }, [get]);
 
-   useEffect(() => {
-      loadEvent();
-   }, [loadEvent]);
+   const publicEvents = useCallback(async () => {
+      const events = await get('/events/recent-with-instagram?limit=3');
+      setEvents(events.data ?? []);
+   }, [get]);
 
    return (
       <EventContext.Provider
@@ -34,6 +36,7 @@ export function EventProvider(props: any) {
             search,
             setSearch,
             loadEvent,
+            publicEvents,
          }}
       >
          {props.children}

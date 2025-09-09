@@ -1,65 +1,209 @@
-import { mockEvents } from '@/core/constants';
-import { formatDate } from '@/utils/format';
+'use client';
+
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import Calendar from 'react-calendar';
+import { format, isSameDay, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { useEvents } from '@/data/hooks/useEvents';
+import 'react-calendar/dist/Calendar.css';
+
+type ValuePiece = Date | null;
+type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function CalendarCards() {
+   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+   const [value, setValue] = useState<Value>(new Date());
+   const [isLoading, setIsLoading] = useState(true);
+   const { events, publicEvents } = useEvents();
+
+   // Carregar eventos quando o componente for montado (apenas uma vez)
+   useEffect(() => {
+      const loadEvents = async () => {
+         try {
+            setIsLoading(true);
+            await publicEvents();
+         } catch (error) {
+            console.error('Erro ao carregar eventos:', error);
+         } finally {
+            setIsLoading(false);
+         }
+      };
+
+      // Só carrega se ainda não tem eventos
+      if (events.length === 0) {
+         loadEvents();
+      } else {
+         setIsLoading(false);
+      }
+   }, [publicEvents, events.length]);
+
+   // Função para verificar se uma data tem eventos (memoizada)
+   const hasEvents = useCallback(
+      (date: Date) => {
+         return events.some((event) => {
+            return isSameDay(date, event.date);
+         });
+      },
+      [events]
+   );
+
+   // Função para obter eventos de uma data específica (memoizada)
+   const getEventsForDate = useCallback(
+      (date: Date) => {
+         return events.filter((event) => {
+            return isSameDay(date, event.date);
+         });
+      },
+      [events]
+   );
+
+   // Função para renderizar o conteúdo do tile (cada dia do calendário) - memoizada
+   const tileContent = useCallback(
+      ({ date, view }: { date: Date; view: string }) => {
+         if (view === 'month' && hasEvents(date)) {
+            return (
+               <div className="relative">
+                  <div className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></div>
+               </div>
+            );
+         }
+         return null;
+      },
+      [hasEvents]
+   );
+
+   // Função para aplicar classes CSS aos tiles - memoizada
+   const tileClassName = useCallback(
+      ({ date, view }: { date: Date; view: string }) => {
+         if (view === 'month' && hasEvents(date)) {
+            return 'has-events';
+         }
+         return '';
+      },
+      [hasEvents]
+   );
+
+   const handleDateChange = useCallback((nextValue: Value) => {
+      setValue(nextValue);
+      if (nextValue instanceof Date) {
+         setSelectedDate(nextValue);
+      }
+   }, []);
+
+   const selectedEvents = useMemo(() => {
+      return selectedDate ? getEventsForDate(selectedDate) : [];
+   }, [selectedDate, getEventsForDate]);
+
+   if (isLoading) {
+      return (
+         <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+         </div>
+      );
+   }
+
    return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-         {mockEvents.map((event, index) => (
-            <div
-               className="group bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
-               key={index}
-            >
-               {/* Date Badge */}
-               <div className="mb-4">
-                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 text-primary text-sm font-medium">
-                     <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                     >
-                        <path
-                           strokeLinecap="round"
-                           strokeLinejoin="round"
-                           strokeWidth={2}
-                           d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                     </svg>
-                     {formatDate(event.date)}
-                  </div>
-               </div>
+      <div className="w-full max-w-6xl mx-auto">
+         <div className="flex flex-col lg:flex-row gap-8">
+            {/* Calendário */}
+            <div className="w-full lg:w-[400px] lg:flex-shrink-0">
+               <Calendar
+                  onChange={handleDateChange}
+                  value={value}
+                  tileContent={tileContent}
+                  tileClassName={tileClassName}
+                  locale="pt-BR"
+                  className="custom-calendar"
+                  minDate={new Date()}
+                  maxDate={new Date(new Date().getFullYear() + 1, 11, 31)}
+               />
+            </div>
 
-               {/* Event Content */}
-               <div className="space-y-3">
-                  <h3 className="text-xl font-bold text-text_color group-hover:text-primary transition-colors duration-300">
-                     {event.title}
+            {/* Painel de eventos do dia selecionado */}
+            <div className="w-full lg:flex-1 lg:min-w-0">
+               <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 min-h-[400px] flex flex-col">
+                  <h3 className="text-xl font-bold text-text_color mb-4">
+                     {selectedDate ? (
+                        <>
+                           Eventos de{' '}
+                           {format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
+                              locale: ptBR,
+                           })}
+                        </>
+                     ) : (
+                        'Selecione uma data para ver os eventos'
+                     )}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                     {event.description}
-                  </p>
-               </div>
 
-               {/* Action Link */}
-               <div className="mt-6 pt-4 border-t border-gray-100">
-                  <div className="flex items-center text-primary font-medium group-hover:text-secondary transition-colors duration-300">
-                     <span>Clique para saber mais</span>
-                     <svg
-                        className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform duration-300"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                     >
-                        <path
-                           strokeLinecap="round"
-                           strokeLinejoin="round"
-                           strokeWidth={2}
-                           d="M9 5l7 7-7 7"
-                        />
-                     </svg>
+                  <div className="flex-1 flex flex-col">
+                     {selectedDate && selectedEvents.length === 0 && (
+                        <div className="flex-1 flex items-center justify-center">
+                           <p className="text-gray-500 italic text-center">
+                              Nenhum evento programado para esta data.
+                           </p>
+                        </div>
+                     )}
+
+                     {!selectedDate && (
+                        <div className="flex-1 flex items-center justify-center">
+                           <p className="text-gray-500 italic text-center">
+                              Selecione uma data no calendário para ver os
+                              eventos.
+                           </p>
+                        </div>
+                     )}
+
+                     <div className="space-y-4">
+                        {selectedEvents.map((event, index) => (
+                           <div
+                              key={event.id || index}
+                              className="p-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-lg border border-primary/20"
+                           >
+                              <div className="flex items-start justify-between">
+                                 <div className="flex-1">
+                                    <h4 className="font-semibold text-lg text-text_color mb-2">
+                                       {event.name}
+                                    </h4>
+                                    <p className="text-gray-600 text-sm mb-2">
+                                       {event.description}
+                                    </p>
+                                    <div className="flex items-center text-sm text-gray-500">
+                                       <svg
+                                          className="w-4 h-4 mr-1"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                       >
+                                          <path
+                                             strokeLinecap="round"
+                                             strokeLinejoin="round"
+                                             strokeWidth={2}
+                                             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                          />
+                                          <path
+                                             strokeLinecap="round"
+                                             strokeLinejoin="round"
+                                             strokeWidth={2}
+                                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                          />
+                                       </svg>
+                                       {event.street}, {event.number} -{' '}
+                                       {event.neighborhood}, {event.city}
+                                    </div>
+                                 </div>
+                                 <div className="ml-4">
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                                       {event.status}
+                                    </span>
+                                 </div>
+                              </div>
+                           </div>
+                        ))}
+                     </div>
                   </div>
                </div>
             </div>
-         ))}
+         </div>
       </div>
    );
 }
