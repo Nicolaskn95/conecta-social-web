@@ -6,6 +6,7 @@ import { format, isSameDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useEvents } from '@/data/hooks/useEvents';
 import 'react-calendar/dist/Calendar.css';
+import CalendarSkeleton from '../shared/CalendarSkeleton';
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -92,15 +93,7 @@ export default function CalendarCards() {
       return selectedDate ? getEventsForDate(selectedDate) : [];
    }, [selectedDate, getEventsForDate]);
 
-   if (isLoading) {
-      return (
-         <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-         </div>
-      );
-   }
-
-   return (
+   const pageContent = (
       <div className="w-full max-w-6xl mx-auto">
          <div className="flex flex-col lg:flex-row gap-8">
             {/* Calendário */}
@@ -203,5 +196,9 @@ export default function CalendarCards() {
             </div>
          </div>
       </div>
+   );
+
+   return (
+      <CalendarSkeleton isLoading={isLoading}>{pageContent}</CalendarSkeleton>
    );
 }

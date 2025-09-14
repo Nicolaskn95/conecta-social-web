@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import useAPI from '@/data/hooks/useAPI';
 import { instagramHTML } from '@/core/constants';
+import EventsSkeleton from '../shared/EventsSkeleton';
 
 const Events = () => {
    const { get } = useAPI();
@@ -42,7 +43,7 @@ const Events = () => {
       }
    }, [instagramEmbeds]);
 
-   return (
+   const pageContent = (
       <section id="events" className="text-center">
          {/* Section Header */}
          <div className="mb-16">
@@ -57,14 +58,7 @@ const Events = () => {
 
          {/* Events Content */}
          <div className="max-w-6xl mx-auto">
-            {loading ? (
-               <div className="flex items-center justify-center py-16">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                  <span className="ml-4 text-lg text-text_color">
-                     Carregando eventos...
-                  </span>
-               </div>
-            ) : instagramEmbeds.length === 0 ? (
+            {instagramEmbeds.length === 0 ? (
                <div className="bg-white rounded-2xl p-12 shadow-lg border border-gray-100">
                   <div className="text-center">
                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -103,17 +97,10 @@ const Events = () => {
                </div>
             )}
          </div>
-
-         {/* Call to Action */}
-         {/* {!loading && instagramEmbeds.length > 0 && (
-            <div className="mt-16">
-               <button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300">
-                  Ver Todos os Eventos
-               </button>
-            </div>
-         )} */}
       </section>
    );
+
+   return <EventsSkeleton isLoading={loading}>{pageContent}</EventsSkeleton>;
 };
 
 export default Events;
