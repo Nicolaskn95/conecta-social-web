@@ -1,6 +1,9 @@
 import { object, string, date, ZodType } from 'zod';
 import { IEventForm } from '../model/IEvent';
 
+// Helper function to extract only digits from a string
+const extractDigits = (value: string): string => value.replace(/\D/g, '');
+
 export const eventSchema: ZodType<IEventForm> = object({
    name: string()
       .min(3, 'O título deve ter pelo menos 3 caracteres')
@@ -19,8 +22,24 @@ export const eventSchema: ZodType<IEventForm> = object({
       }),
 
    cep: string()
-      .length(8, 'CEP deve ter exatamente 8 caracteres')
-      .regex(/^\d{8}$/, 'CEP deve conter apenas números'),
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return digits.length === 8;
+         },
+         {
+            message: 'CEP deve ter exatamente 8 dígitos',
+         }
+      )
+      .refine(
+         (val) => {
+            const digits = extractDigits(val);
+            return /^\d{8}$/.test(digits);
+         },
+         {
+            message: 'CEP deve conter apenas números',
+         }
+      ),
 
    uf: string()
       .min(2, 'UF é obrigatório')

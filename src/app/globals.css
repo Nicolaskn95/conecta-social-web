@@ -3,136 +3,306 @@
 @tailwind utilities;
 
 body {
-  color: rgb(var(--foreground-rgb));
+   color: rgb(var(--foreground-rgb));
 }
 
 p,
 span {
-  color: #090934;
+   color: #090934;
 }
 
 h1,
 h2,
 h3 {
-  font-weight: bold;
-  color: #090934;
+   font-weight: bold;
+   color: #090934;
 }
 
 @layer utilities {
-  li {
-    @apply text-text_color hover:underline hover:text-primary mb-2;
-  }
-  table {
-    border-collapse: separate;
-    border-spacing: 0;
-  }
+   li {
+      @apply text-text_color mb-2;
+   }
+   table {
+      border-collapse: separate;
+      border-spacing: 0;
+   }
 
-  tr td:first-child {
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
-  }
+   tr td:first-child {
+      border-top-left-radius: 15px;
+      border-bottom-left-radius: 15px;
+   }
 
-  tr td:last-child {
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
-  }
+   tr td:last-child {
+      border-top-right-radius: 15px;
+      border-bottom-right-radius: 15px;
+   }
 
-  .row-data {
-    @apply text-primary border-red-500 hover:bg-secondary hover:text-white transition-all duration-200;
-  }
-  .row-title {
-    @apply text-text_color;
-  }
-  .primary-color {
-    @apply text-primary;
-  }
-  .text-balance {
-    text-wrap: balance;
-  }
-  .hover-facebook {
-    @apply group-hover:text-blue-600 text-text_color;
-  }
-  .hover-instagram {
-    @apply group-hover:text-pink-500 text-text_color;
-  }
-  .hover-youtube {
-    @apply group-hover:text-red-600 text-text_color;
-  }
-  .hover-linkedin {
-    @apply group-hover:text-blue-700 text-text_color;
-  }
-  .hover-x {
-    @apply group-hover:text-sky-700 text-text_color;
-  }
-  .hover-whatsapp {
-    @apply group-hover:text-green-600 text-text_color;
-  }
-  .header-color {
-    @apply bg-header_sidebar_color;
-  }
-  .header-hover-text {
-    @apply hover:text-primary;
-  }
-  .title-gradient {
-    @apply font-bold text-transparent bg-clip-text md:text-7xl text-5xl;
-    background-image: linear-gradient(to right, #40789b, #1ea1ff);
-  }
-  .title {
-    @apply font-bold text-text_color text-4xl;
-  }
-  .sub-title {
-    @apply text-primary text-xl;
-    font-family: "Montserrat", sans-serif;
-    font-weight: 100;
-  }
-  .sidebar-color {
-    @apply bg-header_sidebar_color border-primary border;
-  }
-  .sidebar-menu {
-    @apply text-primary hover:bg-secondary hover:text-[white];
-  }
-  .sidebar-menu-selected {
-    @apply bg-primary text-white;
-  }
+   .row-data {
+      @apply text-primary border-red-500 hover:bg-secondary hover:text-white transition-all duration-200;
+   }
+   .row-title {
+      @apply text-text_color;
+   }
+   .primary-color {
+      @apply text-primary;
+   }
+   .text-balance {
+      text-wrap: balance;
+   }
+   .hover-facebook {
+      @apply group-hover:text-blue-600 text-text_color;
+   }
+   .hover-instagram {
+      @apply group-hover:text-pink-500 text-text_color;
+   }
+   .hover-youtube {
+      @apply group-hover:text-red-600 text-text_color;
+   }
+   .hover-linkedin {
+      @apply group-hover:text-blue-700 text-text_color;
+   }
+   .hover-x {
+      @apply group-hover:text-sky-700 text-text_color;
+   }
+   .hover-whatsapp {
+      @apply group-hover:text-green-600 text-text_color;
+   }
+   .header-color {
+      @apply bg-header_sidebar_color;
+   }
+   .header-hover-text {
+      @apply hover:text-primary;
+   }
+   .title-gradient {
+      @apply font-bold text-transparent bg-clip-text md:text-7xl text-5xl;
+      background-image: linear-gradient(to right, #40789b, #1ea1ff);
+   }
+   .title {
+      @apply font-bold text-text_color text-4xl;
+   }
+   .sub-title {
+      @apply text-primary text-xl;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 100;
+   }
+   .sidebar-color {
+      @apply bg-header_sidebar_color border-primary border;
+   }
+   .sidebar-menu {
+      @apply text-primary hover:bg-secondary hover:text-[white];
+   }
+   .sidebar-menu-selected {
+      @apply bg-primary text-white;
+   }
+
+   /* 3D Perspective Effects */
+   .perspective-1000 {
+      perspective: 1000px;
+   }
+
+   .transform-style-preserve-3d {
+      transform-style: preserve-3d;
+   }
+
+   /* Enhanced Glassmorphism */
+   .glass-effect {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+   }
+
+   /* Floating Animation */
+   .floating {
+      animation: floating 3s ease-in-out infinite;
+   }
+
+   @keyframes floating {
+      0%,
+      100% {
+         transform: translateY(0px);
+      }
+      50% {
+         transform: translateY(-10px);
+      }
+   }
+
+   /* Particle Animation */
+   .particle-float {
+      animation: particle-float 4s ease-in-out infinite;
+   }
+
+   @keyframes particle-float {
+      0%,
+      100% {
+         transform: translateY(0px) scale(1);
+         opacity: 0.2;
+      }
+      50% {
+         transform: translateY(-20px) scale(1.2);
+         opacity: 0.6;
+      }
+   }
 }
 
 @layer components {
-  .container {
-    @apply max-w-7xl mx-auto px-10;
-  }
+   .container {
+      @apply max-w-7xl mx-auto px-10;
+   }
 
-  .card {
-    @apply border-primary border rounded-lg p-6;
-  }
-  .search-input {
-    @apply text-text_color placeholder-primary placeholder-opacity-30;
-  }
-  .card-effect {
-    @apply card;
-    @apply transition-transform duration-300 hover:bg-gray-100 cursor-pointer hover:shadow-lg;
-  }
+   .card {
+      @apply border-primary border rounded-lg p-6;
+   }
+   .search-input {
+      @apply text-text_color placeholder-primary placeholder-opacity-30;
+   }
+   .card-effect {
+      @apply card;
+      @apply transition-transform duration-300 hover:bg-gray-100 cursor-pointer hover:shadow-lg;
+   }
 
-  .input {
-    @apply w-full border-2 border-b-gray-200 rounded-md p-2  focus:outline-none focus:border-primary;
-  }
+   .input {
+      @apply w-full border-2 border-b-gray-200 rounded-md p-2  focus:outline-none focus:border-primary;
+   }
 
-  .btn {
-    @apply px-4 py-2 rounded-md border-[2px] w-full;
-    font-family: "Montserrat", sans-serif;
-  }
+   .btn {
+      @apply px-4 py-2 rounded-md border-[2px] w-full;
+      font-family: 'Montserrat', sans-serif;
+   }
 
-  .btn-primary {
-    @apply btn;
-    @apply bg-primary border-secondary hover:bg-secondary text-[white] hover:border-primary font-bold;
-  }
+   .btn-primary {
+      @apply btn;
+      @apply bg-primary border-secondary hover:bg-secondary text-[white] hover:border-primary font-bold;
+   }
 
-  .btn-secondary {
-    @apply btn;
-    @apply bg-[#FFFFFF] hover:bg-tertiary border-primary text-primary font-bold;
-  }
+   .btn-secondary {
+      @apply btn;
+      @apply bg-[#FFFFFF] hover:bg-tertiary border-primary text-primary font-bold;
+   }
 
-  .btn-danger {
-    @apply btn;
-    @apply bg-danger hover:bg-danger_hover hover:border-danger font-bold;
-  }
+   .btn-danger {
+      @apply btn;
+      @apply bg-danger hover:bg-danger_hover hover:border-danger font-bold;
+   }
+}
+
+/* Estilos personalizados para o calendário */
+.custom-calendar {
+   width: 100%;
+   max-width: 400px;
+   background: white;
+   border: 1px solid #e5e7eb;
+   border-radius: 1rem;
+   padding: 1rem;
+   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.custom-calendar button {
+   border: none;
+   background: none;
+   padding: 0.5rem;
+   border-radius: 0.5rem;
+   transition: all 0.2s ease;
+}
+
+.custom-calendar button:hover {
+   background-color: #f3f4f6;
+}
+
+.custom-calendar button:focus {
+   outline: 2px solid #387aa1;
+   outline-offset: 2px;
+}
+
+.custom-calendar .react-calendar__tile {
+   position: relative;
+   height: 3rem;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-weight: 500;
+}
+
+.custom-calendar .react-calendar__tile--active {
+   background-color: #387aa1 !important;
+   color: white !important;
+   border-radius: 0.5rem;
+   font-weight: 600 !important;
+}
+
+.custom-calendar .react-calendar__tile--now {
+   background-color: #fef3c7;
+   border-radius: 0.5rem;
+}
+
+.custom-calendar .react-calendar__tile.has-events {
+   font-weight: 600;
+   color: #387aa1;
+}
+
+.custom-calendar .react-calendar__tile.has-events:hover {
+   background-color: #dbeafe;
+}
+
+.custom-calendar .react-calendar__navigation button {
+   font-size: 1.1rem;
+   font-weight: 600;
+   color: #374151;
+}
+
+.custom-calendar .react-calendar__navigation button:hover {
+   background-color: #f3f4f6;
+}
+
+.custom-calendar .react-calendar__month-view__weekdays {
+   text-transform: uppercase;
+   font-weight: 600;
+   font-size: 0.875rem;
+   color: #6b7280;
+   margin-bottom: 0.5rem;
+}
+
+.custom-calendar .react-calendar__month-view__weekdays__weekday {
+   padding: 0.5rem;
+   text-align: center;
+}
+
+.custom-calendar .react-calendar__month-view__days__day--neighboringMonth {
+   color: #d1d5db;
+}
+
+/* Indicador de eventos no calendário */
+.custom-calendar .react-calendar__tile {
+   position: relative;
+   overflow: visible;
+}
+
+.custom-calendar .react-calendar__tile > div {
+   position: absolute;
+   top: 2px;
+   right: 2px;
+   width: 8px;
+   height: 8px;
+   background-color: #ef4444;
+   border-radius: 50%;
+   z-index: 10;
+   pointer-events: none;
+}
+
+/* Garantir visibilidade do texto em dias selecionados */
+.custom-calendar .react-calendar__tile--active abbr,
+.custom-calendar .react-calendar__tile--active {
+   color: white !important;
+   text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+   font-weight: 700 !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+   .custom-calendar {
+      max-width: 100%;
+   }
+
+   .custom-calendar .react-calendar__tile {
+      height: 2.5rem;
+      font-size: 0.875rem;
+   }
 }

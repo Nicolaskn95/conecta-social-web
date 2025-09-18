@@ -11,7 +11,7 @@ export interface IDonation {
    available?: boolean;
    gender: string | null;
    size: string | null;
-   active: boolean;
+   active?: boolean;
    //    status: string;
    created_at?: Date | null;
    updated_at?: Date | null;
