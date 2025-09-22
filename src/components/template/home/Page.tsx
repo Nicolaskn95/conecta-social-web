@@ -13,7 +13,7 @@ interface PageProps {
    noFooter?: boolean;
 }
 
-const publicRoutes = ['/', '/about', '/contactUs', '/login'];
+const publicRoutes = ['/', '/about', '/contactUs', '/login', '/doacoes'];
 
 function Page(props: PageProps) {
    const path = usePathname(); // Obtém a pathname da URL

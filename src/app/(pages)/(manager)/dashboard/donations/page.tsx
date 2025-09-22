@@ -13,7 +13,8 @@ import {
    exportToExcel,
    generateFilename,
 } from '@/utils/exportUtils';
-import { FilePdfIcon, FileXlsIcon } from '@phosphor-icons/react';
+import { FilePdfIcon, FileXlsIcon, Heart } from '@phosphor-icons/react';
+import DonationPayment from '@/components/Payment/DonationPayment';
 
 const mockDonations: IDonation[] = [
    {
@@ -95,6 +96,7 @@ function Donations() {
    const [selectedDonation, setSelectedDonation] = useState<IDonation | null>(
       null
    );
+   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
 
    const register = () => {
       router.push('/dashboard/donations/register');
@@ -218,6 +220,10 @@ function Donations() {
       }
    };
 
+   const handleMakeDonation = () => {
+      setIsPaymentModalOpen(true);
+   };
+
    return (
       <div className="min-h-screen p-4 bg-gray-100">
          <div className="flex justify-between items-center mb-6">
@@ -238,6 +244,14 @@ function Donations() {
                >
                   <FileXlsIcon size={20} />
                   Excel
+               </button>
+               <button
+                  className="btn-primary justify-center flex items-center gap-2 text-nowrap w-32 text-center"
+                  onClick={handleMakeDonation}
+                  title="Fazer Doação"
+               >
+                  <Heart size={20} />
+                  Doar
                </button>
                <button
                   className="btn-primary justify-center flex text-nowrap w-32 text-center"
@@ -278,6 +292,11 @@ function Donations() {
                </div>
             </div>
          </Modal>
+
+         <DonationPayment
+            isOpen={isPaymentModalOpen}
+            onClose={() => setIsPaymentModalOpen(false)}
+         />
       </div>
    );
 }

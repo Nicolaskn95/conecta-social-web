@@ -9,6 +9,7 @@ import {
    CalendarIcon,
    SignOutIcon,
    IdentificationBadgeIcon,
+   CreditCardIcon,
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -45,6 +46,11 @@ export default function Sidebar() {
          description: 'Voluntários',
          link: '/dashboard/volunteers',
          icon: <IdentificationBadgeIcon size={24} />,
+      },
+      {
+         description: 'Doações Online',
+         link: '/stripe',
+         icon: <CreditCardIcon size={24} />,
       },
    ];
 
