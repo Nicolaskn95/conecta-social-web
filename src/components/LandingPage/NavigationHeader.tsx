@@ -23,6 +23,11 @@ function NavigationHeader() {
                   Doações
                </p>
             </Link>
+            <Link href="/mapas" passHref>
+               <p className="header-hover-text hover:underline cursor-pointer">
+                  Mapas
+               </p>
+            </Link>
             <Link href="/contactUs" passHref>
                <p className="header-hover-text hover:underline cursor-pointer">
                   Fale Conosco
@@ -61,6 +66,14 @@ function NavigationHeader() {
                      onClick={() => setMenuOpen(false)}
                   >
                      Doações
+                  </p>
+               </Link>
+               <Link href="/mapas" passHref>
+                  <p
+                     className="header-hover-text hover:underline cursor-pointer"
+                     onClick={() => setMenuOpen(false)}
+                  >
+                     Mapas
                   </p>
                </Link>
                <Link href="/contactUs" passHref>

@@ -16,6 +16,7 @@ import { DonationsChart } from '@/components/Dashboard/DonationsChart';
 import { MonthlyActivityChart } from '@/components/Dashboard/MonthlyActivityChart';
 import { FamiliyIncomeDistributionChart } from '@/components/Dashboard/FamiliyIncomeDistributionChart';
 import { TotalDonationsChart } from '@/components/Dashboard/TotalDonationsChart';
+import MapWidget from '@/components/Dashboard/MapWidget';
 
 ChartJS.register(
    ArcElement,
@@ -135,6 +136,11 @@ function Dashboard() {
                   <DonationsChart />
                   <FamiliyIncomeDistributionChart />
                </div>
+            </div>
+            
+            {/* Widget de Mapa */}
+            <div className="w-full">
+               <MapWidget />
             </div>
          </div>
       </div>
