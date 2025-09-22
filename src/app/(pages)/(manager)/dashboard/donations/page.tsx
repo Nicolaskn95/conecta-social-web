@@ -8,6 +8,12 @@ import Modal from '@/components/Modal/Modal';
 import { toast } from 'react-toastify';
 import { Category, IDonation } from '@/core/donation/model/IDonation';
 import Status from '@/components/shared/Status';
+import {
+   exportToPDF,
+   exportToExcel,
+   generateFilename,
+} from '@/utils/exportUtils';
+import { FilePdfIcon, FileXlsIcon } from '@phosphor-icons/react';
 
 const mockDonations: IDonation[] = [
    {
@@ -51,6 +57,34 @@ const mockDonations: IDonation[] = [
       size: null,
       active: true,
       created_at: new Date('2024-07-15'),
+   },
+   {
+      id: '4',
+      category: Category.ALIMENTO,
+      name: 'Feijão',
+      description: 'Feijão em bom estado',
+      initial_quantity: 5,
+      current_quantity: 3,
+      donator_name: 'Pedro Oliveira',
+      available: true,
+      gender: null,
+      size: null,
+      active: true,
+      created_at: new Date('2025-09-22'),
+   },
+   {
+      id: '3',
+      category: Category.BRINQUEDO,
+      name: 'Bolas de futebol',
+      description: 'Bolas de futebol em bom estado',
+      initial_quantity: 5,
+      current_quantity: 3,
+      donator_name: 'Pedro Oliveira',
+      available: true,
+      gender: null,
+      size: null,
+      active: true,
+      created_at: new Date('2025-09-22'),
    },
 ];
 
@@ -162,16 +196,56 @@ function Donations() {
       setDonations(filtered);
    };
 
+   const handleExportPDF = () => {
+      try {
+         const filename = generateFilename('pdf', 'doacoes');
+         exportToPDF(donations, filename);
+         toast.success('Relatório PDF exportado com sucesso!');
+      } catch (error) {
+         toast.error('Erro ao exportar PDF');
+         console.error('Erro ao exportar PDF:', error);
+      }
+   };
+
+   const handleExportExcel = () => {
+      try {
+         const filename = generateFilename('xlsx', 'doacoes');
+         exportToExcel(donations, filename);
+         toast.success('Planilha Excel exportada com sucesso!');
+      } catch (error) {
+         toast.error('Erro ao exportar Excel');
+         console.error('Erro ao exportar Excel:', error);
+      }
+   };
+
    return (
       <div className="min-h-screen p-4 bg-gray-100">
          <div className="flex justify-between items-center mb-6">
             <Breadcrumb items={breadcrumbItems} />
-            <button
-               className="btn-primary justify-center flex text-nowrap w-32 text-center"
-               onClick={register}
-            >
-               Nova Doação
-            </button>
+            <div className="flex gap-3">
+               <button
+                  className="btn-secondary justify-center flex items-center gap-2 text-nowrap w-32 text-center"
+                  onClick={handleExportPDF}
+                  title="Exportar para PDF"
+               >
+                  <FilePdfIcon size={20} />
+                  PDF
+               </button>
+               <button
+                  className="btn-secondary justify-center flex items-center gap-2 text-nowrap w-32 text-center"
+                  onClick={handleExportExcel}
+                  title="Exportar para Excel"
+               >
+                  <FileXlsIcon size={20} />
+                  Excel
+               </button>
+               <button
+                  className="btn-primary justify-center flex text-nowrap w-32 text-center"
+                  onClick={register}
+               >
+                  Nova Doação
+               </button>
+            </div>
          </div>
          <TableContainer
             title="Todas as Doações"
