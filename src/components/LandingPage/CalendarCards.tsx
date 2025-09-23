@@ -97,7 +97,7 @@ export default function CalendarCards() {
       <div className="w-full max-w-6xl mx-auto">
          <div className="flex flex-col lg:flex-row gap-8">
             {/* Calendário */}
-            <div className="w-full lg:w-[400px] lg:flex-shrink-0">
+            <div className="w-full lg:w-[400px] lg:flex-shrink-0 justify-items-center">
                <Calendar
                   onChange={handleDateChange}
                   value={value}

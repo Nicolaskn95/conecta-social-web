@@ -51,6 +51,8 @@ export default function Footer() {
                      <div className="flex gap-4">
                         <Link
                            href="https://facebook.com"
+                           target="_blank"
+                           rel="noopener noreferrer"
                            className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition-colors duration-300 transform hover:scale-110"
                            aria-label="Facebook"
                         >
@@ -58,6 +60,8 @@ export default function Footer() {
                         </Link>
                         <Link
                            href="https://instagram.com"
+                           target="_blank"
+                           rel="noopener noreferrer"
                            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-3 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-110"
                            aria-label="Instagram"
                         >
@@ -65,6 +69,8 @@ export default function Footer() {
                         </Link>
                         <Link
                            href="https://youtube.com"
+                           target="_blank"
+                           rel="noopener noreferrer"
                            className="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition-colors duration-300 transform hover:scale-110"
                            aria-label="YouTube"
                         >
@@ -72,6 +78,8 @@ export default function Footer() {
                         </Link>
                         <Link
                            href="https://linkedin.com"
+                           target="_blank"
+                           rel="noopener noreferrer"
                            className="bg-blue-700 text-white p-3 rounded-full hover:bg-blue-800 transition-colors duration-300 transform hover:scale-110"
                            aria-label="LinkedIn"
                         >
