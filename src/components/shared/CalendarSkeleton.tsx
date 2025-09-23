@@ -58,9 +58,11 @@ function CalendarSkeleton({ isLoading, children }: CalendarSkeletonProps) {
             {/* Events Panel Skeleton */}
             <div className="w-full lg:flex-1 lg:min-w-0">
                <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 min-h-[400px] flex flex-col">
-                  {/* Panel Header */}
+                  {/* Panel Header - Always Visible */}
                   <div className="mb-6">
-                     <SkeletonBox width="w-64" height="h-6" delay={1000} />
+                     <h3 className="text-xl font-bold text-text_color">
+                        Selecione uma data para ver os eventos
+                     </h3>
                   </div>
 
                   {/* Events Content */}

@@ -1,6 +1,7 @@
 'use client';
 import { howToHelpData } from '@/core/constants';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const HowToHelp = () => {
    return (
@@ -60,9 +61,11 @@ const HowToHelp = () => {
 
          {/* Call to Action */}
          <div className="mt-16">
-            <button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300">
-               Entre em Contato
-            </button>
+            <Link href="/contactUs">
+               <button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300">
+                  Entre em Contato
+               </button>
+            </Link>
          </div>
       </section>
    );

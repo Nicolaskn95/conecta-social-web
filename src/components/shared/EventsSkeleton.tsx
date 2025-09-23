@@ -14,26 +14,15 @@ function EventsSkeleton({ isLoading, children }: EventsSkeletonProps) {
 
    return (
       <section id="events" className="text-center">
-         {/* Section Header Skeleton */}
+         {/* Section Header - Always Visible */}
          <div className="mb-16">
-            <SkeletonBox
-               width="w-48"
-               height="h-16"
-               className="mx-auto mb-4"
-               delay={0}
-            />
-            <SkeletonBox
-               width="w-24"
-               height="h-1"
-               className="mx-auto mb-6"
-               delay={100}
-            />
-            <SkeletonBox
-               width="w-40"
-               height="h-6"
-               className="mx-auto"
-               delay={200}
-            />
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-text_color mb-4">
+               Eventos
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-6"></div>
+            <p className="text-xl text-primary font-light tracking-wide">
+               Últimos Eventos
+            </p>
          </div>
 
          {/* Events Content Skeleton */}

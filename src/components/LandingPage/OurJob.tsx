@@ -25,9 +25,6 @@ function OurJob() {
                   cultural e emocional a crianças em situação de
                   vulnerabilidade.
                </p>
-            </div>
-
-            <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-2xl p-8 border border-primary/20">
                <p className="text-text_color">
                   Junte-se a nós nesta missão de esperança! Cada contribuição,
                   seja voluntariado, doação ou apoio, faz uma diferença real na
@@ -36,13 +33,6 @@ function OurJob() {
                </p>
             </div>
          </div>
-
-         {/* Call to Action
-         <div className="mt-12">
-            <button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-full font-semibold text-lg hover:shadow-lg hover:scale-105 transition-all duration-300">
-               Faça Parte da Nossa Missão
-            </button>
-         </div> */}
       </article>
    );
 }
