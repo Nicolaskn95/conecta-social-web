@@ -97,15 +97,13 @@ export default function ContactUs() {
             {/* Hero Section */}
             <section className="py-20 px-4 sm:px-6 lg:px-8">
                <div className="max-w-7xl mx-auto text-center">
-                  <div className="mb-16">
-                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-text_color mb-4">
-                        Fale Conosco
-                     </h1>
-                     <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-6"></div>
-                     <p className="text-xl text-primary font-light tracking-wide">
-                        Estamos aqui para conectar e transformar vidas juntos
-                     </p>
-                  </div>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-text_color mb-4">
+                     Fale Conosco
+                  </h1>
+                  <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-6"></div>
+                  <p className="text-xl text-primary font-light tracking-wide">
+                     Estamos aqui para conectar e transformar vidas juntos
+                  </p>
                </div>
             </section>
             {/* Location Section */}
