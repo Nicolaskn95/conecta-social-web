@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function About() {
    return (
       <>
-         <Banner imagePath="/images/carousel3.png" />
+         <Banner imagePath="/images/about1.jpg" />
 
          {/* Modern About Page Content */}
          <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
@@ -13,7 +13,9 @@ export default function About() {
                <div className="max-w-6xl mx-auto">
                   <div className="text-center mb-16">
                      <h1 className="text-2xl md:text-7xl lg:text-7xl font-black mb-6">
-                        <span className="text bg-clip-text">Sobre</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                           Sobre
+                        </span>
                      </h1>
                      <div className="w-32 h-1 bg-gradient-to-r from-[#40789b] to-[#1ea1ff] mx-auto rounded-full shadow-lg"></div>
                      <p className="text-2xl md:text-3xl text-gray-600 mt-6 font-light">
