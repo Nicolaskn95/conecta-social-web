@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 import useAuth from './useAuth';
 import { useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface ApiOptions {
    headers?: Record<string, string>;
@@ -8,7 +9,8 @@ interface ApiOptions {
 }
 
 export default function useAPI() {
-   const { token } = useAuth();
+   const { token, logout } = useAuth();
+   const router = useRouter();
    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
    const buildUrl = (path: string) => {
@@ -31,6 +33,14 @@ export default function useAPI() {
    async function handleResponse<T>(response: Response): Promise<T> {
       if (!response.ok) {
          const errorData = await response.json().catch(() => ({}));
+
+         if (response.status === 401) {
+            logout();
+            router.push('/login');
+            toast.error('Sua sessão expirou. Faça login novamente.');
+            throw new Error('Unauthorized - Session expired');
+         }
+
          toast.error(
             errorData.message || `Erro HTTP! Status: ${response.status}`
          );
@@ -79,7 +89,6 @@ export default function useAPI() {
       const completeUrl = buildUrl(path);
 
       try {
-         console.log(completeUrl);
          const response = await fetch(completeUrl, {
             method: 'GET',
             headers: buildHeaders(options),

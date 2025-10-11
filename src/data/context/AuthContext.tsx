@@ -37,9 +37,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
    const [auth, setAuth] = useState<Session>({ token: null, user: null });
 
    function login(token: string) {
-      cookies.set(cookieName, token, { expires: 1 });
+      cookies.set(cookieName, token, {
+         expires: 1,
+         secure: process.env.NODE_ENV === 'production', // HTTPS em produção
+         sameSite: 'strict', // Proteção CSRF
+         path: '/', // Disponível em toda a aplicação
+      });
       const session = getSession();
-      console.log('session', session);
       setAuth(session);
       setLoading(false);
    }
@@ -71,7 +75,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
    function getSession(): Session {
       const token = cookies.get(cookieName);
-      console.log('token', token);
 
       if (!token) {
          return { token: null, user: null };
@@ -79,7 +82,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       try {
          const payload: any = jwtDecode(token);
-         console.log('payload', payload);
          const isValid = payload.exp! > Date.now() / 1000;
 
          if (!isValid) {

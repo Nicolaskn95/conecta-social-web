@@ -20,7 +20,6 @@ export function EventProvider(props: any) {
 
    const loadEvent = useCallback(async () => {
       const events = await get('/events/actives');
-      // console.log(events);
       setEvents(events.data ?? []);
    }, [get]);
 
