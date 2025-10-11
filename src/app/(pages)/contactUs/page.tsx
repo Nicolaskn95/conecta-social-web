@@ -15,9 +15,84 @@ import { useState } from 'react';
 
 export default function ContactUs() {
    const [pixCopied, setPixCopied] = useState(false);
+   const [showMobileNotification, setShowMobileNotification] = useState(false);
+
+   const copyToClipboard = async (text: string) => {
+      try {
+         // Detectar se é iOS/Safari
+         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+         const isSafari =
+            /Safari/.test(navigator.userAgent) &&
+            !/Chrome/.test(navigator.userAgent);
+
+         if (isIOS || isSafari) {
+            // Método para iOS/Safari
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            textArea.style.opacity = '0';
+            textArea.style.pointerEvents = 'none';
+            document.body.appendChild(textArea);
+
+            // Selecionar o texto
+            textArea.select();
+            textArea.setSelectionRange(0, 99999);
+
+            try {
+               const successful = document.execCommand('copy');
+               if (successful) {
+                  setPixCopied(true);
+                  setShowMobileNotification(true);
+                  setTimeout(() => {
+                     setPixCopied(false);
+                     setShowMobileNotification(false);
+                  }, 3000);
+               } else {
+                  throw new Error('Copy command failed');
+               }
+            } catch (err) {
+               console.error('Erro ao copiar no iOS/Safari:', err);
+               // Mostrar notificação visual em vez de alert
+               setShowMobileNotification(true);
+               setTimeout(() => setShowMobileNotification(false), 5000);
+            } finally {
+               document.body.removeChild(textArea);
+            }
+         } else {
+            // Para outros navegadores modernos
+            if (navigator.clipboard && window.isSecureContext) {
+               await navigator.clipboard.writeText(text);
+               setPixCopied(true);
+               setTimeout(() => setPixCopied(false), 3000);
+            } else {
+               // Fallback para navegadores mais antigos
+               throw new Error('Clipboard API not available');
+            }
+         }
+      } catch (err) {
+         console.error('Erro ao copiar:', err);
+         // Fallback: mostrar notificação visual
+         setShowMobileNotification(true);
+         setTimeout(() => setShowMobileNotification(false), 5000);
+      }
+   };
    return (
       <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-white">
-         <Banner imagePath="/images/contactUs1.png" />
+         {/* Notificação flutuante para mobile */}
+         {showMobileNotification && (
+            <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-primary text-white px-6 py-3 rounded-lg shadow-lg animate-bounce">
+               <div className="flex items-center gap-2">
+                  <CheckIcon size={20} weight="bold" />
+                  <span className="font-medium text-white">
+                     Chave PIX copiada!
+                  </span>
+               </div>
+            </div>
+         )}
+
+         <Banner imagePath="/images/contactUs1.jpg" />
          <main className="relative z-10">
             {/* Hero Section */}
             <section className="py-20 px-4 sm:px-6 lg:px-8">
@@ -46,8 +121,8 @@ export default function ContactUs() {
                      </p>
                   </div>
 
-                  <div className="grid lg:grid-cols-2 gap-12 items-center">
-                     <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                  <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                     <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 w-full overflow-hidden">
                         <div className="flex flex-col items-center text-center">
                            <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full flex items-center justify-center mb-6">
                               <MapPinIcon
@@ -104,32 +179,32 @@ export default function ContactUs() {
                      </p>
                   </div>
 
-                  <div className="grid lg:grid-cols-2 gap-12">
-                     <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
-                        <div className="text-center mb-8">
-                           <h3 className="text-2xl font-bold text-text_color mb-4">
+                  <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+                     <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 w-full overflow-hidden">
+                        <div className="text-center mb-6 lg:mb-8">
+                           <h3 className="text-xl sm:text-2xl font-bold text-text_color mb-4">
                               Nos siga nas redes sociais
                            </h3>
-                           <p className="text-gray-600">
+                           <p className="text-gray-600 text-sm sm:text-base">
                               Acompanhe nosso trabalho e fique por dentro das
                               novidades
                            </p>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3 lg:space-y-4">
                            <Link href={'#'} className="block group">
-                              <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-pink-50 transition-all duration-300 hover:shadow-md">
-                                 <div className="w-14 h-14 bg-gradient-to-br from-pink-500/10 to-pink-600/10 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                              <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-pink-50 transition-all duration-300 hover:shadow-md">
+                                 <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-pink-500/10 to-pink-600/10 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                                     <InstagramLogoIcon
-                                       size={28}
-                                       className="text-pink-600"
+                                       size={24}
+                                       className="text-pink-600 sm:w-7 sm:h-7"
                                     />
                                  </div>
-                                 <div className="flex-1">
-                                    <p className="font-semibold text-text_color text-base">
+                                 <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-text_color text-sm sm:text-base truncate">
                                        Instagram
                                     </p>
-                                    <p className="text-gray-600 text-sm">
+                                    <p className="text-gray-600 text-xs sm:text-sm truncate">
                                        @conectasocial
                                     </p>
                                  </div>
@@ -137,19 +212,19 @@ export default function ContactUs() {
                            </Link>
 
                            <Link href={'#'} className="block group">
-                              <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-red-50 transition-all duration-300 hover:shadow-md">
-                                 <div className="w-14 h-14 bg-gradient-to-br from-red-500/10 to-red-600/10 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                              <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-red-50 transition-all duration-300 hover:shadow-md">
+                                 <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-red-500/10 to-red-600/10 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                                     <YoutubeLogoIcon
-                                       size={28}
+                                       size={24}
                                        weight="fill"
-                                       className="text-red-600"
+                                       className="text-red-600 sm:w-7 sm:h-7"
                                     />
                                  </div>
-                                 <div className="flex-1">
-                                    <p className="font-semibold text-text_color text-base">
+                                 <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-text_color text-sm sm:text-base truncate">
                                        YouTube
                                     </p>
-                                    <p className="text-gray-600 text-sm">
+                                    <p className="text-gray-600 text-xs sm:text-sm truncate">
                                        @conectasocial
                                     </p>
                                  </div>
@@ -157,19 +232,19 @@ export default function ContactUs() {
                            </Link>
 
                            <Link href={'#'} className="block group">
-                              <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-blue-50 transition-all duration-300 hover:shadow-md">
-                                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500/10 to-blue-600/10 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                              <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-blue-50 transition-all duration-300 hover:shadow-md">
+                                 <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500/10 to-blue-600/10 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                                     <LinkedinLogoIcon
-                                       size={28}
+                                       size={24}
                                        weight="fill"
-                                       className="text-blue-600"
+                                       className="text-blue-600 sm:w-7 sm:h-7"
                                     />
                                  </div>
-                                 <div className="flex-1">
-                                    <p className="font-semibold text-text_color text-base">
+                                 <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-text_color text-sm sm:text-base truncate">
                                        LinkedIn
                                     </p>
-                                    <p className="text-gray-600 text-sm">
+                                    <p className="text-gray-600 text-xs sm:text-sm truncate">
                                        @conectasocial
                                     </p>
                                  </div>
@@ -177,19 +252,19 @@ export default function ContactUs() {
                            </Link>
 
                            <Link href={'#'} className="block group">
-                              <div className="flex items-center gap-4 p-4 rounded-xl hover:bg-green-50 transition-all duration-300 hover:shadow-md">
-                                 <div className="w-14 h-14 bg-gradient-to-br from-green-500/10 to-green-600/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                              <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl hover:bg-green-50 transition-all duration-300 hover:shadow-md">
+                                 <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-green-500/10 to-green-600/10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                                     <PhoneIcon
-                                       size={28}
+                                       size={24}
                                        weight="fill"
-                                       className="text-green-600"
+                                       className="text-green-600 sm:w-7 sm:h-7"
                                     />
                                  </div>
-                                 <div className="flex-1">
-                                    <p className="font-semibold text-text_color text-base">
+                                 <div className="flex-1 min-w-0">
+                                    <p className="font-semibold text-text_color text-sm sm:text-base truncate">
                                        WhatsApp
                                     </p>
-                                    <p className="text-gray-600 text-sm">
+                                    <p className="text-gray-600 text-xs sm:text-sm truncate">
                                        +55 (15) 99999-9999
                                     </p>
                                  </div>
@@ -197,11 +272,11 @@ export default function ContactUs() {
                            </Link>
                         </div>
                      </div>
-                     <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                     <div className="bg-white rounded-2xl p-4 sm:p-6 lg:p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 w-full overflow-hidden">
                         <div className="text-center">
-                           <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                           <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                               <svg
-                                 className="w-10 h-10 text-primary"
+                                 className="w-8 h-8 sm:w-10 sm:h-10 text-primary"
                                  fill="none"
                                  stroke="currentColor"
                                  viewBox="0 0 24 24"
@@ -215,15 +290,15 @@ export default function ContactUs() {
                               </svg>
                            </div>
 
-                           <h3 className="text-2xl font-bold text-text_color mb-4">
+                           <h3 className="text-xl sm:text-2xl font-bold text-text_color mb-3 sm:mb-4">
                               Faça uma doação!
                            </h3>
-                           <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+                           <p className="text-gray-600 mb-6 sm:mb-8 text-base sm:text-lg leading-relaxed">
                               Gostou do nosso trabalho? Junte-se a nós e
                               contribua agora mesmo. Muito obrigado pelo apoio!
                            </p>
 
-                           <div className="bg-gradient-to-br from-header_sidebar_color/50 to-tertiary/30 rounded-2xl p-6 mb-6 border border-primary/20">
+                           <div className="bg-gradient-to-br from-header_sidebar_color/50 to-tertiary/30 rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 border border-primary/20">
                               <Image
                                  src="/images/fakeQRcode.png"
                                  alt="QR Code for Donation"
@@ -241,32 +316,22 @@ export default function ContactUs() {
 
                               {/* Chave PIX para copiar */}
                               <div className="bg-white rounded-lg p-4 border border-primary/30 shadow-sm">
-                                 <p className="text-xs text-primary mb-2 font-medium">
+                                 <p className="text-xs text-primary mb-3 font-medium">
                                     Chave PIX:
                                  </p>
-                                 <div className="flex items-center gap-2">
-                                    <code className="text-sm font-mono bg-primary/5 text-text_color px-3 py-2 rounded flex-1 border border-primary/20">
+
+                                 {/* Layout responsivo */}
+                                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+                                    <code className="text-xs sm:text-sm font-mono bg-primary/5 text-text_color px-3 py-2 rounded border border-primary/20 flex-1 break-all">
                                        conectasocial@email.com
                                     </code>
                                     <button
-                                       onClick={async () => {
-                                          try {
-                                             await navigator.clipboard.writeText(
-                                                'conectasocial@email.com'
-                                             );
-                                             setPixCopied(true);
-                                             setTimeout(
-                                                () => setPixCopied(false),
-                                                3000
-                                             );
-                                          } catch (err) {
-                                             console.error(
-                                                'Erro ao copiar:',
-                                                err
-                                             );
-                                          }
-                                       }}
-                                       className={`flex items-center gap-2 px-4 py-2 rounded text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md ${
+                                       onClick={() =>
+                                          copyToClipboard(
+                                             'conectasocial@email.com'
+                                          )
+                                       }
+                                       className={`flex items-center justify-center gap-2 px-4 py-2 rounded text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md w-full sm:w-auto ${
                                           pixCopied
                                              ? 'bg-success text-white'
                                              : 'bg-primary hover:bg-secondary text-white'
