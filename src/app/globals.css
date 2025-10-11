@@ -141,6 +141,44 @@ h3 {
          opacity: 0.6;
       }
    }
+
+   /* Modern Contact Page Animations */
+   .fade-in-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+   }
+
+   @keyframes fadeInUp {
+      from {
+         opacity: 0;
+         transform: translateY(30px);
+      }
+      to {
+         opacity: 1;
+         transform: translateY(0);
+      }
+   }
+
+   .scale-on-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+   }
+
+   .scale-on-hover:hover {
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+   }
+
+   .gradient-border {
+      position: relative;
+      background: linear-gradient(white, white) padding-box,
+         linear-gradient(45deg, #387aa1, #4aa1d3) border-box;
+      border: 2px solid transparent;
+   }
+
+   .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+   }
 }
 
 @layer components {
