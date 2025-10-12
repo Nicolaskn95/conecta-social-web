@@ -10,14 +10,17 @@ interface ForceAuthenticationProps {
 export default function ForceAuthentication({
    children,
 }: ForceAuthenticationProps) {
-   const { user, loading: authLoading } = useAuth();
+   const { status, user, loading: authLoading } = useAuth();
    const router = useRouter();
    const path = usePathname();
 
-   if (authLoading) {
+   // Mostra loading enquanto está verificando autenticação
+   if (authLoading || status === 'loading') {
       return <LottieAnimation status="loading" />;
    }
-   if (!user?.email) {
+
+   // Redireciona para login se não estiver autenticado
+   if (status === 'unauthenticated' || !user?.email) {
       router.push(`/login?destination=${path}`);
       return <LottieAnimation status="loading" />;
    }

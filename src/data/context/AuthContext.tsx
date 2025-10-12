@@ -7,8 +7,10 @@ import {
    useEffect,
    useState,
 } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import cookies from 'js-cookie';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
+import { toast } from 'react-toastify';
 
 interface AuthProviderProps {
    children: ReactNode;
@@ -19,12 +21,17 @@ interface Session {
    user: Partial<IVolunteer> | null;
 }
 
+type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
+
 interface AuthContextProps {
+   status: AuthStatus;
    loading: boolean;
    token: string | null;
    user: Partial<IVolunteer> | null;
+   signed: boolean;
    login: (token: string) => void;
    logout: () => void;
+   router: ReturnType<typeof useRouter>;
 }
 
 const AuthContext = createContext<AuthContextProps>({} as any);
@@ -32,9 +39,14 @@ export default AuthContext;
 
 export function AuthProvider({ children }: AuthProviderProps) {
    const cookieName = '_conectasocial_token';
+   const router = useRouter();
+   const pathname = usePathname();
 
+   // Estados de autenticação
    const [loading, setLoading] = useState<boolean>(true);
+   const [navigationLoading, setNavigationLoading] = useState<boolean>(false);
    const [auth, setAuth] = useState<Session>({ token: null, user: null });
+   const [status, setStatus] = useState<AuthStatus>('loading');
 
    function login(token: string) {
       cookies.set(cookieName, token, {
@@ -46,16 +58,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const session = getSession();
       setAuth(session);
       setLoading(false);
+      setStatus(session.token ? 'authenticated' : 'unauthenticated');
+
+      toast.success('Login realizado com sucesso!');
    }
    function logout() {
       cookies.remove(cookieName);
       setAuth({ token: null, user: null });
       setLoading(false);
-      if (typeof window !== 'undefined') {
-         // Importa dinamicamente o toast para evitar problemas de SSR
-         import('react-toastify').then(({ toast }) => {
-            toast.done('Logout realizado com sucesso!');
-         });
+      setStatus('unauthenticated');
+
+      toast.success('Logout realizado com sucesso!');
+
+      if (pathname.startsWith('/dashboard')) {
+         router.push('/login');
       }
    }
 
@@ -64,6 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
          setLoading(true);
          const session = getSession();
          setAuth(session);
+         setStatus(session.token ? 'authenticated' : 'unauthenticated');
       } finally {
          setLoading(false);
       }
@@ -72,6 +89,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
    useEffect(() => {
       sessionLoading();
    }, [sessionLoading]);
+
+   useEffect(() => {
+      if (status === 'authenticated' && auth.user) {
+         const { user } = auth;
+
+         if (pathname === '/login') {
+            router.push('/dashboard');
+         }
+      } else if (status === 'unauthenticated') {
+         if (pathname.startsWith('/dashboard')) {
+            router.push(`/login?destination=${pathname}`);
+         }
+      }
+   }, [status, auth.user, pathname, router]);
+
+   useEffect(() => {
+      const handleRouteChangeStart = () => {
+         setNavigationLoading(true);
+      };
+
+      const handleRouteChangeComplete = () => {
+         setNavigationLoading(false);
+      };
+   }, []);
 
    function getSession(): Session {
       const token = cookies.get(cookieName);
@@ -85,6 +126,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
          const isValid = payload.exp! > Date.now() / 1000;
 
          if (!isValid) {
+            cookies.remove(cookieName);
+            toast.error('Sua sessão expirou. Faça login novamente.');
             return { token: null, user: null };
          }
 
@@ -98,6 +141,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             },
          };
       } catch (error) {
+         cookies.remove(cookieName);
+         toast.error('Erro na validação da sessão. Faça login novamente.');
          return { token: null, user: null };
       }
    }
@@ -105,11 +150,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
    return (
       <AuthContext.Provider
          value={{
-            loading,
+            status,
+            loading: loading || navigationLoading,
             token: auth.token,
             user: auth.user,
+            signed: status === 'authenticated' && !!auth.user,
             login,
             logout,
+            router,
          }}
       >
          {children}
