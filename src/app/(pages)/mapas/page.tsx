@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import DynamicMap from '@/components/Map/DynamicMap';
 import {
    MapPin,
-   Navigation,
+   Compass,
    Users,
    Calendar,
    FunnelSimple,

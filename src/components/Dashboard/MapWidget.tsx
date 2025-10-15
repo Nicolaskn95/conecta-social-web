@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import DynamicMap from '@/components/Map/DynamicMap';
-import { MapPin, Navigation, Users, Calendar } from '@phosphor-icons/react';
+import { MapPin, Compass, Users, Calendar } from '@phosphor-icons/react';
 
 // Dados mockados para o widget do dashboard
 const dashboardEvents = [

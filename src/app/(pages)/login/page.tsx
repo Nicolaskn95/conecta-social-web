@@ -118,9 +118,12 @@ export default function Login() {
                   {isLoading ? 'Entrando...' : 'Entrar'}
                </button>
             </form>
-            <p className="text-start text-[#387AA1] mt-4 underline cursor-pointer hover:text-[#090934]">
+            <button
+               onClick={() => router.push('/forgot-password')}
+               className="text-start text-[#387AA1] mt-4 underline cursor-pointer hover:text-[#090934] bg-transparent border-none p-0"
+            >
                Esqueci minha senha
-            </p>
+            </button>
          </div>
       </div>
    );

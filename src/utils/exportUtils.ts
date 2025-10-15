@@ -8,10 +8,6 @@ const formatCategory = (category: Category): string => {
       [Category.VESTIMENTA]: 'Vestimenta',
       [Category.ALIMENTO]: 'Alimento',
       [Category.BRINQUEDO]: 'Brinquedo',
-      [Category.HIGIENE]: 'Higiene',
-      [Category.ELETRONICO]: 'Eletrônico',
-      [Category.LIVRO]: 'Livro',
-      [Category.OUTRO]: 'Outro',
    };
    return categoryMap[category] || category;
 };
@@ -94,7 +90,7 @@ export const exportToPDF = (
          formatCategory(donation.category),
          donation.donator_name || '',
          donation.current_quantity?.toString() || '0',
-         formatDate(donation.created_at),
+         formatDate(donation.created_at || null),
       ];
 
       rowData.forEach((data, colIndex) => {
@@ -129,7 +125,7 @@ export const exportToExcel = (
       Disponível: donation.available ? 'Sim' : 'Não',
       Gênero: donation.gender || '',
       Tamanho: donation.size || '',
-      'Data de Cadastro': formatDate(donation.created_at),
+      'Data de Cadastro': formatDate(donation.created_at || null),
       Ativo: donation.active ? 'Sim' : 'Não',
    }));
 
