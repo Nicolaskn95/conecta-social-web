@@ -1,7 +1,6 @@
 import { toast } from 'react-toastify';
-import useAuth from './useAuth';
-import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import cookies from 'js-cookie';
 
 interface ApiOptions {
    headers?: Record<string, string>;
@@ -9,9 +8,20 @@ interface ApiOptions {
 }
 
 export default function useAPI() {
-   const { token, logout } = useAuth();
    const router = useRouter();
    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+   const cookieName = '_conectasocial_token';
+
+   // Função para obter token do cookie sem depender do useAuth
+   const getToken = () => {
+      return cookies.get(cookieName);
+   };
+
+   // Função para logout sem depender do useAuth
+   const handleLogout = () => {
+      cookies.remove(cookieName);
+      router.push('/login');
+   };
 
    const buildUrl = (path: string) => {
       return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
@@ -23,8 +33,11 @@ export default function useAPI() {
          ...options?.headers,
       };
 
-      if (!options?.noAuth && token) {
-         headers.Authorization = `Bearer ${token}`;
+      if (!options?.noAuth) {
+         const token = getToken();
+         if (token) {
+            headers.Authorization = `Bearer ${token}`;
+         }
       }
 
       return headers;
@@ -35,8 +48,7 @@ export default function useAPI() {
          const errorData = await response.json().catch(() => ({}));
 
          if (response.status === 401) {
-            logout();
-            router.push('/login');
+            handleLogout();
             toast.error('Sua sessão expirou. Faça login novamente.');
             throw new Error('Unauthorized - Session expired');
          }
@@ -81,8 +93,7 @@ export default function useAPI() {
    }
 
    // READ
-
-   const get = useCallback(async function <T = any>(
+   async function get<T = any>(
       path: string,
       options?: ApiOptions
    ): Promise<T> {
@@ -101,8 +112,7 @@ export default function useAPI() {
          );
          throw error;
       }
-   },
-   []);
+   }
 
    // UPDATE
    async function put<T = any, U = any>(

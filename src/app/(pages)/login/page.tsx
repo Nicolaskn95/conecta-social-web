@@ -45,7 +45,6 @@ export default function Login() {
          }
 
          const response: any = await post('auth/login', { email, password });
-
          const accessToken = response?.data?.access_token;
 
          if (accessToken) {
