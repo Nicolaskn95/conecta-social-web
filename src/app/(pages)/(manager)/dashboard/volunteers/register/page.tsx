@@ -67,7 +67,6 @@ function Register() {
       setIsLoading(true);
       try {
          // Mock API call - simulate success
-         console.log('Volunteer data to submit:', data);
          await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
          toast.success('Voluntário cadastrado com sucesso!');
          router.push('/dashboard/volunteers');

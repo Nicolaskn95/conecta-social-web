@@ -19,7 +19,7 @@ export default function EditEventPage() {
    const params = useParams();
    const router = useRouter();
    const { put, get } = useAPI();
-   const { loadEvent, events } = useEvents();
+   const { events, updateEvent } = useEvents();
    const [event, setEvent] = useState<IEvent | null>(null);
    const [loading, setLoading] = useState(true);
    const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +48,6 @@ export default function EditEventPage() {
       const fetchEvent = async () => {
          try {
             const eventData = await get(`/events/${params.id}`);
-            console.log('event', eventData.data);
 
             if (!eventData) {
                toast.error('Evento não encontrado');
@@ -74,11 +73,10 @@ export default function EditEventPage() {
       };
 
       fetchEvent();
-   }, [params.id, loadEvent, router, reset, get]);
+   }, [params.id]);
 
    useEffect(() => {
       if (cepData) {
-         if (cepData.uf) setValue('uf', cepData.uf);
          if (cepData.localidade) setValue('city', cepData.localidade);
          if (cepData.logradouro) setValue('street', cepData.logradouro);
          if (cepData.bairro) setValue('neighborhood', cepData.bairro);
@@ -105,11 +103,19 @@ export default function EditEventPage() {
             ...data,
             date: new Date(data.date),
          };
-         await put(`/events/${id}`, apiData);
+         
+         const response = await put(`/events/${id}`, apiData);
+         
          toast.success('Evento atualizado com sucesso!');
+         
+         if (response) {
+            const eventData = response.data || response;
+            updateEvent(eventData);
+         }
+         
          router.push('/dashboard/events');
-         loadEvent();
       } catch (error: any) {
+         console.error('Erro ao atualizar evento:', error);
          toast.error(
             error?.response?.data?.message ||
                'Erro ao atualizar evento. Tente novamente.'
