@@ -15,7 +15,7 @@ function Register() {
    const router = useRouter();
    const [isLoading, setIsLoading] = useState(false);
    const { post } = useAPI();
-   const { addEvent } = useEvents();
+   const { loadEvent } = useEvents();
 
    // useCEP hook
    const {
@@ -51,6 +51,7 @@ function Register() {
 
    React.useEffect(() => {
       if (cepData) {
+         if (cepData.uf) setValue('uf', cepData.uf);
          if (cepData.localidade) setValue('city', cepData.localidade);
          if (cepData.logradouro) setValue('street', cepData.logradouro);
          if (cepData.bairro) setValue('neighborhood', cepData.bairro);
@@ -66,18 +67,11 @@ function Register() {
    const submit: SubmitHandler<IEvent> = async (data) => {
       setIsLoading(true);
       try {
-         const response = await post('/events', data);
-         
+         await post('/events', data);
          toast.success('Evento cadastrado com sucesso!');
-         
-         if (response) {
-            const eventData = response.data || response;
-            addEvent(eventData);
-         }
-         
+         loadEvent();
          router.push('/dashboard/events');
       } catch (error: any) {
-         console.error('Erro ao criar evento:', error);
          toast.error(
             error?.response?.data?.message ||
                'Erro ao cadastrar evento. Tente novamente.'
@@ -251,6 +245,28 @@ function Register() {
                            )}
                         </div>
 
+                        <div className="flex flex-col flex-1 min-w-[250px]">
+                           <label htmlFor="uf" className="font-semibold mb-1">
+                              UF <span className="text-red-500">*</span>
+                           </label>
+                           <input
+                              type="text"
+                              id="uf"
+                              className="input"
+                              placeholder="UF"
+                              {...register('uf')}
+                              value={cepData?.uf || watch('uf') || ''}
+                              onChange={(e) =>
+                                 setValue('uf', e.target.value.toUpperCase())
+                              }
+                              maxLength={2}
+                           />
+                           {errors.uf && (
+                              <p className="text-red-500 text-sm">
+                                 {errors.uf.message}
+                              </p>
+                           )}
+                        </div>
                      </div>
 
                      <div className="flex flex-wrap gap-4">

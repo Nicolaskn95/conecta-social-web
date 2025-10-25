@@ -1,14 +1,6 @@
-import { useAuthStore } from '../store/authStore';
-import { useRouter } from 'next/navigation';
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext";
 
-const useAuth = () => {
-  const store = useAuthStore();
-  const router = useRouter();
-
-  return {
-    ...store,
-    router,
-  };
-};
+const useAuth = () =>  useContext(AuthContext)
 
 export default useAuth;

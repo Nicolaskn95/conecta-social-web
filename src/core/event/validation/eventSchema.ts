@@ -41,6 +41,11 @@ export const eventSchema: ZodType<IEventForm> = object({
          }
       ),
 
+   uf: string()
+      .min(2, 'UF é obrigatório')
+      .max(2, 'UF deve ter 2 caracteres')
+      .regex(/^[A-Z]{2}$/, 'UF deve ser a sigla em maiúsculas'),
+
    state: string()
       .min(2, 'Estado é obrigatório')
       .max(100, 'Estado não pode ter mais de 100 caracteres'),

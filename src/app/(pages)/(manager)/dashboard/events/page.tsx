@@ -16,7 +16,7 @@ function Events() {
    const router = useRouter();
    const { del } = useAPI();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-   const { events, loadEvent, removeEvent } = useEvents();
+   const { events, loadEvent } = useEvents();
 
    const register = () => {
       router.push('/dashboard/events/register');
@@ -78,7 +78,8 @@ function Events() {
          await del(`/events/${selectedEvent.id}`);
          toast.success('Evento excluído com sucesso!');
          setIsDeleteModalOpen(false);
-         removeEvent(selectedEvent.id);
+         // Update the events list by filtering out the deleted event
+         loadEvent();
       } catch (error) {
          toast.error('Erro ao excluir evento');
          console.error('Erro ao excluir evento:', error);
@@ -111,7 +112,9 @@ function Events() {
    ];
 
    const onSearch = (value: string) => {
-      // TODO: Implement search/filter logic
+      // Optionally implement search/filter logic here
+      // For now, just log
+      console.log(value);
    };
 
    return (

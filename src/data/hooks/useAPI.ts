@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
-import cookies from 'js-cookie';
+import useAuth from './useAuth';
+import { useCallback } from 'react';
 
 interface ApiOptions {
    headers?: Record<string, string>;
@@ -8,20 +8,8 @@ interface ApiOptions {
 }
 
 export default function useAPI() {
-   const router = useRouter();
+   const { token } = useAuth();
    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-   const cookieName = '_conectasocial_token';
-
-   // Função para obter token do cookie sem depender do useAuth
-   const getToken = () => {
-      return cookies.get(cookieName);
-   };
-
-   // Função para logout sem depender do useAuth
-   const handleLogout = () => {
-      cookies.remove(cookieName);
-      router.push('/login');
-   };
 
    const buildUrl = (path: string) => {
       return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
@@ -33,11 +21,8 @@ export default function useAPI() {
          ...options?.headers,
       };
 
-      if (!options?.noAuth) {
-         const token = getToken();
-         if (token) {
-            headers.Authorization = `Bearer ${token}`;
-         }
+      if (!options?.noAuth && token) {
+         headers.Authorization = `Bearer ${token}`;
       }
 
       return headers;
@@ -46,13 +31,6 @@ export default function useAPI() {
    async function handleResponse<T>(response: Response): Promise<T> {
       if (!response.ok) {
          const errorData = await response.json().catch(() => ({}));
-
-         if (response.status === 401) {
-            handleLogout();
-            toast.error('Sua sessão expirou. Faça login novamente.');
-            throw new Error('Unauthorized - Session expired');
-         }
-
          toast.error(
             errorData.message || `Erro HTTP! Status: ${response.status}`
          );
@@ -93,13 +71,15 @@ export default function useAPI() {
    }
 
    // READ
-   async function get<T = any>(
+
+   const get = useCallback(async function <T = any>(
       path: string,
       options?: ApiOptions
    ): Promise<T> {
       const completeUrl = buildUrl(path);
 
       try {
+         console.log(completeUrl);
          const response = await fetch(completeUrl, {
             method: 'GET',
             headers: buildHeaders(options),
@@ -112,7 +92,8 @@ export default function useAPI() {
          );
          throw error;
       }
-   }
+   },
+   []);
 
    // UPDATE
    async function put<T = any, U = any>(

@@ -74,6 +74,7 @@ function EditFamily({ params }: { params: { id: string } }) {
 
       try {
          // Mock API call
+         console.log('Updating family:', formData);
          toast.success('Família atualizada com sucesso!');
          router.push('/dashboard/families');
       } catch (error) {

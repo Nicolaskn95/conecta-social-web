@@ -32,9 +32,11 @@ export default function RegisterDonationPage() {
    const handleCancel = () => {
       router.push('/dashboard/donations');
    };
+   console.log(errors);
    const submit: SubmitHandler<IDonation> = async (data) => {
       setIsLoading(true);
       try {
+         // console.log('Donation data to register:', data);
          await new Promise((resolve) => setTimeout(resolve, 1000));
          toast.success('Doação cadastrada com sucesso!');
          router.push('/dashboard/donations');

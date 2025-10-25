@@ -139,6 +139,7 @@ function Families() {
 
    const onSearch = (value: string) => {
       // Mock search implementation
+      console.log('Searching for:', value);
    };
 
    return (

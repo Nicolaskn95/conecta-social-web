@@ -169,6 +169,7 @@ export default function EditVolunteerPage() {
          };
 
          // Mock API call - simulate success
+         console.log('Volunteer data to update:', apiData);
          await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
 
          toast.success('Voluntário atualizado com sucesso!');

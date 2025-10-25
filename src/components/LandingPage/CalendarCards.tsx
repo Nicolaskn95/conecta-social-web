@@ -14,13 +14,29 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 export default function CalendarCards() {
    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
    const [value, setValue] = useState<Value>(new Date());
-   const { events, publicEvents, isLoading } = useEvents();
+   const [isLoading, setIsLoading] = useState(true);
+   const { events, publicEvents } = useEvents();
 
    // Carregar eventos quando o componente for montado (apenas uma vez)
    useEffect(() => {
-      // Carrega apenas uma vez quando o componente monta
-      publicEvents();
-   }, []); // Array vazio = executa apenas uma vez
+      const loadEvents = async () => {
+         try {
+            setIsLoading(true);
+            await publicEvents();
+         } catch (error) {
+            console.error('Erro ao carregar eventos:', error);
+         } finally {
+            setIsLoading(false);
+         }
+      };
+
+      // Só carrega se ainda não tem eventos
+      if (events.length === 0) {
+         loadEvents();
+      } else {
+         setIsLoading(false);
+      }
+   }, [publicEvents, events.length]);
 
    // Função para verificar se uma data tem eventos (memoizada)
    const hasEvents = useCallback(

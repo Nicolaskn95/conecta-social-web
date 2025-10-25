@@ -2,6 +2,7 @@
 import useAuth from '@/data/hooks/useAuth';
 import { usePathname, useRouter } from 'next/navigation';
 import LottieAnimation from './LottieAnimation';
+import { useEffect, useState } from 'react';
 
 interface ForceAuthenticationProps {
    children: React.ReactNode;
@@ -10,17 +11,28 @@ interface ForceAuthenticationProps {
 export default function ForceAuthentication({
    children,
 }: ForceAuthenticationProps) {
-   const { status, user, loading: authLoading } = useAuth();
+   const { user, loading: authLoading } = useAuth();
    const router = useRouter();
    const path = usePathname();
 
-   // Mostra loading enquanto está verificando autenticação
-   if (authLoading || status === 'loading') {
+   const [navigationLoading, setNavigationLoading] = useState(false);
+   const [previousPath, setPreviousPath] = useState(path);
+
+   useEffect(() => {
+      if (path !== previousPath) {
+         setNavigationLoading(true);
+         const timer = setTimeout(() => {
+            setNavigationLoading(false);
+            setPreviousPath(path);
+         }, 500); // Show loading for 500ms
+         return () => clearTimeout(timer);
+      }
+   }, [path, previousPath]);
+
+   if ((authLoading && !user?.email) || navigationLoading) {
       return <LottieAnimation status="loading" />;
    }
-
-   // Redireciona para login se não estiver autenticado
-   if (status === 'unauthenticated' || !user?.email) {
+   if (!user?.email) {
       router.push(`/login?destination=${path}`);
       return <LottieAnimation status="loading" />;
    }
