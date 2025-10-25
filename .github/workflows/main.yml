@@ -194,7 +194,7 @@ jobs:
           git config --global user.email 'github-actions@github.com'
 
           if [ -n "$(git status --porcelain)" ]; then
-            git add package.json
+            git add .
             git commit -m "chore(release): version $NEW_VERSION"
             if git rev-parse "v$NEW_VERSION" >/dev/null 2>&1; then
               echo "Tag v$NEW_VERSION já existe, ignorando..."
