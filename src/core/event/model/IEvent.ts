@@ -14,7 +14,6 @@ export interface IEvent {
    street: string;
    neighborhood: string;
    number: string;
-   uf: string;
    complement: string;
    status: string;
 

@@ -16,7 +16,7 @@ function Events() {
    const router = useRouter();
    const { del } = useAPI();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-   const { events, loadEvent } = useEvents();
+   const { events, loadEvent, removeEvent } = useEvents();
 
    const register = () => {
       router.push('/dashboard/events/register');
@@ -78,8 +78,8 @@ function Events() {
          await del(`/events/${selectedEvent.id}`);
          toast.success('Evento excluído com sucesso!');
          setIsDeleteModalOpen(false);
-         // Update the events list by filtering out the deleted event
-         loadEvent();
+         // ✅ Remove o evento da lista imediatamente
+         removeEvent(selectedEvent.id);
       } catch (error) {
          toast.error('Erro ao excluir evento');
          console.error('Erro ao excluir evento:', error);

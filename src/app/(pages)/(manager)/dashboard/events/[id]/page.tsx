@@ -19,7 +19,7 @@ export default function EditEventPage() {
    const params = useParams();
    const router = useRouter();
    const { put, get } = useAPI();
-   const { loadEvent, events } = useEvents();
+   const { events, updateEvent } = useEvents();
    const [event, setEvent] = useState<IEvent | null>(null);
    const [loading, setLoading] = useState(true);
    const [isLoading, setIsLoading] = useState(false);
@@ -74,11 +74,10 @@ export default function EditEventPage() {
       };
 
       fetchEvent();
-   }, [params.id, loadEvent, router, reset, get]);
+   }, [params.id]); // ✅ Apenas params.id como dependência
 
    useEffect(() => {
       if (cepData) {
-         if (cepData.uf) setValue('uf', cepData.uf);
          if (cepData.localidade) setValue('city', cepData.localidade);
          if (cepData.logradouro) setValue('street', cepData.logradouro);
          if (cepData.bairro) setValue('neighborhood', cepData.bairro);
@@ -105,11 +104,27 @@ export default function EditEventPage() {
             ...data,
             date: new Date(data.date),
          };
-         await put(`/events/${id}`, apiData);
+         
+         console.log('Dados do evento sendo atualizados:', apiData);
+         const response = await put(`/events/${id}`, apiData);
+         console.log('Resposta da API:', response);
+         
          toast.success('Evento atualizado com sucesso!');
+         
+         // ✅ Atualiza o evento na lista imediatamente
+         // A API pode retornar os dados diretamente ou em um objeto 'data'
+         if (response) {
+            console.log('Atualizando evento na lista:', response);
+            // Verifica se a resposta tem a estrutura { data: [...] } ou se é direta
+            const eventData = response.data || response;
+            updateEvent(eventData);
+         } else {
+            console.warn('Resposta da API não contém dados válidos:', response);
+         }
+         
          router.push('/dashboard/events');
-         loadEvent();
       } catch (error: any) {
+         console.error('Erro ao atualizar evento:', error);
          toast.error(
             error?.response?.data?.message ||
                'Erro ao atualizar evento. Tente novamente.'
