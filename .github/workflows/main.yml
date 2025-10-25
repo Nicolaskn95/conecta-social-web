@@ -167,7 +167,7 @@ jobs:
         run: |
           CURRENT_PKG_VERSION=$(node -p "require('./package.json').version")
           if [ "$CURRENT_PKG_VERSION" != "$NEW_VERSION" ]; then
-            npm version "$NEW_VERSION" --no-git-tag-version
+            yarn version --new-version "$NEW_VERSION" --no-git-tag-version
             echo "Versão atualizada para $NEW_VERSION"
           else
             echo "A versão já é $NEW_VERSION, nenhuma alteração necessária."
@@ -193,15 +193,22 @@ jobs:
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
 
+          # Verifica se há mudanças para commit
           if [ -n "$(git status --porcelain)" ]; then
+            echo "Mudanças detectadas, fazendo commit..."
             git add .
             git commit -m "chore(release): version $NEW_VERSION"
+            
+            # Verifica se a tag já existe
             if git rev-parse "v$NEW_VERSION" >/dev/null 2>&1; then
               echo "Tag v$NEW_VERSION já existe, ignorando..."
             else
+              echo "Criando tag v$NEW_VERSION"
               git tag "v$NEW_VERSION"
               git push origin "v$NEW_VERSION"
             fi
+            
+            # Push das mudanças e tags
             git push origin main --follow-tags
           else
             echo "Nenhuma mudança para commit"
