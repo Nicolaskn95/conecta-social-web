@@ -98,7 +98,6 @@ export default function EditDonationPage() {
    const submit: SubmitHandler<IDonation> = async (data) => {
       setIsLoading(true);
       try {
-         console.log('Donation data to update:', data);
          await new Promise((resolve) => setTimeout(resolve, 1000));
          toast.success('Doação atualizada com sucesso!');
          router.push('/dashboard/donations');
