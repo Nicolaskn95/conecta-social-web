@@ -2,7 +2,7 @@
 
 > **Conectando tecnologia com projetos sociais**
 
-O Conecta Social é uma plataforma web desenvolvida para gerenciar e conectar projetos sociais, especificamente o **Projeto Sementes do Amanhã**. A aplicação oferece uma interface moderna e intuitiva para gerenciar voluntários, famílias beneficiárias, eventos e doações, além de fornecer dashboards analíticos para acompanhamento do impacto social.
+O Conecta Social é uma plataforma web desenvolvida para gerenciar e conectar projetos sociais, especificamente o **Projeto Conecta Social**. A aplicação oferece uma interface moderna e intuitiva para gerenciar voluntários, famílias beneficiárias, eventos e doações, além de fornecer dashboards analíticos para acompanhamento do impacto social.
 
 ## 📋 Índice
 
