@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/data/store/authStore';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -11,11 +11,15 @@ export default function AuthInitializer({ children }: AuthInitializerProps) {
   const { initializeAuth, status, user, token, loading } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const initialized = useRef(false);
 
   // Inicializa a autenticação quando o componente monta
   useEffect(() => {
-    initializeAuth();
-  }, [initializeAuth]);
+    if (!initialized.current) {
+      initialized.current = true;
+      initializeAuth();
+    }
+  }, []);
 
   // Gerencia redirecionamentos baseados no status de autenticação
   useEffect(() => {

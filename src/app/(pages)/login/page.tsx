@@ -23,7 +23,7 @@ export default function Login() {
          const destination = param.get('destination');
          router.push(destination ? destination : '/dashboard');
       }
-   }, [router, user, param]);
+   }, [router, user?.email, param]);
 
    const togglePasswordVisibility = () => {
       setShowPassword(!showPassword);
@@ -49,7 +49,6 @@ export default function Login() {
 
          if (accessToken) {
             login(accessToken);
-            toast.success('Login realizado com sucesso!');
          } else {
             console.error('Access token não encontrado na resposta:', response);
          }

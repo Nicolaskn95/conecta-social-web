@@ -78,7 +78,6 @@ function Events() {
          await del(`/events/${selectedEvent.id}`);
          toast.success('Evento excluído com sucesso!');
          setIsDeleteModalOpen(false);
-         // ✅ Remove o evento da lista imediatamente
          removeEvent(selectedEvent.id);
       } catch (error) {
          toast.error('Erro ao excluir evento');
@@ -112,9 +111,7 @@ function Events() {
    ];
 
    const onSearch = (value: string) => {
-      // Optionally implement search/filter logic here
-      // For now, just log
-      console.log(value);
+      // TODO: Implement search/filter logic
    };
 
    return (

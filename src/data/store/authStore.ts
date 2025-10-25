@@ -18,6 +18,7 @@ interface AuthState {
   user: Partial<IVolunteer> | null;
   signed: boolean;
   navigationLoading: boolean;
+  _initialized: boolean;
 }
 
 interface AuthActions {
@@ -72,9 +73,15 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   user: null,
   signed: false,
   navigationLoading: false,
+  _initialized: false,
 
   // Ações
   login: (token: string) => {
+    const state = get();
+    if (state.status === 'authenticated' && state.token) {
+      return;
+    }
+    
     cookies.set(cookieName, token, {
       expires: 1,
       secure: process.env.NODE_ENV === 'production',
@@ -114,7 +121,12 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   initializeAuth: () => {
-    set({ loading: true });
+    const state = get();
+    if (state._initialized) {
+      return;
+    }
+    
+    set({ loading: true, _initialized: true });
     
     try {
       const session = getSession();
@@ -127,6 +139,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         loading: false,
       });
     } catch (error) {
+      console.error('Erro na inicialização da autenticação:', error);
       set({
         token: null,
         user: null,

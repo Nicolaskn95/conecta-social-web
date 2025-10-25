@@ -39,7 +39,6 @@ export default function useCEP() {
             `https://viacep.com.br/ws/${cleanCep}/json/`
          );
          const result: CepData = await response.json();
-         console.log(result);
          if (result.erro) {
             setError('CEP não encontrado.');
             setData(null);

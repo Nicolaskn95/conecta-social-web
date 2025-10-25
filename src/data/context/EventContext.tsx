@@ -11,10 +11,10 @@ export interface EventContextProps {
    loadEvent: () => Promise<void>;
    publicEvents: () => Promise<void>;
    isLoading: boolean;
-   resetFlags: () => void; // ✅ Adicionado para permitir reset manual
-   addEvent: (event: IEvent) => void; // ✅ Adicionado para adicionar evento à lista
-   updateEvent: (event: IEvent) => void; // ✅ Adicionado para atualizar evento na lista
-   removeEvent: (eventId: string) => void; // ✅ Adicionado para remover evento da lista
+   resetFlags: () => void;
+   addEvent: (event: IEvent) => void;
+   updateEvent: (event: IEvent) => void;
+   removeEvent: (eventId: string) => void;
 }
 
 const EventContext = createContext<EventContextProps>({} as any);
@@ -48,7 +48,7 @@ export function EventProvider(props: any) {
       } finally {
          setIsLoading(false);
       }
-   }, [get, token]); // ❌ Removido isLoading das dependências
+   }, [get, isLoading, token]); // ❌ Removido isLoading das dependências
 
    const publicEvents = useCallback(async () => {
       // Se já tem eventos carregados ou está carregando, não faz nova requisição
@@ -69,14 +69,14 @@ export function EventProvider(props: any) {
       } finally {
          setIsLoading(false);
       }
-   }, [get, events.length, isLoading]); // ✅ Adicionado events.length para evitar chamadas desnecessárias
+   }, [get, events.length, isLoading]);
 
    // Carrega eventos quando o token estiver disponível
    useEffect(() => {
       if (token && !loadEventCalled.current) {
          loadEvent();
       }
-   }, [token]); // ❌ Removido loadEvent das dependências
+   }, [loadEvent, token]); // ❌ Removido loadEvent das dependências
 
    // Função para resetar os flags quando necessário
    const resetFlags = useCallback(() => {
@@ -114,10 +114,10 @@ export function EventProvider(props: any) {
             loadEvent,
             publicEvents,
             isLoading,
-            resetFlags, // ✅ Adicionado para permitir reset manual
-            addEvent, // ✅ Adicionado para adicionar evento à lista
-            updateEvent, // ✅ Adicionado para atualizar evento na lista
-            removeEvent, // ✅ Adicionado para remover evento da lista
+            resetFlags,
+            addEvent,
+            updateEvent,
+            removeEvent,
          }}
       >
          {props.children}

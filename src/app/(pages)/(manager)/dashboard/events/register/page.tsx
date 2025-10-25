@@ -66,21 +66,13 @@ function Register() {
    const submit: SubmitHandler<IEvent> = async (data) => {
       setIsLoading(true);
       try {
-         console.log('Dados do evento sendo enviados:', data);
          const response = await post('/events', data);
-         console.log('Resposta da API:', response);
          
          toast.success('Evento cadastrado com sucesso!');
          
-         // ✅ Adiciona o novo evento à lista imediatamente
-         // A API pode retornar os dados diretamente ou em um objeto 'data'
          if (response) {
-            console.log('Adicionando evento à lista:', response);
-            // Verifica se a resposta tem a estrutura { data: [...] } ou se é direta
             const eventData = response.data || response;
             addEvent(eventData);
-         } else {
-            console.warn('Resposta da API não contém dados válidos:', response);
          }
          
          router.push('/dashboard/events');

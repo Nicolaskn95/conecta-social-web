@@ -48,7 +48,6 @@ export default function EditEventPage() {
       const fetchEvent = async () => {
          try {
             const eventData = await get(`/events/${params.id}`);
-            console.log('event', eventData.data);
 
             if (!eventData) {
                toast.error('Evento não encontrado');
@@ -74,7 +73,7 @@ export default function EditEventPage() {
       };
 
       fetchEvent();
-   }, [params.id]); // ✅ Apenas params.id como dependência
+   }, [params.id]);
 
    useEffect(() => {
       if (cepData) {
@@ -105,21 +104,13 @@ export default function EditEventPage() {
             date: new Date(data.date),
          };
          
-         console.log('Dados do evento sendo atualizados:', apiData);
          const response = await put(`/events/${id}`, apiData);
-         console.log('Resposta da API:', response);
          
          toast.success('Evento atualizado com sucesso!');
          
-         // ✅ Atualiza o evento na lista imediatamente
-         // A API pode retornar os dados diretamente ou em um objeto 'data'
          if (response) {
-            console.log('Atualizando evento na lista:', response);
-            // Verifica se a resposta tem a estrutura { data: [...] } ou se é direta
             const eventData = response.data || response;
             updateEvent(eventData);
-         } else {
-            console.warn('Resposta da API não contém dados válidos:', response);
          }
          
          router.push('/dashboard/events');
