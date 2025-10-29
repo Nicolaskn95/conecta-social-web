@@ -16,7 +16,7 @@ function Events() {
    const router = useRouter();
    const { del } = useAPI();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-   const { events, loadEvent, removeEvent } = useEvents();
+   const { events, removeEvent } = useEvents();
 
    const register = () => {
       router.push('/dashboard/events/register');

@@ -1,123 +1,95 @@
 'use client';
-import { createContext, useCallback, useState, useRef, useEffect } from 'react';
-import useAPI from '../hooks/useAPI';
-import useAuth from '../hooks/useAuth';
+import { createContext, useState } from 'react';
 import { IEvent } from '@/core/event';
+import { useActiveEvents, usePublicEvents } from '../hooks/useEventQueries';
+import { useEventMutations } from '../hooks/useEventMutations';
+import useAuth from '../hooks/useAuth';
 
 export interface EventContextProps {
-   events: IEvent[];
+   // Estados de busca
    search: string;
    setSearch: (search: string) => void;
-   loadEvent: () => Promise<void>;
-   publicEvents: () => Promise<void>;
+
+   // Dados dos eventos
+   events: IEvent[];
+   publicEvents: IEvent[];
+
+   // Estados de loading
    isLoading: boolean;
-   resetFlags: () => void;
+   isPublicLoading: boolean;
+
+   // Funções de mutação
    addEvent: (event: IEvent) => void;
    updateEvent: (event: IEvent) => void;
    removeEvent: (eventId: string) => void;
+
+   // Funções de refetch
+   refetchEvents: () => void;
+   refetchPublicEvents: () => void;
 }
 
 const EventContext = createContext<EventContextProps>({} as any);
 
 export function EventProvider(props: any) {
-   const { get } = useAPI();
    const { token } = useAuth();
    const [search, setSearch] = useState<string>('');
-   const [events, setEvents] = useState<IEvent[]>([]);
-   const [isLoading, setIsLoading] = useState<boolean>(false);
-   const publicEventsCalled = useRef<boolean>(false);
-   const loadEventCalled = useRef<boolean>(false);
 
-   const loadEvent = useCallback(async () => {
-      if (isLoading || loadEventCalled.current) {
-         return; // Evita chamadas simultâneas
-      }
+   // Hooks do React Query
+   const {
+      data: eventsData,
+      isLoading,
+      refetch: refetchEvents,
+   } = useActiveEvents({ search }, { enabled: !!token });
 
-      // Verifica se o token está disponível antes de fazer a requisição
-      if (!token) {
-         return;
-      }
+   const {
+      data: publicEventsData,
+      isLoading: isPublicLoading,
+      refetch: refetchPublicEvents,
+   } = usePublicEvents(3);
 
-      loadEventCalled.current = true;
-      setIsLoading(true);
-      try {
-         const events = await get('/events/actives');
-         setEvents(events.data ?? []);
-      } catch (error) {
-         console.error('Erro ao carregar eventos:', error);
-      } finally {
-         setIsLoading(false);
-      }
-   }, [get, isLoading, token]); // ❌ Removido isLoading das dependências
+   // Hooks de mutação
+   const {
+      createEvent,
+      updateEvent: updateEventMutation,
+      deleteEvent,
+   } = useEventMutations();
 
-   const publicEvents = useCallback(async () => {
-      // Se já tem eventos carregados ou está carregando, não faz nova requisição
-      if (events.length > 0 || isLoading || publicEventsCalled.current) {
-         return; // Evita chamadas desnecessárias
-      }
+   // Extrair dados dos eventos
+   const events = eventsData?.data ?? [];
+   const publicEvents = publicEventsData?.data ?? [];
 
-      // Para publicEvents, não precisa de token (é público)
-      publicEventsCalled.current = true;
-      setIsLoading(true);
-      try {
-         const events = await get('/events/recent-with-instagram?limit=3', {
-            noAuth: true,
+   // Funções de mutação que usam React Query
+   const addEvent = (event: IEvent) => {
+      createEvent.mutate(event);
+   };
+
+   const updateEvent = (updatedEvent: IEvent) => {
+      if (updatedEvent.id) {
+         updateEventMutation.mutate({
+            id: updatedEvent.id,
+            event: updatedEvent,
          });
-         setEvents(events.data ?? []);
-      } catch (error) {
-         console.error('Erro ao carregar eventos públicos:', error);
-      } finally {
-         setIsLoading(false);
       }
-   }, [get, events.length, isLoading]);
+   };
 
-   // Carrega eventos quando o token estiver disponível
-   useEffect(() => {
-      if (token && !loadEventCalled.current) {
-         loadEvent();
-      }
-   }, [loadEvent, token]); // ❌ Removido loadEvent das dependências
-
-   // Função para resetar os flags quando necessário
-   const resetFlags = useCallback(() => {
-      loadEventCalled.current = false;
-      publicEventsCalled.current = false;
-   }, []);
-
-   // Função para adicionar um novo evento à lista
-   const addEvent = useCallback((event: IEvent) => {
-      setEvents(prevEvents => [event, ...prevEvents]);
-   }, []);
-
-   // Função para atualizar um evento na lista
-   const updateEvent = useCallback((updatedEvent: IEvent) => {
-      setEvents(prevEvents => 
-         prevEvents.map(event => 
-            event.id === updatedEvent.id ? updatedEvent : event
-         )
-      );
-   }, []);
-
-   // Função para remover um evento da lista
-   const removeEvent = useCallback((eventId: string) => {
-      setEvents(prevEvents => 
-         prevEvents.filter(event => event.id !== eventId)
-      );
-   }, []);
+   const removeEvent = (eventId: string) => {
+      deleteEvent.mutate(eventId);
+   };
 
    return (
       <EventContext.Provider
          value={{
-            events,
             search,
             setSearch,
-            loadEvent,
+            events,
             publicEvents,
             isLoading,
-            resetFlags,
+            isPublicLoading,
             addEvent,
             updateEvent,
             removeEvent,
+            refetchEvents,
+            refetchPublicEvents,
          }}
       >
          {props.children}

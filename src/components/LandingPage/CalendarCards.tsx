@@ -16,12 +16,6 @@ export default function CalendarCards() {
    const [value, setValue] = useState<Value>(new Date());
    const { events, publicEvents, isLoading } = useEvents();
 
-   // Carregar eventos quando o componente for montado (apenas uma vez)
-   useEffect(() => {
-      // Carrega apenas uma vez quando o componente monta
-      publicEvents();
-   }, []); // Array vazio = executa apenas uma vez
-
    // Função para verificar se uma data tem eventos (memoizada)
    const hasEvents = useCallback(
       (date: Date) => {
