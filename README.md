@@ -36,7 +36,7 @@ O Conecta Social é a plataforma tecnológica que facilita a gestão de projetos
 
 - **Diagrama da área logada**
 
-  ![Diagrama — Área logada](doc/diagram-i.png)
+  ![diagram-I](https://github.com/user-attachments/assets/01a59eae-9662-44b8-8df5-0ce5dc74f102)
   _Figura: Diagrama de caso de uso da área logada (Administrador / Gerente / Colaborador)._
 
 - **Diagrama da área não logada**
