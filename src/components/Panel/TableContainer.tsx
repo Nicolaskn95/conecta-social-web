@@ -24,6 +24,7 @@ interface DashboardTableContainerProps {
    data?: any[];
    actions?: Action[];
    onSearch?: (value: string) => void;
+   showFilters?: boolean;
 }
 
 export default function TableContainer({
@@ -32,6 +33,7 @@ export default function TableContainer({
    data,
    actions = [],
    onSearch,
+   showFilters = false,
 }: DashboardTableContainerProps) {
    const [currentPage, setCurrentPage] = useState<number>(1);
    const itemsPerPage = 10;
@@ -42,19 +44,52 @@ export default function TableContainer({
       : [];
 
    return (
-      <div className="p-4 bg-white rounded-3xl shadow-md border border-[#4AA1D3]">
-         <div className="flex items-start justify-between p-3">
-            <h1 className="mb-4 text-2xl font-extrabold">{title}</h1>
-            <SearchInput onSearch={onSearch} />
+      <div className="bg-white rounded-3xl shadow-md border border-[#4AA1D3] flex flex-col max-h-[calc(100vh-200px)]">
+         {/* Header similar ao Jampack */}
+         <div className="p-6 pb-4 flex-shrink-0">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+               <div className="flex items-center gap-4">
+                  <h1 className="text-2xl font-extrabold">{title}</h1>
+                  <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                     {data?.length || 0} itens
+                  </span>
+               </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="flex flex-col sm:flex-row gap-3">
+               <div className="flex-1">
+                  <SearchInput onSearch={onSearch} />
+               </div>
+
+               {/* Filtros rápidos */}
+               {showFilters && (
+                  <div className="flex gap-2">
+                     <select className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option>Todos os Status</option>
+                        <option>Ativo</option>
+                        <option>Inativo</option>
+                        <option>Pendente</option>
+                     </select>
+                     <select className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option>Todas as Cidades</option>
+                        <option>São Paulo</option>
+                        <option>Rio de Janeiro</option>
+                        <option>Belo Horizonte</option>
+                     </select>
+                  </div>
+               )}
+            </div>
          </div>
-         <div className="overflow-x-auto">
+
+         <div className="flex-1 overflow-auto min-h-0">
             <table className="w-full border-collapse">
-               <thead>
+               <thead className="sticky top-0 bg-white z-10">
                   <tr>
                      {columns.map((column, index) => (
                         <th
                            key={index}
-                           className="px-4 py-2 text-start text-primary font-bold"
+                           className="px-4 py-2 text-start text-primary font-bold bg-white"
                         >
                            {column.label}
                         </th>
@@ -62,7 +97,7 @@ export default function TableContainer({
                      {actions.map((action, index) => (
                         <th
                            key={index}
-                           className="px-4 py-2 text-primary font-bold text-center"
+                           className="px-4 py-2 text-primary font-bold text-center bg-white"
                         >
                            {action.label}
                         </th>
@@ -100,11 +135,14 @@ export default function TableContainer({
                </tbody>
             </table>
          </div>
-         <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-         />
+
+         <div className="p-6 pt-4 border-t border-gray-200 flex-shrink-0">
+            <Pagination
+               currentPage={currentPage}
+               totalPages={totalPages}
+               onPageChange={setCurrentPage}
+            />
+         </div>
       </div>
    );
 }

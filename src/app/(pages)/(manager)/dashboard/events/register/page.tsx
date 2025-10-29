@@ -1,21 +1,17 @@
 'use client';
 
 import { eventSchema, IEvent } from '@/core/event';
-import useAPI from '@/data/hooks/useAPI';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import Breadcrumb from '@/components/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
-import { useEvents } from '@/data/hooks/useEvents';
+import { useEventMutations } from '@/data/hooks/useEventMutations';
 
 function Register() {
    const router = useRouter();
-   const [isLoading, setIsLoading] = useState(false);
-   const { post } = useAPI();
-   const { loadEvent } = useEvents();
+   const { createEvent } = useEventMutations();
 
    // useCEP hook
    const {
@@ -51,7 +47,6 @@ function Register() {
 
    React.useEffect(() => {
       if (cepData) {
-         if (cepData.uf) setValue('uf', cepData.uf);
          if (cepData.localidade) setValue('city', cepData.localidade);
          if (cepData.logradouro) setValue('street', cepData.logradouro);
          if (cepData.bairro) setValue('neighborhood', cepData.bairro);
@@ -65,20 +60,20 @@ function Register() {
    };
 
    const submit: SubmitHandler<IEvent> = async (data) => {
-      setIsLoading(true);
-      try {
-         await post('/events', data);
-         toast.success('Evento cadastrado com sucesso!');
-         loadEvent();
-         router.push('/dashboard/events');
-      } catch (error: any) {
-         toast.error(
-            error?.response?.data?.message ||
-               'Erro ao cadastrar evento. Tente novamente.'
-         );
-      } finally {
-         setIsLoading(false);
-      }
+      // Converter data de string para Date se necessário
+      const eventData = {
+         ...data,
+         date: new Date(data.date),
+      };
+
+      createEvent.mutate(eventData, {
+         onSuccess: () => {
+            router.push('/dashboard/events');
+         },
+         onError: (error) => {
+            console.error('Erro ao criar evento:', error);
+         },
+      });
    };
 
    return (
@@ -241,29 +236,6 @@ function Register() {
                            {errors.cep && (
                               <p className="text-red-500 text-sm">
                                  {errors.cep.message}
-                              </p>
-                           )}
-                        </div>
-
-                        <div className="flex flex-col flex-1 min-w-[250px]">
-                           <label htmlFor="uf" className="font-semibold mb-1">
-                              UF <span className="text-red-500">*</span>
-                           </label>
-                           <input
-                              type="text"
-                              id="uf"
-                              className="input"
-                              placeholder="UF"
-                              {...register('uf')}
-                              value={cepData?.uf || watch('uf') || ''}
-                              onChange={(e) =>
-                                 setValue('uf', e.target.value.toUpperCase())
-                              }
-                              maxLength={2}
-                           />
-                           {errors.uf && (
-                              <p className="text-red-500 text-sm">
-                                 {errors.uf.message}
                               </p>
                            )}
                         </div>
@@ -432,15 +404,19 @@ function Register() {
                            htmlFor="instagram"
                            className="font-semibold mb-1"
                         >
-                           Post do Instagram (embed)
+                           Post do Instagram
                         </label>
                         <input
-                           type="text"
+                           type="url"
                            id="instagram"
                            className="input"
-                           placeholder="Insira o link do post do Instagram"
+                           placeholder="https://www.instagram.com/p/DKZm15CskZp/"
                            {...register('embedded_instagram')}
                         />
+                        <p className="text-sm text-gray-500 mt-1">
+                           Cole aqui o link do post do Instagram (ex:
+                           https://www.instagram.com/p/DKZm15CskZp/)
+                        </p>
                         {errors.embedded_instagram && (
                            <p className="text-red-500 text-sm">
                               {errors.embedded_instagram.message}
@@ -455,16 +431,16 @@ function Register() {
                         type="button"
                         className="btn-danger w-32 text-white"
                         onClick={handleCancel}
-                        disabled={isLoading}
+                        disabled={createEvent.isPending}
                      >
                         Cancelar
                      </button>
                      <button
                         type="submit"
                         className="btn-primary w-32"
-                        disabled={isLoading}
+                        disabled={createEvent.isPending}
                      >
-                        {isLoading ? 'Cadastrando...' : 'Cadastrar'}
+                        {createEvent.isPending ? 'Cadastrando...' : 'Cadastrar'}
                      </button>
                   </div>
                </form>

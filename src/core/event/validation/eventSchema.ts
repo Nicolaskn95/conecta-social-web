@@ -1,5 +1,6 @@
 import { object, string, date, ZodType } from 'zod';
 import { IEventForm } from '../model/IEvent';
+import { isValidInstagramUrl, isValidInstagramEmbed } from '@/utils/instagram';
 
 // Helper function to extract only digits from a string
 const extractDigits = (value: string): string => value.replace(/\D/g, '');
@@ -41,11 +42,6 @@ export const eventSchema: ZodType<IEventForm> = object({
          }
       ),
 
-   uf: string()
-      .min(2, 'UF é obrigatório')
-      .max(2, 'UF deve ter 2 caracteres')
-      .regex(/^[A-Z]{2}$/, 'UF deve ser a sigla em maiúsculas'),
-
    state: string()
       .min(2, 'Estado é obrigatório')
       .max(100, 'Estado não pode ter mais de 100 caracteres'),
@@ -72,10 +68,18 @@ export const eventSchema: ZodType<IEventForm> = object({
    ),
 
    embedded_instagram: string()
-      .regex(/<blockquote class="instagram-media".*<\/blockquote>/, {
-         message: 'Código de embed inválido',
-      })
-      .optional(),
+      .optional()
+      .refine(
+         (val) => {
+            if (!val) return true; // Se não fornecido, é válido
+            // Aceita tanto links do Instagram quanto embeds HTML
+            return isValidInstagramUrl(val) || isValidInstagramEmbed(val);
+         },
+         {
+            message:
+               'Link do Instagram inválido. Use o formato: https://www.instagram.com/p/XXXXX/',
+         }
+      ),
 
    status: string()
       .min(5, 'Status é obrigatório')

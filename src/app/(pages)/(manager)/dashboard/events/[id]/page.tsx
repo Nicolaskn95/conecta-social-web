@@ -1,15 +1,14 @@
 'use client';
-import { useEvents } from '@/data/hooks/useEvents';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { eventSchema, IEvent } from '@/core/event';
 import { IEventForm } from '@/core/event/model/IEvent';
-import { toast } from 'react-toastify';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import useCEP from '@/data/hooks/useCEP';
-import useAPI from '@/data/hooks/useAPI';
+import { useEventMutations } from '@/data/hooks/useEventMutations';
+import { useEventById } from '@/data/hooks/useEventQueries';
 import BasicInfoSection from './components/BasicInfoSection';
 import AddressSection from './components/AddressSection';
 import SocialMediaSection from './components/SocialMediaSection';
@@ -18,11 +17,10 @@ import LottieAnimation from '@/components/shared/LottieAnimation';
 export default function EditEventPage() {
    const params = useParams();
    const router = useRouter();
-   const { put, get } = useAPI();
-   const { loadEvent, events } = useEvents();
-   const [event, setEvent] = useState<IEvent | null>(null);
-   const [loading, setLoading] = useState(true);
-   const [isLoading, setIsLoading] = useState(false);
+   const { updateEvent } = useEventMutations();
+
+   const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
+   const { data: eventData, isLoading: loading, error } = useEventById(eventId);
 
    const {
       register,
@@ -45,40 +43,19 @@ export default function EditEventPage() {
    const cepValue = watch('cep');
 
    useEffect(() => {
-      const fetchEvent = async () => {
-         try {
-            const eventData = await get(`/events/${params.id}`);
-            console.log('event', eventData.data);
-
-            if (!eventData) {
-               toast.error('Evento não encontrado');
-               router.push('/dashboard/events');
-               return;
-            }
-
-            setEvent(eventData.data);
-            const formattedEventData: IEventForm = {
-               ...eventData.data,
-               date: eventData.data.date
-                  ? new Date(eventData.data.date).toISOString().slice(0, 16)
-                  : '',
-            };
-            reset(formattedEventData);
-         } catch (error) {
-            console.error('Error fetching event:', error);
-            toast.error('Erro ao carregar evento');
-            router.push('/dashboard/events');
-         } finally {
-            setLoading(false);
-         }
-      };
-
-      fetchEvent();
-   }, [params.id, loadEvent, router, reset, get]);
+      if (eventData?.data) {
+         const formattedEventData: IEventForm = {
+            ...eventData.data,
+            date: eventData.data.date
+               ? new Date(eventData.data.date).toISOString().slice(0, 16)
+               : '',
+         };
+         reset(formattedEventData);
+      }
+   }, [eventData, reset]);
 
    useEffect(() => {
       if (cepData) {
-         if (cepData.uf) setValue('uf', cepData.uf);
          if (cepData.localidade) setValue('city', cepData.localidade);
          if (cepData.logradouro) setValue('street', cepData.logradouro);
          if (cepData.bairro) setValue('neighborhood', cepData.bairro);
@@ -98,27 +75,25 @@ export default function EditEventPage() {
    };
 
    const submit: SubmitHandler<IEventForm> = async (data) => {
-      setIsLoading(true);
-      try {
-         const id = Array.isArray(params.id) ? params.id[0] : params.id;
-         const apiData: IEvent = {
-            ...data,
-            date: new Date(data.date),
-         };
-         await put(`/events/${id}`, apiData);
-         toast.success('Evento atualizado com sucesso!');
-         router.push('/dashboard/events');
-         loadEvent();
-      } catch (error: any) {
-         toast.error(
-            error?.response?.data?.message ||
-               'Erro ao atualizar evento. Tente novamente.'
-         );
-      } finally {
-         setIsLoading(false);
-      }
+      const apiData: IEvent = {
+         ...data,
+         date: new Date(data.date),
+      };
+
+      updateEvent.mutate(
+         { id: eventId, event: apiData },
+         {
+            onSuccess: () => {
+               router.push('/dashboard/events');
+            },
+            onError: (error) => {
+               console.error('Erro ao atualizar evento:', error);
+            },
+         }
+      );
    };
 
+   const event = eventData?.data;
    const breadcrumbItems = [
       { label: 'Início', href: '/dashboard' },
       { label: 'Eventos', href: '/dashboard/events' },
@@ -129,7 +104,7 @@ export default function EditEventPage() {
       return <LottieAnimation status="loading" />;
    }
 
-   if (!event) {
+   if (error || !event) {
       return <div>Evento não encontrado</div>;
    }
 
@@ -157,16 +132,16 @@ export default function EditEventPage() {
                         type="button"
                         className="btn-danger w-32 text-white"
                         onClick={handleCancel}
-                        disabled={isLoading}
+                        disabled={updateEvent.isPending}
                      >
                         Cancelar
                      </button>
                      <button
                         type="submit"
                         className="btn-primary w-32"
-                        disabled={isLoading}
+                        disabled={updateEvent.isPending}
                      >
-                        {isLoading ? 'Salvando...' : 'Salvar'}
+                        {updateEvent.isPending ? 'Salvando...' : 'Salvar'}
                      </button>
                   </div>
                </form>

@@ -2,21 +2,21 @@
 import TableContainer from '@/components/Panel/TableContainer';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import useAPI from '@/data/hooks/useAPI';
+import React, { useState } from 'react';
 import { PencilIcon, TrashIcon } from '@phosphor-icons/react';
 import Modal from '@/components/Modal/Modal';
-import { toast } from 'react-toastify';
 import { IEvent } from '@/core/event';
 import { useEvents } from '@/data/hooks/useEvents';
+import { useEventMutations } from '@/data/hooks/useEventMutations';
 import { Status } from '@/components/shared/Status';
 import { EventStatus } from '@/core/event/model/IEvent';
+import { toast } from 'react-toastify';
 
 function Events() {
    const router = useRouter();
-   const { del } = useAPI();
+   const { deleteEvent } = useEventMutations();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-   const { events, loadEvent } = useEvents();
+   const { events } = useEvents();
 
    const register = () => {
       router.push('/dashboard/events/register');
@@ -73,17 +73,15 @@ function Events() {
       setIsDeleteModalOpen(true);
    };
 
-   const handleDeleteConfirm = async () => {
-      try {
-         await del(`/events/${selectedEvent.id}`);
-         toast.success('Evento excluído com sucesso!');
-         setIsDeleteModalOpen(false);
-         // Update the events list by filtering out the deleted event
-         loadEvent();
-      } catch (error) {
-         toast.error('Erro ao excluir evento');
-         console.error('Erro ao excluir evento:', error);
-      }
+   const handleDeleteConfirm = () => {
+      deleteEvent.mutate(selectedEvent.id, {
+         onSuccess: () => {
+            setIsDeleteModalOpen(false);
+         },
+         onError: (error) => {
+            console.error('Erro ao excluir evento:', error);
+         },
+      });
    };
 
    const actions = [
@@ -112,13 +110,11 @@ function Events() {
    ];
 
    const onSearch = (value: string) => {
-      // Optionally implement search/filter logic here
-      // For now, just log
-      console.log(value);
+      // TODO: Implement search/filter logic
    };
 
    return (
-      <div className="min-h-screen p-4 bg-gray-100">
+      <div className="min-h-full p-4 bg-gray-100 pb-8">
          <div className="flex justify-between items-center mb-6">
             <Breadcrumb items={breadcrumbItems} />
             <button
@@ -134,6 +130,7 @@ function Events() {
             data={events}
             actions={actions}
             onSearch={onSearch}
+            showFilters={true}
          />
          <Modal
             isOpen={isDeleteModalOpen}
@@ -150,11 +147,16 @@ function Events() {
                   <button
                      onClick={() => setIsDeleteModalOpen(false)}
                      className="btn-secondary"
+                     disabled={deleteEvent.isPending}
                   >
                      Cancelar
                   </button>
-                  <button onClick={handleDeleteConfirm} className="btn-danger">
-                     Excluir
+                  <button
+                     onClick={handleDeleteConfirm}
+                     className="btn-danger"
+                     disabled={deleteEvent.isPending}
+                  >
+                     {deleteEvent.isPending ? 'Excluindo...' : 'Excluir'}
                   </button>
                </div>
             </div>
