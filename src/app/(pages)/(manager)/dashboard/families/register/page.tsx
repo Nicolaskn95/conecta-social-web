@@ -39,7 +39,6 @@ function RegisterFamily() {
    } = useForm<IFamily>({
       resolver: zodResolver(familySchema),
    });
-   console.log(errors);
    const cepValue = watch('cep');
 
    const handleCepBlur = async () => {

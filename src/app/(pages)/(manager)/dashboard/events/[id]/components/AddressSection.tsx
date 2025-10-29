@@ -134,21 +134,6 @@ export default function AddressSection({
                   <p className="text-red-500 text-sm">{errors.state.message}</p>
                )}
             </div>
-            <div className="flex flex-col flex-1 min-w-[200px]">
-               <label htmlFor="uf" className="font-semibold mb-1">
-                  UF <span className="text-red-500">*</span>
-               </label>
-               <input
-                  type="text"
-                  id="uf"
-                  className="input"
-                  placeholder="UF"
-                  {...register('uf')}
-               />
-               {errors.uf && (
-                  <p className="text-red-500 text-sm">{errors.uf.message}</p>
-               )}
-            </div>
          </div>
       </div>
    );

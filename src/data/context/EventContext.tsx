@@ -1,42 +1,95 @@
 'use client';
-import { createContext, useCallback, useEffect, useState } from 'react';
-import useAPI from '../hooks/useAPI';
+import { createContext, useState } from 'react';
 import { IEvent } from '@/core/event';
+import { useActiveEvents, usePublicEvents } from '../hooks/useEventQueries';
+import { useEventMutations } from '../hooks/useEventMutations';
+import useAuth from '../hooks/useAuth';
 
 export interface EventContextProps {
-   events: IEvent[];
+   // Estados de busca
    search: string;
    setSearch: (search: string) => void;
-   loadEvent: () => Promise<void>;
-   publicEvents: () => Promise<void>;
+
+   // Dados dos eventos
+   events: IEvent[];
+   publicEvents: IEvent[];
+
+   // Estados de loading
+   isLoading: boolean;
+   isPublicLoading: boolean;
+
+   // Funções de mutação
+   addEvent: (event: IEvent) => void;
+   updateEvent: (event: IEvent) => void;
+   removeEvent: (eventId: string) => void;
+
+   // Funções de refetch
+   refetchEvents: () => void;
+   refetchPublicEvents: () => void;
 }
 
 const EventContext = createContext<EventContextProps>({} as any);
 
 export function EventProvider(props: any) {
-   const { get } = useAPI();
+   const { token } = useAuth();
    const [search, setSearch] = useState<string>('');
-   const [events, setEvents] = useState<IEvent[]>([]);
 
-   const loadEvent = useCallback(async () => {
-      const events = await get('/events/actives');
-      // console.log(events);
-      setEvents(events.data ?? []);
-   }, [get]);
+   // Hooks do React Query
+   const {
+      data: eventsData,
+      isLoading,
+      refetch: refetchEvents,
+   } = useActiveEvents({ search }, { enabled: !!token });
 
-   const publicEvents = useCallback(async () => {
-      const events = await get('/events/recent-with-instagram?limit=3');
-      setEvents(events.data ?? []);
-   }, [get]);
+   const {
+      data: publicEventsData,
+      isLoading: isPublicLoading,
+      refetch: refetchPublicEvents,
+   } = usePublicEvents(3);
+
+   // Hooks de mutação
+   const {
+      createEvent,
+      updateEvent: updateEventMutation,
+      deleteEvent,
+   } = useEventMutations();
+
+   // Extrair dados dos eventos
+   const events = eventsData?.data ?? [];
+   const publicEvents = publicEventsData?.data ?? [];
+
+   // Funções de mutação que usam React Query
+   const addEvent = (event: IEvent) => {
+      createEvent.mutate(event);
+   };
+
+   const updateEvent = (updatedEvent: IEvent) => {
+      if (updatedEvent.id) {
+         updateEventMutation.mutate({
+            id: updatedEvent.id,
+            event: updatedEvent,
+         });
+      }
+   };
+
+   const removeEvent = (eventId: string) => {
+      deleteEvent.mutate(eventId);
+   };
 
    return (
       <EventContext.Provider
          value={{
-            events,
             search,
             setSearch,
-            loadEvent,
+            events,
             publicEvents,
+            isLoading,
+            isPublicLoading,
+            addEvent,
+            updateEvent,
+            removeEvent,
+            refetchEvents,
+            refetchPublicEvents,
          }}
       >
          {props.children}
