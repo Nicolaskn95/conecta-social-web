@@ -18,8 +18,14 @@ export function useCreateEvent(
       mutationFn: (event: Omit<IEvent, 'id'>) =>
          eventService.createEvent(event),
       onSuccess: (data) => {
-         // Invalidar queries relacionadas a eventos
+         // Invalidar todas as queries de eventos
          queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
+
+         // Invalidar especificamente as listas de eventos
+         queryClient.invalidateQueries({ queryKey: queryKeys.events.lists() });
+
+         // Invalidar eventos públicos também
+         queryClient.invalidateQueries({ queryKey: queryKeys.events.public() });
 
          // Adicionar o novo evento ao cache se tiver id
          if (data.data.id) {

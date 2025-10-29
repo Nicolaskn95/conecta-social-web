@@ -67,10 +67,18 @@ export const eventSchema: ZodType<IEventForm> = object({
    ),
 
    embedded_instagram: string()
-      .regex(/<blockquote class="instagram-media".*<\/blockquote>/, {
-         message: 'Código de embed inválido',
-      })
-      .optional(),
+      .optional()
+      .refine(
+         (val) => {
+            if (!val) return true; // Se não fornecido, é válido
+            return /<blockquote class="instagram-media".*<\/blockquote>/.test(
+               val
+            );
+         },
+         {
+            message: 'Código de embed inválido',
+         }
+      ),
 
    status: string()
       .min(5, 'Status é obrigatório')

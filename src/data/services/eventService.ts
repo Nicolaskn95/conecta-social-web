@@ -50,7 +50,12 @@ class EventService {
       });
 
       if (!response.ok) {
-         const errorData = await response.json().catch(() => ({}));
+         let errorData = {};
+         try {
+            errorData = await response.json();
+         } catch {
+            // Se não conseguir fazer parse do JSON, usar erro genérico
+         }
 
          if (response.status === 401) {
             // Redirecionar para login se não autenticado
@@ -62,8 +67,19 @@ class EventService {
             throw new Error('Unauthorized - Session expired');
          }
 
+         // Melhor tratamento de erro para 400 Bad Request
+         if (response.status === 400) {
+            const errorMessage =
+               (errorData as any).message ||
+               (errorData as any).error ||
+               'Dados inválidos';
+            throw new Error(errorMessage);
+         }
+
          throw new Error(
-            errorData.message || `Erro HTTP! Status: ${response.status}`
+            (errorData as any).message ||
+               (errorData as any).error ||
+               `Erro HTTP! Status: ${response.status}`
          );
       }
 
