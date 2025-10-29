@@ -4,16 +4,11 @@ import EventsSkeleton from '../shared/EventsSkeleton';
 import { useEvents } from '@/data/hooks/useEvents';
 
 const Events = () => {
-   const { publicEvents, events, isLoading } = useEvents();
-
-   useEffect(() => {
-      // Carrega apenas uma vez quando o componente monta
-      publicEvents();
-   }, []); // Array vazio = executa apenas uma vez
+   const { publicEvents, isPublicLoading } = useEvents();
 
    useEffect(() => {
       if (
-         events.length > 0 &&
+         publicEvents.length > 0 &&
          typeof window !== 'undefined' &&
          (window as any).instgrm &&
          (window as any).instgrm.Embeds &&
@@ -21,7 +16,7 @@ const Events = () => {
       ) {
          (window as any).instgrm.Embeds.process();
       }
-   }, [events]);
+   }, [publicEvents]);
 
    const pageContent = (
       <section id="events" className="text-center">
@@ -38,7 +33,7 @@ const Events = () => {
 
          {/* Events Content */}
          <div className="max-w-6xl mx-auto">
-            {events.length === 0 ? (
+            {publicEvents.length === 0 ? (
                <div className="bg-white rounded-2xl p-12 shadow-lg border border-gray-100">
                   <div className="text-center">
                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -66,7 +61,7 @@ const Events = () => {
                </div>
             ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {events
+                  {publicEvents
                      .filter((event) => event.embedded_instagram) // Filtra apenas eventos com Instagram
                      .map((event, index) => (
                         <div
@@ -84,7 +79,9 @@ const Events = () => {
       </section>
    );
 
-   return <EventsSkeleton isLoading={isLoading}>{pageContent}</EventsSkeleton>;
+   return (
+      <EventsSkeleton isLoading={isPublicLoading}>{pageContent}</EventsSkeleton>
+   );
 };
 
 export default Events;

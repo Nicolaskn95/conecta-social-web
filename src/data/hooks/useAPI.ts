@@ -53,9 +53,10 @@ export default function useAPI() {
             throw new Error('Unauthorized - Session expired');
          }
 
-         toast.error(
-            errorData.message || `Erro HTTP! Status: ${response.status}`
-         );
+         // Toast removido para evitar conflito com React Query
+         // toast.error(
+         //    errorData.message || `Erro HTTP! Status: ${response.status}`
+         // );
          throw new Error(
             errorData.message || `Erro HTTP! Status: ${response.status}`
          );
@@ -93,10 +94,7 @@ export default function useAPI() {
    }
 
    // READ
-   async function get<T = any>(
-      path: string,
-      options?: ApiOptions
-   ): Promise<T> {
+   async function get<T = any>(path: string, options?: ApiOptions): Promise<T> {
       const completeUrl = buildUrl(path);
 
       try {

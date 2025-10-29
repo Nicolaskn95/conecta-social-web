@@ -1,21 +1,17 @@
 'use client';
 
 import { eventSchema, IEvent } from '@/core/event';
-import useAPI from '@/data/hooks/useAPI';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import Breadcrumb from '@/components/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
-import { useEvents } from '@/data/hooks/useEvents';
+import { useEventMutations } from '@/data/hooks/useEventMutations';
 
 function Register() {
    const router = useRouter();
-   const [isLoading, setIsLoading] = useState(false);
-   const { post } = useAPI();
-   const { addEvent } = useEvents();
+   const { createEvent } = useEventMutations();
 
    // useCEP hook
    const {
@@ -64,27 +60,20 @@ function Register() {
    };
 
    const submit: SubmitHandler<IEvent> = async (data) => {
-      setIsLoading(true);
-      try {
-         const response = await post('/events', data);
-         
-         toast.success('Evento cadastrado com sucesso!');
-         
-         if (response) {
-            const eventData = response.data || response;
-            addEvent(eventData);
-         }
-         
-         router.push('/dashboard/events');
-      } catch (error: any) {
-         console.error('Erro ao criar evento:', error);
-         toast.error(
-            error?.response?.data?.message ||
-               'Erro ao cadastrar evento. Tente novamente.'
-         );
-      } finally {
-         setIsLoading(false);
-      }
+      // Converter data de string para Date se necessário
+      const eventData = {
+         ...data,
+         date: new Date(data.date),
+      };
+
+      createEvent.mutate(eventData, {
+         onSuccess: () => {
+            router.push('/dashboard/events');
+         },
+         onError: (error) => {
+            console.error('Erro ao criar evento:', error);
+         },
+      });
    };
 
    return (
@@ -250,7 +239,6 @@ function Register() {
                               </p>
                            )}
                         </div>
-
                      </div>
 
                      <div className="flex flex-wrap gap-4">
@@ -439,16 +427,16 @@ function Register() {
                         type="button"
                         className="btn-danger w-32 text-white"
                         onClick={handleCancel}
-                        disabled={isLoading}
+                        disabled={createEvent.isPending}
                      >
                         Cancelar
                      </button>
                      <button
                         type="submit"
                         className="btn-primary w-32"
-                        disabled={isLoading}
+                        disabled={createEvent.isPending}
                      >
-                        {isLoading ? 'Cadastrando...' : 'Cadastrar'}
+                        {createEvent.isPending ? 'Cadastrando...' : 'Cadastrar'}
                      </button>
                   </div>
                </form>
