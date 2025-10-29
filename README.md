@@ -294,15 +294,17 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 **Conecta Social**
 
-- Website: [conectasocial.com](conecta-social-fatec.vercel.app/)
+- Website: [conectasocial.com](https://conecta-social-fatec.vercel.app/)
 - **Desenvolvedores:**
-> Maicon Rodrigues dos Santos ([GitHub](github.com/maiconmaul))
+> Maicon Rodrigues dos Santos ([GitHub](https://github.com/maiconmaul))
 
-> Nicolas Katsuji Nagano ([GitHub](github.com/Nicolaskn95))
+> Nicolas Katsuji Nagano ([GitHub](https://github.com/Nicolaskn95))
 
 > Caio Fernando Scudeler
 
 > Nicollas Mencacci Pereira
+
+> Matheus Tadao Momiy 
 
 ---
 
