@@ -2,12 +2,13 @@
 
 > **Conectando tecnologia com projetos sociais**
 
-O Conecta Social é uma plataforma web desenvolvida para gerenciar e conectar projetos sociais, especificamente o **Projeto Conecta Social**. A aplicação oferece uma interface moderna e intuitiva para gerenciar voluntários, famílias beneficiárias, eventos e doações, além de fornecer dashboards analíticos para acompanhamento do impacto social.
+O Conecta Social nasce para resolver um desafio comum: organizações sociais com recursos limitados precisam de ferramentas simples e eficazes para gerenciar voluntariado, beneficiários e doações. Nossa plataforma centraliza cadastros, organiza eventos e transforma dados em dashboards acionáveis, permitindo que equipes foquem no impacto — não na burocracia. Integramos voluntários, doadores e gestores num fluxo intuitivo para ampliar alcance e eficiência das ações sociais.
 
 ## 📋 Índice
 
 -  [Sobre o Projeto](#-sobre-o-projeto)
 -  [Funcionalidades](#-funcionalidades)
+-  [Entregas de Sprints](#-entregas-de-sprints)
 -  [Tecnologias](#-tecnologias)
 -  [Estrutura do Projeto](#-estrutura-do-projeto)
 -  [Instalação](#-instalação)
@@ -18,9 +19,9 @@ O Conecta Social é uma plataforma web desenvolvida para gerenciar e conectar pr
 
 ## 🎯 Sobre o Projeto
 
-O **Projeto Sementes do Amanhã** nasceu em 2020 com o objetivo de criar um espaço seguro e acolhedor onde crianças em situação de vulnerabilidade pudessem receber apoio educacional, alimentação e, principalmente, carinho e esperança para o futuro.
+O Conecta Social nasce para resolver um desafio comum: organizações sociais com recursos limitados precisam de ferramentas simples e eficazes para gerenciar voluntariado, beneficiários e doações. Nossa plataforma centraliza cadastros, organiza eventos e transforma dados em dashboards acionáveis, permitindo que equipes foquem no impacto — não na burocracia. Integramos voluntários, doadores e gestores num fluxo intuitivo para ampliar alcance e eficiência das ações sociais.
 
-O Conecta Social é a plataforma tecnológica que facilita a gestão deste projeto, permitindo:
+O Conecta Social é a plataforma tecnológica que facilita a gestão de projetos sociais, permitindo:
 
 -  **Gestão de Voluntários**: Cadastro e controle de voluntários
 -  **Gestão de Famílias**: Acompanhamento de famílias beneficiárias
@@ -72,6 +73,17 @@ O Conecta Social é a plataforma tecnológica que facilita a gestão deste proje
 -  Controle de quantidades (inicial e atual)
 -  Informações do doador
 -  Categorização por tipo e características
+
+## 🚀 Entregas de Sprints
+
+Link do Jira: 
+
+| Sprint | Período    | Incrementos Desenvolvidos |
+|--------|------------|-------------------------|
+| 1      | 2025.1    | • Finalização do projeto base do 2º semestre <br/> • Estruturação inicial da aplicação <br/> • Implementação das funcionalidades principais |
+| 2      | 2025.2    | • Desenvolvimento da área não logada <br/> • Listagem de eventos públicos <br/> • Implementação de filtros de busca |
+| 3      | 2025.2    | • Ajustes e correções gerais <br/> • Preparação do ambiente de produção <br/> • Deploy da aplicação |
+| 4      | 2025.2    | • Refinamentos finais <br/> • Preparação da apresentação <br/> • Documentação do projeto |
 
 ## 🛠 Tecnologias
 
@@ -267,14 +279,18 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## 📞 Contato
 
-**Projeto Sementes do Amanhã**
+**Conecta Social**
 
--  Website: [conecta-social.com](https://conecta-social.com)
--  Email: contato@sementesdoamanha.org
+- Website: [conectasocial.com](conecta-social-fatec.vercel.app/)
+- **Desenvolvedores:**
+> Maicon Rodrigues dos Santos ([GitHub](github.com/maiconmaul))
+> Nicolas Katsuji Nagano ([GitHub](github.com/Nicolaskn95))
+> Caio Fernando Scudeler
+> Nicollas Mencacci Pereira
 
 ---
 
 <div align="center">
   <p>Feito com ❤️ para transformar vidas através da solidariedade</p>
-  <p>🌱 <strong>Sementes do Amanhã</strong> - Conectando tecnologia com projetos sociais</p>
+  <p>🌱 <strong>Conecta Social</strong> - Conectando tecnologia com projetos sociais</p>
 </div>
