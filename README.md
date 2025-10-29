@@ -41,7 +41,7 @@ O Conecta Social é a plataforma tecnológica que facilita a gestão de projetos
 
 - **Diagrama da área não logada**
 
-  ![Diagrama — Área não logada](doc/diagram-ii.png)
+  <img width="1600" height="1115" alt="diagram-II" src="https://github.com/user-attachments/assets/3b027647-d683-4e57-8ec9-922c90c3543c" />
   _Figura: Diagrama de caso de uso da área pública (visitantes e eventos públicos)._
 
 ### 🏠 Landing Page
