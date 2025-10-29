@@ -10,6 +10,7 @@ import { useEvents } from '@/data/hooks/useEvents';
 import { useEventMutations } from '@/data/hooks/useEventMutations';
 import { Status } from '@/components/shared/Status';
 import { EventStatus } from '@/core/event/model/IEvent';
+import { toast } from 'react-toastify';
 
 function Events() {
    const router = useRouter();
@@ -113,7 +114,7 @@ function Events() {
    };
 
    return (
-      <div className="min-h-screen p-4 bg-gray-100">
+      <div className="min-h-full p-4 bg-gray-100 pb-8">
          <div className="flex justify-between items-center mb-6">
             <Breadcrumb items={breadcrumbItems} />
             <button
@@ -129,6 +130,7 @@ function Events() {
             data={events}
             actions={actions}
             onSearch={onSearch}
+            showFilters={true}
          />
          <Modal
             isOpen={isDeleteModalOpen}

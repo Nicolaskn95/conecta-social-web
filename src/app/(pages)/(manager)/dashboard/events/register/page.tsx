@@ -404,15 +404,19 @@ function Register() {
                            htmlFor="instagram"
                            className="font-semibold mb-1"
                         >
-                           Post do Instagram (embed)
+                           Post do Instagram
                         </label>
                         <input
-                           type="text"
+                           type="url"
                            id="instagram"
                            className="input"
-                           placeholder="Insira o link do post do Instagram"
+                           placeholder="https://www.instagram.com/p/DKZm15CskZp/"
                            {...register('embedded_instagram')}
                         />
+                        <p className="text-sm text-gray-500 mt-1">
+                           Cole aqui o link do post do Instagram (ex:
+                           https://www.instagram.com/p/DKZm15CskZp/)
+                        </p>
                         {errors.embedded_instagram && (
                            <p className="text-red-500 text-sm">
                               {errors.embedded_instagram.message}

@@ -49,7 +49,7 @@ export default function Sidebar() {
    ];
 
    return (
-      <aside className="sidebar-color w-64 h-auto flex flex-col justify-between p-4">
+      <aside className="sidebar-color w-64 h-screen sticky top-0 self-start flex flex-col justify-between p-4 overflow-y-auto">
          <div>
             {sidebarTopics.map((topic, index) => {
                const isActive =
