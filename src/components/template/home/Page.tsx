@@ -21,7 +21,7 @@ function Page(props: PageProps) {
 
    return (
       <div
-         className="flex flex-col min-h-screen h-screen"
+         className="flex flex-col min-h-screen"
          style={{
             background: 'white',
          }}
@@ -32,15 +32,15 @@ function Page(props: PageProps) {
 
             {path.startsWith('/dashboard') ? (
                <div
-                  className="flex flex-col min-h-screen h-screen"
+                  className="flex flex-col min-h-screen"
                   style={{
                      background: 'white',
                   }}
                >
                   <Header logged />
-                  <div className="flex-1 flex w-screen overflow-hidden">
+                  <div className="flex-1 flex w-screen">
                      <Sidebar />
-                     <div className="flex-1 flex flex-col">
+                     <div className="flex-1 flex flex-col overflow-y-auto">
                         <main
                            className={`flex-1 flex flex-col${
                               props.className ?? ''
