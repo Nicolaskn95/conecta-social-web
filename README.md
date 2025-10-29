@@ -8,6 +8,7 @@ O Conecta Social nasce para resolver um desafio comum: organizações sociais co
 
 -  [Sobre o Projeto](#-sobre-o-projeto)
 -  [Funcionalidades](#-funcionalidades)
+-  [Diagramas](#-diagramas)
 -  [Entregas de Sprints](#-entregas-de-sprints)
 -  [Tecnologias](#-tecnologias)
 -  [Estrutura do Projeto](#-estrutura-do-projeto)
@@ -30,6 +31,18 @@ O Conecta Social é a plataforma tecnológica que facilita a gestão de projetos
 -  **Dashboards Analíticos**: Visualização de métricas e indicadores de impacto
 
 ## ✨ Funcionalidades
+
+### ↔️ Diagramas
+
+- **Diagrama da área logada**
+
+  ![Diagrama — Área logada](doc/diagram-i.png)
+  _Figura: Diagrama de caso de uso da área logada (Administrador / Gerente / Colaborador)._
+
+- **Diagrama da área não logada**
+
+  ![Diagrama — Área não logada](doc/diagram-ii.png)
+  _Figura: Diagrama de caso de uso da área pública (visitantes e eventos públicos)._
 
 ### 🏠 Landing Page
 
@@ -76,7 +89,7 @@ O Conecta Social é a plataforma tecnológica que facilita a gestão de projetos
 
 ## 🚀 Entregas de Sprints
 
-Link do Jira: 
+Link do Jira: https://blackandyellow.atlassian.net/jira/software/c/projects/CS/boards/37
 
 | Sprint | Período    | Incrementos Desenvolvidos |
 |--------|------------|-------------------------|
@@ -284,8 +297,11 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 - Website: [conectasocial.com](conecta-social-fatec.vercel.app/)
 - **Desenvolvedores:**
 > Maicon Rodrigues dos Santos ([GitHub](github.com/maiconmaul))
+
 > Nicolas Katsuji Nagano ([GitHub](github.com/Nicolaskn95))
+
 > Caio Fernando Scudeler
+
 > Nicollas Mencacci Pereira
 
 ---
