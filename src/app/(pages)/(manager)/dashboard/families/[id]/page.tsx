@@ -1,25 +1,34 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
-import { toast } from 'react-toastify';
-import { IFamily, FamilyStatus } from '@/core/family/model/IFamily';
+import { IFamily } from '@/core/family/model/IFamily';
+import { useFamilyById } from '@/data/hooks/family/useFamilyQueries';
+import { useFamilyMutations } from '@/data/hooks/family/useFamilyMutations';
+import LottieAnimation from '@/components/shared/LottieAnimation';
 
-function EditFamily({ params }: { params: { id: string } }) {
+export default function EditFamily() {
+   const params = useParams();
    const router = useRouter();
    const [isLoading, setIsLoading] = useState(false);
-   const [isLoadingData, setIsLoadingData] = useState(true);
+   const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
+   const {
+      data: familyData,
+      isLoading: isLoadingData,
+      error,
+   } = useFamilyById(id || '');
+
+   const { updateFamily } = useFamilyMutations();
 
    const [formData, setFormData] = useState<IFamily>({
       name: '',
       street: '',
       number: '',
-      neighbourhood: '',
+      neighborhood: '',
       city: '',
-      uf: '',
       state: '',
       cep: '',
-      status: FamilyStatus.ATIVO,
       active: true,
    });
 
@@ -30,33 +39,10 @@ function EditFamily({ params }: { params: { id: string } }) {
    ];
 
    useEffect(() => {
-      const loadFamilyData = async () => {
-         try {
-            // Mock API call to get family data
-            const mockFamily: IFamily = {
-               id: params.id,
-               name: 'Família Silva',
-               street: 'Rua das Flores',
-               number: '123',
-               neighbourhood: 'Bairro das Flores',
-               city: 'São Paulo',
-               uf: 'SP',
-               state: 'São Paulo',
-               cep: '12345678',
-               status: FamilyStatus.ATIVO,
-               active: true,
-            };
-            setFormData(mockFamily);
-         } catch (error) {
-            console.error('Error loading family:', error);
-            toast.error('Erro ao carregar dados da família');
-         } finally {
-            setIsLoadingData(false);
-         }
-      };
-
-      loadFamilyData();
-   }, [params.id]);
+      if (familyData?.data) {
+         setFormData(familyData.data);
+      }
+   }, [familyData]);
 
    const handleInputChange = (
       e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -70,28 +56,38 @@ function EditFamily({ params }: { params: { id: string } }) {
 
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      setIsLoading(true);
+      if (!id) return;
 
+      setIsLoading(true);
       try {
-         // Mock API call
-         toast.success('Família atualizada com sucesso!');
-         router.push('/dashboard/families');
+         // Remove id, created_at e updated_at antes de enviar
+         const { id: _, created_at, updated_at, ...familyData } = formData;
+
+         updateFamily.mutate(
+            { id, family: familyData },
+            {
+               onSuccess: () => {
+                  router.push('/dashboard/families');
+               },
+               onError: () => {
+                  setIsLoading(false);
+               },
+            }
+         );
       } catch (error) {
-         console.error('Error updating family:', error);
-         toast.error('Erro ao atualizar família');
-      } finally {
          setIsLoading(false);
       }
    };
 
    if (isLoadingData) {
+      return <LottieAnimation status="loading" />;
+   }
+
+   if (error || !familyData?.data) {
       return (
          <div className="min-h-screen p-4 bg-gray-100 flex items-center justify-center">
             <div className="text-center">
-               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-               <p className="mt-4 text-gray-600">
-                  Carregando dados da família...
-               </p>
+               <p className="text-red-500">Erro ao carregar dados da família</p>
             </div>
          </div>
       );
@@ -187,16 +183,16 @@ function EditFamily({ params }: { params: { id: string } }) {
                   {/* Bairro */}
                   <div>
                      <label
-                        htmlFor="neighbourhood"
+                        htmlFor="neighborhood"
                         className="block text-sm font-medium text-gray-700 mb-1"
                      >
                         Bairro *
                      </label>
                      <input
                         type="text"
-                        id="neighbourhood"
-                        name="neighbourhood"
-                        value={formData.neighbourhood}
+                        id="neighborhood"
+                        name="neighborhood"
+                        value={formData.neighborhood}
                         onChange={handleInputChange}
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
@@ -240,49 +236,6 @@ function EditFamily({ params }: { params: { id: string } }) {
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                      />
                   </div>
-
-                  {/* UF */}
-                  <div>
-                     <label
-                        htmlFor="uf"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                     >
-                        UF *
-                     </label>
-                     <input
-                        type="text"
-                        id="uf"
-                        name="uf"
-                        value={formData.uf}
-                        onChange={handleInputChange}
-                        required
-                        maxLength={2}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                     />
-                  </div>
-
-                  {/* Status */}
-                  <div>
-                     <label
-                        htmlFor="status"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                     >
-                        Status *
-                     </label>
-                     <select
-                        id="status"
-                        name="status"
-                        value={formData.status}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                     >
-                        <option value={FamilyStatus.ATIVO}>Ativo</option>
-                        <option value={FamilyStatus.CANCELADO}>
-                           Cancelado
-                        </option>
-                     </select>
-                  </div>
                </div>
 
                <div className="flex justify-end space-x-3 pt-6">
@@ -306,5 +259,3 @@ function EditFamily({ params }: { params: { id: string } }) {
       </div>
    );
 }
-
-export default EditFamily;

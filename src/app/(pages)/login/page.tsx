@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
-import useAPI from '@/data/hooks/useAPI';
 import useAuth from '@/data/hooks/useAuth';
 import { toast } from 'react-toastify';
 

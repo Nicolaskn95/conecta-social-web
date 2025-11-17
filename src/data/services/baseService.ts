@@ -29,14 +29,13 @@ export abstract class BaseService<
       this.entityPath = entityPath;
    }
 
-   protected async request<U>(
+   public async request<U>(
       endpoint: string,
       options: RequestInit = {},
       noAuth = false
    ): Promise<U> {
-      const url = `${this.baseUrl}${
-         endpoint.startsWith('/') ? endpoint : `/${endpoint}`
-      }`;
+      const url = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+         }`;
 
       const headers: Record<string, string> = {
          'Content-Type': 'application/json',
@@ -93,9 +92,8 @@ export abstract class BaseService<
          queryParams.append('offset', filters.offset.toString());
 
       const queryString = queryParams.toString();
-      const endpoint = `/${this.entityPath}${
-         queryString ? `?${queryString}` : ''
-      }`;
+      const endpoint = `/${this.entityPath}${queryString ? `?${queryString}` : ''
+         }`;
 
       return this.request<BaseResponse<T>>(endpoint);
    }

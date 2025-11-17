@@ -4,44 +4,45 @@ import {
    BaseResponse,
    BaseDetailResponse,
 } from './baseService';
-
-// Tipo temporário para famílias - substitua pela interface real quando disponível
-interface IFamily {
-   id: string;
-   name: string;
-   // Adicione outros campos conforme necessário
-}
+import { IFamily } from '@/core/family/model/IFamily';
 
 export interface FamilyFilters extends BaseFilters {
-   // Filtros específicos para famílias
-   incomeRange?: string;
-   childrenCount?: number;
    city?: string;
+   status?: string;
 }
 
-export interface FamilyResponse extends BaseResponse<IFamily> {}
-export interface FamilyDetailResponse extends BaseDetailResponse<IFamily> {}
+export interface FamilyResponse extends BaseResponse<IFamily> { }
+export interface FamilyDetailResponse extends BaseDetailResponse<IFamily> { }
 
 class FamilyService extends BaseService<IFamily> {
    constructor() {
       super('families');
    }
 
-   // Métodos específicos para famílias
-   async getByStatus(status: string): Promise<FamilyResponse> {
-      return this.request<FamilyResponse>(
-         `/${this.entityPath}/status/${status}`
-      );
+   async getActivesFamilies(): Promise<FamilyResponse> {
+      return this.request<FamilyResponse>(`/${this.entityPath}/actives`, {
+         method: 'GET',
+      })
    }
 
-   async getByCity(city: string): Promise<FamilyResponse> {
-      return this.request<FamilyResponse>(`/${this.entityPath}/city/${city}`);
+   async createFamily(family: IFamily): Promise<FamilyDetailResponse> {
+      return this.request<FamilyDetailResponse>(`/${this.entityPath}`, {
+         method: 'POST',
+         body: JSON.stringify(family),
+      });
    }
 
-   async getByIncomeRange(min: number, max: number): Promise<FamilyResponse> {
-      return this.request<FamilyResponse>(
-         `/${this.entityPath}/income?min=${min}&max=${max}`
-      );
+   async updateFamily(family: IFamily): Promise<FamilyDetailResponse> {
+      return this.request<FamilyDetailResponse>(`/${this.entityPath}`, {
+         method: 'PUT',
+         body: JSON.stringify(family),
+      });
+   }
+
+   async deleteFamily(id: string): Promise<void> {
+      return this.request<void>(`/${this.entityPath}/${id}`, {
+         method: 'DELETE',
+      });
    }
 }
 

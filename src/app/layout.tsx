@@ -6,6 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AuthInitializer from '@/components/shared/AuthInitializer';
 import { EventProvider } from '@/data/context/EventContext';
+import { FamilyProvider } from '@/data/context/FamilyContext';
 import { QueryProvider } from '@/data/providers/QueryProvider';
 
 const nunito = Nunito({
@@ -29,15 +30,17 @@ export default function RootLayout({
             <QueryProvider>
                <AuthInitializer>
                   <EventProvider>
-                     <ToastContainer
-                        position="top-right"
-                        autoClose={5000}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover={false}
-                        theme="colored"
-                     />
-                     <Page>{children}</Page>
+                     <FamilyProvider>
+                        <ToastContainer
+                           position="top-right"
+                           autoClose={5000}
+                           pauseOnFocusLoss
+                           draggable
+                           pauseOnHover={false}
+                           theme="colored"
+                        />
+                        <Page>{children}</Page>
+                     </FamilyProvider>
                   </EventProvider>
                </AuthInitializer>
             </QueryProvider>

@@ -2,7 +2,6 @@
 
 import { donationSchema } from '@/core/donation/validation/donationSchema';
 import { Category, IDonation } from '@/core/donation/model/IDonation';
-import useAPI from '@/data/hooks/useAPI';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -13,7 +12,6 @@ import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 export default function RegisterDonationPage() {
    const router = useRouter();
    const [isLoading, setIsLoading] = useState(false);
-   const { post } = useAPI();
 
    const breadcrumbItems = [
       { label: 'Início', href: '/dashboard' },
