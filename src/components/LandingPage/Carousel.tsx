@@ -112,9 +112,16 @@ const Carousel: React.FC<CarouselProps> = ({
             <div className="text-center text-white px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
                {/* Main Title with Elegant Glassmorphism */}
                <div className="mb-12 relative">
-                  <div className="backdrop-blur-md bg-white/10 rounded-3xl p-8 border border-white/20 shadow-2xl transition-all duration-500 hover:bg-white/15 hover:border-white/30">
+                  <div
+                     className="backdrop-blur-lg bg-white/5 rounded-2xl p-6 border shadow-xl transition-all duration-500 hover:bg-white/10"
+                     style={{
+                        borderWidth: '1px',
+                        borderColor: 'primary',
+                     }}
+                  >
+                     {' '}
                      <h1 className="text-7xl md:text-8xl lg:text-9xl font-black mb-6">
-                        <span className="bg-gradient-to-r from-[#40789b] to-[#1ea1ff] bg-clip-text text-transparent drop-shadow-[0px_0px_40px_rgba(0,0,0,1)]">
+                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent drop-shadow-[0px_0px_40px_rgba(0,0,0,1)]">
                            Conecta Social
                         </span>
                      </h1>
@@ -125,11 +132,8 @@ const Carousel: React.FC<CarouselProps> = ({
                {/* Floating Subtitle Card */}
                <div className="backdrop-blur-lg bg-white/5 rounded-2xl p-6 border border-white/10 shadow-xl transition-all duration-500 hover:bg-white/10 hover:border-white/20">
                   <p className="text-2xl md:text-3xl lg:text-4xl font-light leading-relaxed">
-                     <span className="bg-gradient-to-r from-[#40789b] to-[#1ea1ff] bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(56,122,161,0.7)]">
-                        Conectando tecnologia
-                     </span>{' '}
                      <span className="text-white/95 drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]">
-                        com projetos sociais
+                        Conectando tecnologia com projetos sociais
                      </span>
                   </p>
                </div>
