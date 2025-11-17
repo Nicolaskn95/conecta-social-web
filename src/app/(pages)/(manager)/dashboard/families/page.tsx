@@ -2,60 +2,16 @@
 import TableContainer from '@/components/Panel/TableContainer';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { PencilIcon, TrashIcon } from '@phosphor-icons/react';
 import Modal from '@/components/Modal/Modal';
-import { toast } from 'react-toastify';
-import { FamilyStatus, IFamily } from '@/core/family/model/IFamily';
-import Status from '@/components/shared/Status';
+import { IFamily } from '@/core/family/model/IFamily';
+import { useFamilies as useFamiliesContext } from '@/data/hooks/family/useFamilies';
 
 function Families() {
    const router = useRouter();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-   const [families, setFamilies] = useState<IFamily[]>([
-      {
-         id: '1',
-         name: 'Família Silva',
-         street: 'Rua das Flores',
-         number: '123',
-         neighbourhood: 'Bairro das Flores',
-         city: 'São Paulo',
-         uf: 'SP',
-         state: 'São Paulo',
-         cep: '12345-678',
-         status: FamilyStatus.CANCELADO,
-         active: true,
-         created_at: new Date(),
-      },
-      {
-         id: '2',
-         name: 'Família Santos',
-         street: 'Av. Principal',
-         number: '456',
-         neighbourhood: 'Bairro dos Santos',
-         city: 'São Paulo',
-         uf: 'SP',
-         state: 'São Paulo',
-         cep: '12345-678',
-         status: FamilyStatus.ATIVO,
-         active: true,
-         created_at: new Date(),
-      },
-      {
-         id: '3',
-         name: 'Família Oliveira',
-         street: 'Rua do Comércio',
-         number: '789',
-         neighbourhood: 'Bairro dos Oliveiras',
-         city: 'São Paulo',
-         uf: 'SP',
-         state: 'São Paulo',
-         cep: '12345-678',
-         status: FamilyStatus.CANCELADO,
-         active: true,
-         created_at: new Date(),
-      },
-   ]);
+   const { families, removeFamily } = useFamiliesContext();
 
    const register = () => {
       router.push('/dashboard/families/register');
@@ -67,7 +23,18 @@ function Families() {
    ];
 
    const columns = [
-      { key: 'id', label: 'ID' },
+      {
+         key: 'created_at',
+         label: 'Data de criação',
+         render: (value: string) =>
+            value
+               ? new Date(value).toLocaleDateString('pt-BR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                 })
+               : '',
+      },
       { key: 'name', label: 'Nome da Família' },
       {
          key: 'created_at',
@@ -82,11 +49,6 @@ function Families() {
                : '',
       },
       { key: 'city', label: 'Cidade' },
-      {
-         key: 'status',
-         label: 'Status',
-         render: (value: FamilyStatus) => <Status status={value} />,
-      },
    ];
 
    const handleEdit = (family: IFamily) => {
@@ -101,14 +63,9 @@ function Families() {
    };
 
    const handleDeleteConfirm = async () => {
-      try {
-         // Mock delete operation
-         setFamilies(families.filter((f) => f.id !== selectedFamily?.id));
-         toast.success('Família excluída com sucesso!');
+      if (selectedFamily?.id) {
+         removeFamily(selectedFamily.id);
          setIsDeleteModalOpen(false);
-      } catch (error) {
-         toast.error('Erro ao excluir família');
-         console.error('Erro ao excluir família:', error);
       }
    };
 
@@ -138,7 +95,7 @@ function Families() {
    ];
 
    const onSearch = (value: string) => {
-      // Mock search implementation
+      // TODO: Implement search logic
    };
 
    return (

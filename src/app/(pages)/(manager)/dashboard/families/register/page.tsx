@@ -1,8 +1,7 @@
 'use client';
 
 import { familySchema } from '@/core/family/validation/familySchema';
-import { FamilyStatus, IFamily } from '@/core/family/model/IFamily';
-import useAPI from '@/data/hooks/useAPI';
+import { IFamily } from '@/core/family/model/IFamily';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -10,11 +9,12 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import Breadcrumb from '@/components/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
+import { useFamilyMutations } from '@/data/hooks/family/useFamilyMutations';
 
 function RegisterFamily() {
    const router = useRouter();
    const [isLoading, setIsLoading] = useState(false);
-   const { post } = useAPI();
+   const { createFamily } = useFamilyMutations();
 
    // useCEP hook
    const {
@@ -49,10 +49,9 @@ function RegisterFamily() {
 
    React.useEffect(() => {
       if (cepData) {
-         if (cepData.uf) setValue('uf', cepData.uf);
          if (cepData.localidade) setValue('city', cepData.localidade);
          if (cepData.logradouro) setValue('street', cepData.logradouro);
-         if (cepData.bairro) setValue('neighbourhood', cepData.bairro);
+         if (cepData.bairro) setValue('neighborhood', cepData.bairro);
          if (cepData.estado) setValue('state', cepData.estado);
       }
    }, [cepData, setValue]);
@@ -64,16 +63,15 @@ function RegisterFamily() {
    const submit: SubmitHandler<IFamily> = async (data) => {
       setIsLoading(true);
       try {
-         // await post('/families', data);
-         await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
-         toast.success('Família cadastrada com sucesso!');
-         router.push('/dashboard/families');
+         createFamily.mutate(data, {
+            onSuccess: () => {
+               router.push('/dashboard/families');
+            },
+            onError: () => {
+               setIsLoading(false);
+            },
+         });
       } catch (error: any) {
-         toast.error(
-            error?.response?.data?.message ||
-               'Erro ao cadastrar família. Tente novamente.'
-         );
-      } finally {
          setIsLoading(false);
       }
    };
@@ -118,32 +116,6 @@ function RegisterFamily() {
                               </p>
                            )}
                         </div>
-                        <div className="flex flex-col flex-1 min-w-[250px]">
-                           <label
-                              htmlFor="status"
-                              className="font-semibold mb-1"
-                           >
-                              Status <span className="text-red-500">*</span>
-                           </label>
-                           <select
-                              id="status"
-                              className="input"
-                              defaultValue={FamilyStatus.ATIVO}
-                              {...register('status')}
-                           >
-                              <option value={FamilyStatus.ATIVO}>
-                                 {FamilyStatus.ATIVO}
-                              </option>
-                              <option value={FamilyStatus.CANCELADO}>
-                                 {FamilyStatus.CANCELADO}
-                              </option>
-                           </select>
-                           {errors.status && (
-                              <p className="text-red-500 text-sm">
-                                 {errors.status.message as string}
-                              </p>
-                           )}
-                        </div>
                      </div>
                   </div>
 
@@ -177,33 +149,6 @@ function RegisterFamily() {
                            {errors.cep && (
                               <p className="text-red-500 text-sm">
                                  {errors.cep.message as string}
-                              </p>
-                           )}
-                        </div>
-                        <div className="flex flex-col flex-1 min-w-[250px]">
-                           <label htmlFor="uf" className="font-semibold mb-1">
-                              UF <span className="text-red-500">*</span>
-                           </label>
-                           <input
-                              type="text"
-                              id="uf"
-                              className="input"
-                              placeholder="UF"
-                              {...register('uf')}
-                              value={
-                                 typeof cepData?.uf === 'string' &&
-                                 cepData.uf !== ''
-                                    ? cepData.uf
-                                    : watch('uf') || ''
-                              }
-                              onChange={(e) =>
-                                 setValue('uf', e.target.value.toUpperCase())
-                              }
-                              maxLength={2}
-                           />
-                           {errors.uf && (
-                              <p className="text-red-500 text-sm">
-                                 {errors.uf.message as string}
                               </p>
                            )}
                         </div>
@@ -279,20 +224,20 @@ function RegisterFamily() {
                               id="bairro"
                               className="input"
                               placeholder="Digite o bairro"
-                              {...register('neighbourhood')}
+                              {...register('neighborhood')}
                               value={
                                  typeof cepData?.bairro === 'string' &&
                                  cepData.bairro !== ''
                                     ? cepData.bairro
-                                    : watch('neighbourhood') || ''
+                                    : watch('neighborhood') || ''
                               }
                               onChange={(e) =>
-                                 setValue('neighbourhood', e.target.value)
+                                 setValue('neighborhood', e.target.value)
                               }
                            />
-                           {errors.neighbourhood && (
+                           {errors.neighborhood && (
                               <p className="text-red-500 text-sm">
-                                 {errors.neighbourhood.message as string}
+                                 {errors.neighborhood.message as string}
                               </p>
                            )}
                         </div>

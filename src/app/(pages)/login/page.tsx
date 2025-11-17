@@ -1,22 +1,21 @@
 'use client';
-import { Suspense, useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EyeIcon, EyeSlashIcon } from '@phosphor-icons/react';
-import useAPI from '@/data/hooks/useAPI';
 import useAuth from '@/data/hooks/useAuth';
 import { toast } from 'react-toastify';
-import LottieAnimation from '@/components/shared/LottieAnimation';
 
 export default function Login() {
    const [showPassword, setShowPassword] = useState<boolean>(false);
    const [password, setPassword] = useState<string>('');
    const [email, setEmail] = useState<string>('');
    const [isLoading, setIsLoading] = useState<boolean>(false);
-   const { post } = useAPI();
    const { user, login } = useAuth();
    const router = useRouter();
    const param = useSearchParams();
    const buttonRef = useRef<HTMLButtonElement>(null);
+
+   const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
    useEffect(() => {
       if (user?.email) {
@@ -44,7 +43,13 @@ export default function Login() {
             return;
          }
 
-         const response: any = await post('auth/login', { email, password });
+         const response: any = await fetch(`${apiUrl}/auth/login`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+         }).then((res) => res.json());
          const accessToken = response?.data?.access_token;
 
          if (accessToken) {

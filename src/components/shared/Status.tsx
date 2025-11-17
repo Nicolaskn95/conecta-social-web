@@ -9,36 +9,35 @@ import {
    IdentificationBadgeIcon,
 } from '@phosphor-icons/react';
 import { EventStatus } from '@/core/event/model/IEvent';
-import { FamilyStatus } from '@/core/family/model/IFamily';
 import { Category } from '@/core/donation/model/IDonation';
 import { VolunteerRole } from '@/core/volunteer/model/IVolunteer';
 
 interface StatusProps {
-   status: EventStatus | FamilyStatus | Category | VolunteerRole;
+   status: EventStatus | Category | VolunteerRole;
    selected?: boolean;
 }
 
 // Type guards
 const isEventStatus = (
-   status: EventStatus | FamilyStatus | Category | VolunteerRole
+   status: EventStatus | Category | VolunteerRole
 ): status is EventStatus => {
    return Object.values(EventStatus).includes(status as EventStatus);
 };
 
 const isCategory = (
-   status: EventStatus | FamilyStatus | Category | VolunteerRole
+   status: EventStatus | Category | VolunteerRole
 ): status is Category => {
    return Object.values(Category).includes(status as Category);
 };
 
 const isVolunteerRole = (
-   status: EventStatus | FamilyStatus | Category | VolunteerRole
+   status: EventStatus | Category | VolunteerRole
 ): status is VolunteerRole => {
    return Object.values(VolunteerRole).includes(status as VolunteerRole);
 };
 
 const getStatusStyles = (
-   status: EventStatus | FamilyStatus | Category | VolunteerRole
+   status: EventStatus | Category | VolunteerRole
 ): string => {
    if (isEventStatus(status)) {
       switch (status) {
@@ -73,20 +72,12 @@ const getStatusStyles = (
          default:
             return 'bg-gray-100 text-gray-800 hover:text-gray-800';
       }
-   } else {
-      switch (status) {
-         case FamilyStatus.ATIVO:
-            return 'bg-success_light text-success border border-success_light ';
-         case FamilyStatus.CANCELADO:
-            return 'bg-warning_light text-danger border border-warning_light ';
-         default:
-            return 'bg-gray-100 text-gray-800 hover:text-gray-800';
-      }
    }
+   return 'bg-gray-100 text-gray-800 hover:text-gray-800';
 };
 
 const getStatusIcon = (
-   status: EventStatus | FamilyStatus | Category | VolunteerRole
+   status: EventStatus | Category | VolunteerRole
 ) => {
    if (isEventStatus(status)) {
       switch (status) {
@@ -120,20 +111,12 @@ const getStatusIcon = (
       }
    } else if (isVolunteerRole(status)) {
       return <IdentificationBadgeIcon size={20} className="mr-1" />;
-   } else {
-      switch (status) {
-         case FamilyStatus.ATIVO:
-            return <CheckIcon size={20} className="text-green-600 mr-1" />;
-         case FamilyStatus.CANCELADO:
-            return <XIcon size={20} className="text-danger mr-1" />;
-         default:
-            return null;
-      }
    }
+   return null;
 };
 
 const getStatusText = (
-   status: EventStatus | FamilyStatus | Category | VolunteerRole
+   status: EventStatus | Category | VolunteerRole
 ): string => {
    if (isEventStatus(status)) {
       switch (status) {
@@ -168,16 +151,8 @@ const getStatusText = (
          default:
             return 'Desconhecido';
       }
-   } else {
-      switch (status) {
-         case FamilyStatus.ATIVO:
-            return 'Ativo';
-         case FamilyStatus.CANCELADO:
-            return 'Cancelado';
-         default:
-            return 'Desconhecido';
-      }
    }
+   return 'Desconhecido';
 };
 
 export function Status({ status, selected }: StatusProps) {
