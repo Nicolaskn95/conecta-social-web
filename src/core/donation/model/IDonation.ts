@@ -1,22 +1,27 @@
+export interface ICategory {
+   id: string;
+   name: string;
+   measure_unity: string;
+   active: boolean;
+   created_at: Date;
+}
+
 export interface IDonation {
    id?: string;
-   category: Category;
+   category_id: string;
+   category?: ICategory;
    name: string;
-   description: string;
-   initial_quantity: number | null;
-   current_quantity: number | null;
-   donator_name: string | null;
-   user_updated?: string | null;
-   system_updated?: boolean;
-   available?: boolean;
-   gender: string | null;
-   size: string | null;
+   description?: string | null;
+   initial_quantity: number;
+   current_quantity: number;
+   donator_name?: string | null;
+   gender?: string | null;
+   size?: string | null;
    active?: boolean;
-   //    status: string;
+   available?: boolean;
    created_at?: Date | null;
    updated_at?: Date | null;
 }
-// TERÁ UM CRUD DE CATEGORIAS?
 
 export enum Category {
    VESTIMENTA = 'Vestimenta',

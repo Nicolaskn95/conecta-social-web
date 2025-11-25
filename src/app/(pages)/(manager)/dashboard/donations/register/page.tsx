@@ -1,17 +1,21 @@
 'use client';
 
 import { donationSchema } from '@/core/donation/validation/donationSchema';
-import { Category, IDonation } from '@/core/donation/model/IDonation';
+import { IDonation } from '@/core/donation/model/IDonation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
+import { useDonations } from '@/data/hooks/donation/useDonations';
+import { useCategories } from '@/data/hooks/donation/useCategoryQueries';
 
 export default function RegisterDonationPage() {
    const router = useRouter();
    const [isLoading, setIsLoading] = useState(false);
+   const { addDonation } = useDonations();
+   const { data: categoriesData } = useCategories();
+   const categories = categoriesData?.data ?? [];
 
    const breadcrumbItems = [
       { label: 'Início', href: '/dashboard' },
@@ -33,14 +37,10 @@ export default function RegisterDonationPage() {
    const submit: SubmitHandler<IDonation> = async (data) => {
       setIsLoading(true);
       try {
-         await new Promise((resolve) => setTimeout(resolve, 1000));
-         toast.success('Doação cadastrada com sucesso!');
+         addDonation(data);
          router.push('/dashboard/donations');
       } catch (error: any) {
-         toast.error(
-            error?.response?.data?.message ||
-               'Erro ao cadastrar doação. Tente novamente.'
-         );
+         // Error handling is done in the mutation
       } finally {
          setIsLoading(false);
       }
@@ -81,25 +81,26 @@ export default function RegisterDonationPage() {
                         </div>
                         <div>
                            <label
-                              htmlFor="category"
+                              htmlFor="category_id"
                               className="font-semibold mb-1"
                            >
-                              Categoria
+                              Categoria <span className="text-red-500">*</span>
                            </label>
                            <select
-                              id="category"
+                              id="category_id"
                               className="input"
-                              {...register('category')}
+                              {...register('category_id')}
                            >
-                              {Object.values(Category).map((cat) => (
-                                 <option key={cat} value={cat}>
-                                    {cat}
+                              <option value="">Selecione uma categoria</option>
+                              {categories.map((cat) => (
+                                 <option key={cat.id} value={cat.id}>
+                                    {cat.name}
                                  </option>
                               ))}
                            </select>
-                           {errors.category && (
+                           {errors.category_id && (
                               <p className="text-red-500 text-sm">
-                                 {errors.category.message}
+                                 {errors.category_id.message}
                               </p>
                            )}
                         </div>

@@ -1,41 +1,34 @@
-import { object, string, number, boolean, date } from 'zod';
-import { Category } from '../model/IDonation';
+import { object, string, number, boolean, ZodType } from 'zod';
+import { IDonation } from '../model/IDonation';
 
-export const donationSchema = object({
-   id: string().optional(),
-   category: string().refine(
-      (value) => Object.values(Category).includes(value as Category),
-      {
-         message: 'Categoria inválida',
-      }
-   ),
+export const donationSchema: ZodType<Omit<IDonation, 'id' | 'created_at' | 'updated_at' | 'category'>> = object({
+   category_id: string().uuid('ID da categoria deve ser um UUID válido'),
    name: string()
       .min(2, 'Nome é obrigatório')
-      .max(100, 'Nome não pode ter mais de 100 caracteres'),
+      .max(60, 'Nome não pode ter mais de 60 caracteres'),
    description: string()
-      .min(2, 'Descrição é obrigatória')
-      .max(500, 'Descrição não pode ter mais de 500 caracteres'),
+      .max(250, 'Descrição não pode ter mais de 250 caracteres')
+      .nullable()
+      .optional(),
    initial_quantity: number()
       .int('Quantidade inicial deve ser um número inteiro')
-      .min(0, 'Quantidade inicial não pode ser negativa')
-      .nullable(),
+      .min(0, 'Quantidade inicial não pode ser negativa'),
    current_quantity: number()
       .int('Quantidade atual deve ser um número inteiro')
       .min(0, 'Quantidade atual não pode ser negativa')
-      .nullable(),
+      .optional(),
    donator_name: string()
-      .max(100, 'Nome do doador não pode ter mais de 100 caracteres')
-      .nullable(),
-   user_updated: string().nullable().optional(),
-   system_updated: boolean().optional(),
+      .max(90, 'Nome do doador não pode ter mais de 90 caracteres')
+      .nullable()
+      .optional(),
    available: boolean().optional(),
    gender: string()
-      .max(20, 'Gênero não pode ter mais de 20 caracteres')
-      .nullable(),
+      .max(10, 'Gênero não pode ter mais de 10 caracteres')
+      .nullable()
+      .optional(),
    size: string()
       .max(20, 'Tamanho não pode ter mais de 20 caracteres')
-      .nullable(),
+      .nullable()
+      .optional(),
    active: boolean().optional(),
-
-   created_at: date().nullable().optional(),
 });
