@@ -5,6 +5,8 @@ export interface EventFilters {
    status?: string;
    limit?: number;
    offset?: number;
+   page?: number;
+   size?: number;
 }
 
 export interface EventResponse {
@@ -12,6 +14,20 @@ export interface EventResponse {
    total?: number;
    page?: number;
    limit?: number;
+}
+
+export interface PaginatedEventApiResponse {
+   code: number;
+   success: boolean;
+   message: string;
+   data: {
+      page: number;
+      next_page: number;
+      is_last_page: boolean;
+      previous_page: number;
+      total_pages: number;
+      list: IEvent[];
+   };
 }
 
 export interface EventDetailResponse {
@@ -90,7 +106,7 @@ class EventService {
       }
    }
 
-   // Buscar eventos ativos (autenticado)
+   // Buscar eventos ativos (autenticado) - DEPRECATED: usar getPaginatedEvents
    async getActiveEvents(filters?: EventFilters): Promise<EventResponse> {
       const queryParams = new URLSearchParams();
 
@@ -106,6 +122,36 @@ class EventService {
       return this.request<EventResponse>(endpoint);
    }
 
+   // Buscar eventos paginados (autenticado) - NOVA ROTA
+   async getPaginatedEvents(
+      page: number = 1,
+      size: number = 20,
+      filters?: Omit<EventFilters, 'page' | 'size' | 'limit' | 'offset'>
+   ): Promise<EventResponse> {
+      const queryParams = new URLSearchParams();
+
+      queryParams.append('page', page.toString());
+      queryParams.append('size', size.toString());
+
+      if (filters?.search) queryParams.append('search', filters.search);
+      if (filters?.status) queryParams.append('status', filters.status);
+
+      const queryString = queryParams.toString();
+      const endpoint = `/events/paginated?${queryString}`;
+
+      const apiResponse = await this.request<PaginatedEventApiResponse>(
+         endpoint
+      );
+
+      // Transformar a resposta da API para o formato esperado
+      return {
+         data: apiResponse.data.list,
+         total: apiResponse.data.list.length,
+         page: apiResponse.data.page,
+         limit: size,
+      };
+   }
+
    // Buscar eventos públicos (não autenticado)
    async getPublicEvents(limit = 3): Promise<EventResponse> {
       return this.request<EventResponse>(
@@ -113,6 +159,11 @@ class EventService {
          {},
          true
       );
+   }
+
+   // Buscar eventos para o calendário (próximos eventos)
+   async getEventsOnCalendar(limit: number = 100): Promise<EventResponse> {
+      return this.request<EventResponse>(`/events/upcoming?limit=${limit}`);
    }
 
    // Buscar evento por ID

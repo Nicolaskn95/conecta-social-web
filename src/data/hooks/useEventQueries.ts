@@ -81,3 +81,33 @@ export function useEventsWithPagination(
       }
    );
 }
+
+// Hook para buscar eventos paginados usando a nova rota events-paginated
+export function usePaginatedEvents(
+   page = 1,
+   size = 20,
+   filters?: Omit<EventFilters, 'page' | 'size' | 'limit' | 'offset'>,
+   options?: Omit<UseQueryOptions<EventResponse>, 'queryKey' | 'queryFn'>
+) {
+   return useQuery({
+      queryKey: queryKeys.events.paginated(page, size, filters || {}),
+      queryFn: () => eventService.getPaginatedEvents(page, size, filters),
+      enabled: true,
+      staleTime: 5 * 60 * 1000, // 5 minutos
+      ...options,
+   });
+}
+
+// Hook para buscar eventos para o calendário (próximos eventos)
+export function useEventsOnCalendar(
+   limit: number = 100,
+   options?: Omit<UseQueryOptions<EventResponse>, 'queryKey' | 'queryFn'>
+) {
+   return useQuery({
+      queryKey: queryKeys.events.upcoming(limit),
+      queryFn: () => eventService.getEventsOnCalendar(limit),
+      enabled: true,
+      staleTime: 10 * 60 * 1000, // 10 minutos
+      ...options,
+   });
+}

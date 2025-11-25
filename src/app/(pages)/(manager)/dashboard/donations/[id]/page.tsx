@@ -1,64 +1,33 @@
 'use client';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import React from 'react';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
-import { toast } from 'react-toastify';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { donationSchema } from '@/core/donation/validation/donationSchema';
-import { IDonation, Category } from '@/core/donation/model/IDonation';
-
-const mockDonations: IDonation[] = [
-   {
-      id: '1',
-      category: Category.VESTIMENTA,
-      name: 'Camisetas',
-      description: 'Camisetas em bom estado',
-      initial_quantity: 10,
-      current_quantity: 8,
-      donator_name: 'João Silva',
-      available: true,
-      gender: 'Unissex',
-      size: 'M',
-      active: true,
-      created_at: new Date('2024-07-20'),
-   },
-   {
-      id: '2',
-      category: Category.ALIMENTO,
-      name: 'Arroz',
-      description: 'Pacotes de arroz 5kg',
-      initial_quantity: 20,
-      current_quantity: 15,
-      donator_name: 'Maria Santos',
-      available: true,
-      gender: null,
-      size: null,
-      active: true,
-      created_at: new Date('2024-07-18'),
-   },
-   {
-      id: '3',
-      category: Category.BRINQUEDO,
-      name: 'Hot Wheels',
-      description: 'Hot Wheels em bom estado',
-      initial_quantity: 5,
-      current_quantity: 3,
-      donator_name: 'Pedro Oliveira',
-      available: true,
-      gender: null,
-      size: null,
-      active: true,
-      created_at: new Date('2024-07-15'),
-   },
-];
+import { IDonation } from '@/core/donation/model/IDonation';
+import { useDonationById } from '@/data/hooks/donation/useDonationQueries';
+import { useDonationMutations } from '@/data/hooks/donation/useDonationMutations';
+import { useCategories } from '@/data/hooks/donation/useCategoryQueries';
+import LottieAnimation from '@/components/shared/LottieAnimation';
+import { toast } from 'react-toastify';
 
 export default function EditDonationPage() {
    const params = useParams();
    const router = useRouter();
-   const [donation, setDonation] = useState<IDonation | null>(null);
-   const [loading, setLoading] = useState(true);
-   const [isLoading, setIsLoading] = useState(false);
+   const id = Array.isArray(params.id) ? params.id[0] : params.id;
+   const [isLoading, setIsLoading] = React.useState(false);
+
+   const {
+      data: donationData,
+      isLoading: isLoadingData,
+      error,
+   } = useDonationById(id || '');
+
+   const { updateDonation } = useDonationMutations();
+   const { data: categoriesData } = useCategories();
+   const categories = categoriesData?.data ?? [];
 
    const {
       register,
@@ -70,43 +39,41 @@ export default function EditDonationPage() {
    });
 
    useEffect(() => {
-      const fetchDonation = async () => {
-         try {
-            const donationData = mockDonations.find((d) => d.id === params.id);
-            if (!donationData) {
-               toast.error('Doação não encontrada');
-               router.push('/dashboard/donations');
-               return;
-            }
-            setDonation(donationData);
-            reset(donationData);
-         } catch (error) {
-            console.error('Error fetching donation:', error);
-            toast.error('Erro ao carregar doação');
-         } finally {
-            setLoading(false);
-         }
-      };
-
-      fetchDonation();
-   }, [params.id, router, reset]);
+      if (donationData?.data) {
+         reset(donationData.data);
+      }
+   }, [donationData, reset]);
 
    const handleCancel = () => {
       router.push('/dashboard/donations');
    };
 
    const submit: SubmitHandler<IDonation> = async (data) => {
+      if (!id) return;
+
       setIsLoading(true);
       try {
-         await new Promise((resolve) => setTimeout(resolve, 1000));
-         toast.success('Doação atualizada com sucesso!');
-         router.push('/dashboard/donations');
-      } catch (error: any) {
-         toast.error(
-            error?.response?.data?.message ||
-               'Erro ao atualizar doação. Tente novamente.'
+         // Remove id, created_at, updated_at e category antes de enviar
+         const {
+            id: _,
+            created_at,
+            updated_at,
+            category,
+            ...donationData
+         } = data;
+
+         updateDonation.mutate(
+            { id, donation: donationData },
+            {
+               onSuccess: () => {
+                  router.push('/dashboard/donations');
+               },
+               onError: () => {
+                  setIsLoading(false);
+               },
+            }
          );
-      } finally {
+      } catch (error) {
          setIsLoading(false);
       }
    };
@@ -114,15 +81,15 @@ export default function EditDonationPage() {
    const breadcrumbItems = [
       { label: 'Início', href: '/dashboard' },
       { label: 'Doações', href: '/dashboard/donations' },
-      { label: donation?.name || 'Editar Doação' },
+      { label: donationData?.data?.name || 'Editar Doação' },
    ];
 
-   if (loading) {
-      return <div>Carregando...</div>;
+   if (isLoadingData) {
+      return <LottieAnimation status="loading" />;
    }
 
-   if (!donation) {
-      return <div>Doação não encontrada</div>;
+   if (error || !donationData?.data) {
+      toast.error('Ocorreu um erro ao buscar a doação.');
    }
 
    return (
@@ -156,25 +123,26 @@ export default function EditDonationPage() {
                         </div>
                         <div>
                            <label
-                              htmlFor="category"
+                              htmlFor="category_id"
                               className="font-semibold mb-1"
                            >
-                              Categoria
+                              Categoria <span className="text-red-500">*</span>
                            </label>
                            <select
-                              id="category"
+                              id="category_id"
                               className="input"
-                              {...register('category')}
+                              {...register('category_id')}
                            >
-                              {Object.values(Category).map((cat) => (
-                                 <option key={cat} value={cat}>
-                                    {cat}
+                              <option value="">Selecione uma categoria</option>
+                              {categories.map((cat) => (
+                                 <option key={cat.id} value={cat.id}>
+                                    {cat.name}
                                  </option>
                               ))}
                            </select>
-                           {errors.category && (
+                           {errors.category_id && (
                               <p className="text-red-500 text-sm">
-                                 {errors.category.message}
+                                 {errors.category_id.message}
                               </p>
                            )}
                         </div>

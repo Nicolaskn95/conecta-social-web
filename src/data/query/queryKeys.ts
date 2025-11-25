@@ -11,6 +11,18 @@ export const queryKeys = {
       publicWithInstagram: (limit?: number) =>
          [...queryKeys.events.public(), 'instagram', { limit }] as const,
       actives: () => [...queryKeys.events.all, 'actives'] as const,
+      paginated: (
+         page?: number,
+         size?: number,
+         filters?: Record<string, any>
+      ) =>
+         [
+            ...queryKeys.events.all,
+            'paginated',
+            { page, size, filters },
+         ] as const,
+      upcoming: (limit?: number) =>
+         [...queryKeys.events.all, 'upcoming', { limit }] as const,
    },
 
    // Famílias (para futuras implementações)

@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useState } from 'react';
 import { IEvent } from '@/core/event';
-import { useActiveEvents, usePublicEvents } from '../hooks/useEventQueries';
+import { usePaginatedEvents, usePublicEvents } from '../hooks/useEventQueries';
 import { useEventMutations } from '../hooks/useEventMutations';
 import useAuth from '../hooks/useAuth';
 
@@ -34,12 +34,14 @@ export function EventProvider(props: any) {
    const { token } = useAuth();
    const [search, setSearch] = useState<string>('');
 
-   // Hooks do React Query
+   // Hooks do React Query - usando a nova rota paginada events-paginated
    const {
       data: eventsData,
       isLoading,
       refetch: refetchEvents,
-   } = useActiveEvents({ search }, { enabled: !!token });
+   } = usePaginatedEvents(1, 20, search ? { search } : undefined, {
+      enabled: !!token,
+   });
 
    const {
       data: publicEventsData,
