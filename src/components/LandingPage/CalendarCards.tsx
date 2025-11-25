@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import Calendar from 'react-calendar';
 import { format, isSameDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useEvents } from '@/data/hooks/useEvents';
+import { useEventsOnCalendar } from '@/data/hooks/useEventQueries';
 import 'react-calendar/dist/Calendar.css';
 import CalendarSkeleton from '../shared/CalendarSkeleton';
 
@@ -14,7 +14,16 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 export default function CalendarCards() {
    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
    const [value, setValue] = useState<Value>(new Date());
-   const { events, publicEvents, isLoading } = useEvents();
+   const { data: eventsData, isLoading } = useEventsOnCalendar(100);
+
+   // Converter datas de string para Date se necessário
+   const events = useMemo(() => {
+      return (eventsData?.data ?? []).map((event) => ({
+         ...event,
+         date:
+            typeof event.date === 'string' ? parseISO(event.date) : event.date,
+      }));
+   }, [eventsData?.data]);
 
    // Função para verificar se uma data tem eventos (memoizada)
    const hasEvents = useCallback(

@@ -11,8 +11,8 @@ export interface FamilyFilters extends BaseFilters {
    status?: string;
 }
 
-export interface FamilyResponse extends BaseResponse<IFamily> { }
-export interface FamilyDetailResponse extends BaseDetailResponse<IFamily> { }
+export interface FamilyResponse extends BaseResponse<IFamily> {}
+export interface FamilyDetailResponse extends BaseDetailResponse<IFamily> {}
 
 class FamilyService extends BaseService<IFamily> {
    constructor() {
@@ -20,9 +20,9 @@ class FamilyService extends BaseService<IFamily> {
    }
 
    async getActivesFamilies(): Promise<FamilyResponse> {
-      return this.request<FamilyResponse>(`/${this.entityPath}/actives`, {
+      return this.request<FamilyResponse>(`/${this.entityPath}`, {
          method: 'GET',
-      })
+      });
    }
 
    async createFamily(family: IFamily): Promise<FamilyDetailResponse> {

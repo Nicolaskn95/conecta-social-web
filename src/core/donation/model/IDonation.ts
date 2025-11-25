@@ -13,7 +13,7 @@ export interface IDonation {
    name: string;
    description?: string | null;
    initial_quantity: number;
-   current_quantity: number;
+   current_quantity?: number;
    donator_name?: string | null;
    gender?: string | null;
    size?: string | null;

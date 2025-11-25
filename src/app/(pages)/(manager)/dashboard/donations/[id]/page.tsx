@@ -11,19 +11,20 @@ import { useDonationById } from '@/data/hooks/donation/useDonationQueries';
 import { useDonationMutations } from '@/data/hooks/donation/useDonationMutations';
 import { useCategories } from '@/data/hooks/donation/useCategoryQueries';
 import LottieAnimation from '@/components/shared/LottieAnimation';
+import { toast } from 'react-toastify';
 
 export default function EditDonationPage() {
    const params = useParams();
    const router = useRouter();
    const id = Array.isArray(params.id) ? params.id[0] : params.id;
    const [isLoading, setIsLoading] = React.useState(false);
-   
+
    const {
       data: donationData,
       isLoading: isLoadingData,
       error,
    } = useDonationById(id || '');
-   
+
    const { updateDonation } = useDonationMutations();
    const { data: categoriesData } = useCategories();
    const categories = categoriesData?.data ?? [];
@@ -49,12 +50,18 @@ export default function EditDonationPage() {
 
    const submit: SubmitHandler<IDonation> = async (data) => {
       if (!id) return;
-      
+
       setIsLoading(true);
       try {
          // Remove id, created_at, updated_at e category antes de enviar
-         const { id: _, created_at, updated_at, category, ...donationData } = data;
-         
+         const {
+            id: _,
+            created_at,
+            updated_at,
+            category,
+            ...donationData
+         } = data;
+
          updateDonation.mutate(
             { id, donation: donationData },
             {
@@ -82,7 +89,7 @@ export default function EditDonationPage() {
    }
 
    if (error || !donationData?.data) {
-      return <LottieAnimation status="error" />;
+      toast.error('Ocorreu um erro ao buscar a doação.');
    }
 
    return (
