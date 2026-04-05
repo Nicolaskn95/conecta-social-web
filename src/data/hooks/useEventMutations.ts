@@ -60,8 +60,8 @@ export function useUpdateEvent(
          // Atualizar o cache do evento específico
          queryClient.setQueryData(queryKeys.events.detail(variables.id), data);
 
-         // Invalidar listas de eventos
-         queryClient.invalidateQueries({ queryKey: queryKeys.events.lists() });
+         // Invalidar todas as queries de eventos, incluindo públicas
+         queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
 
          toast.success('Evento atualizado com sucesso!');
       },
@@ -88,8 +88,8 @@ export function usePatchEvent(
          // Atualizar o cache do evento específico
          queryClient.setQueryData(queryKeys.events.detail(variables.id), data);
 
-         // Invalidar listas de eventos
-         queryClient.invalidateQueries({ queryKey: queryKeys.events.lists() });
+         // Invalidar todas as queries de eventos, incluindo públicas
+         queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
 
          toast.success('Evento atualizado com sucesso!');
       },
@@ -112,8 +112,8 @@ export function useDeleteEvent(
          // Remover o evento do cache
          queryClient.removeQueries({ queryKey: queryKeys.events.detail(id) });
 
-         // Invalidar listas de eventos
-         queryClient.invalidateQueries({ queryKey: queryKeys.events.lists() });
+         // Invalidar todas as queries de eventos, incluindo públicas
+         queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
 
          toast.success('Evento deletado com sucesso!');
       },

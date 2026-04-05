@@ -19,7 +19,7 @@ export default function AuthInitializer({ children }: AuthInitializerProps) {
          initialized.current = true;
          initializeAuth();
       }
-   }, []);
+   }, [initializeAuth]);
 
    // Gerencia redirecionamentos baseados no status de autenticação
    useEffect(() => {

@@ -1,64 +1,61 @@
+'use client';
+
 import {
-   Chart as ChartJS,
-   CategoryScale,
-   LinearScale,
+   DashboardPeriod,
+   IActivityOverviewChart,
+} from '@/core/dashboard/model/IDashboard';
+import {
    BarElement,
-   Tooltip,
+   CategoryScale,
+   Chart as ChartJS,
    Legend,
+   LinearScale,
+   Tooltip,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const TotalDonationsChart = () => {
-   const labels = [
-      'JAN',
-      'FEV',
-      'MAR',
-      'ABR',
-      'MAI',
-      'JUN',
-      'JUL',
-      'AGO',
-      'SET',
-      'OUT',
-      'NOV',
-      'DEZ',
-   ];
+const PERIOD_LABELS: Record<DashboardPeriod, string> = {
+   month: 'Mês',
+   quarter: 'Trimestre',
+   semester: 'Semestre',
+   year: 'Ano',
+};
 
+interface TotalDonationsChartProps {
+   chart: IActivityOverviewChart;
+   period: DashboardPeriod;
+   onPeriodChange: (period: DashboardPeriod) => void;
+}
+
+const DATASET_COLORS = ['#2c6ca3', '#a9d2e8'];
+
+const TotalDonationsChart = ({
+   chart,
+   period,
+   onPeriodChange,
+}: TotalDonationsChartProps) => {
    const data = {
-      labels,
-      datasets: [
-         {
-            label: 'Meta',
-            data: [
-               6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000,
-               6000,
-            ],
-            backgroundColor: '#cde1ec',
-            borderRadius: 4,
-            barThickness: 20,
-         },
-         {
-            label: 'Doações',
-            data: [
-               500, 1800, 2700, 600, 1600, 2500, 1300, 400, 1700, 300, 1600,
-               2300,
-            ],
-            backgroundColor: '#2c6ca3',
-            borderRadius: 4,
-            barThickness: 20,
-         },
-      ],
+      labels: chart.labels,
+      datasets: chart.datasets.map((dataset, index) => ({
+         label: dataset.label,
+         data: dataset.data,
+         backgroundColor: DATASET_COLORS[index] ?? '#5f9cc5',
+         borderRadius: 8,
+         barThickness: chart.labels.length > 12 ? 10 : 18,
+      })),
    };
 
    const options = {
       responsive: true,
+      maintainAspectRatio: false,
       scales: {
          y: {
             beginAtZero: true,
             ticks: {
-               callback: (value: any) => `${value / 1000}k`,
+               color: '#6b7280',
+               precision: 0,
             },
             grid: {
                drawBorder: false,
@@ -67,39 +64,62 @@ const TotalDonationsChart = () => {
          },
          x: {
             grid: { display: false },
+            ticks: {
+               color: '#6b7280',
+               maxRotation: chart.labels.length > 12 ? 45 : 0,
+               minRotation: chart.labels.length > 12 ? 45 : 0,
+            },
          },
       },
       plugins: {
-         legend: { display: false },
+         legend: {
+            position: 'top' as const,
+            labels: {
+               usePointStyle: true,
+               boxWidth: 8,
+               color: '#475569',
+            },
+         },
          tooltip: {
             callbacks: {
                label: (ctx: any) =>
-                  `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()}`,
+                  `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('pt-BR')}`,
             },
          },
-         datalabels: { display: false },
       },
    };
 
+   const periods: DashboardPeriod[] = ['month', 'quarter', 'semester', 'year'];
+
    return (
-      <div className="bg-white rounded-xl shadow p-4 w-3/4 mx-auto">
-         <h3 className="text-gray-500 text-sm font-medium">Atividade</h3>
-         <div className="flex justify-between items-center mb-2">
-            <h2 className="text-lg font-bold">Total de doações</h2>
-            <div className="bg-gray-100 rounded-full flex">
-               <button className="px-4 py-1 text-sm text-gray-600">
-                  Quarto
-               </button>
-               <button className="px-4 py-1 text-sm text-gray-600">
-                  Semestre
-               </button>
-               <button className="px-4 py-1 text-sm text-white bg-gray-900 rounded-full">
-                  Anual
-               </button>
+      <div className="rounded-2xl border border-[#dbe7ef] bg-white p-6 shadow-sm">
+         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+               <h3 className="text-sm font-medium text-slate-500">Atividade</h3>
+               <h2 className="text-xl font-bold text-[#090934]">
+                  Cadastros no período
+               </h2>
+            </div>
+            <div className="flex flex-wrap rounded-full bg-[#eef4f8] p-1">
+               {periods.map((periodOption) => (
+                  <button
+                     key={periodOption}
+                     className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                        periodOption === period
+                           ? 'bg-[#090934] text-white'
+                           : 'text-slate-600 hover:text-[#090934]'
+                     }`}
+                     onClick={() => onPeriodChange(periodOption)}
+                     type="button"
+                  >
+                     {PERIOD_LABELS[periodOption]}
+                  </button>
+               ))}
             </div>
          </div>
-         <hr className="my-2" />
-         <Bar data={data} options={options} />
+         <div className="h-[340px]">
+            <Bar data={data} options={options} />
+         </div>
       </div>
    );
 };

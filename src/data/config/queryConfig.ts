@@ -1,5 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
+import { ApiRequestError } from '../services/baseService';
 
 export const createQueryClient = () => {
    return new QueryClient({
@@ -11,8 +11,11 @@ export const createQueryClient = () => {
             gcTime: 10 * 60 * 1000, // 10 minutos (anteriormente cacheTime)
             // Retry automático em caso de erro
             retry: (failureCount, error) => {
-               // Não tentar novamente para erros 4xx (client errors)
-               if (error instanceof Error && error.message.includes('4')) {
+               if (
+                  error instanceof ApiRequestError &&
+                  error.status >= 400 &&
+                  error.status < 500
+               ) {
                   return false;
                }
                // Tentar até 3 vezes para outros erros
@@ -29,8 +32,11 @@ export const createQueryClient = () => {
          mutations: {
             // Retry para mutations
             retry: (failureCount, error) => {
-               // Não tentar novamente para erros 4xx
-               if (error instanceof Error && error.message.includes('4')) {
+               if (
+                  error instanceof ApiRequestError &&
+                  error.status >= 400 &&
+                  error.status < 500
+               ) {
                   return false;
                }
                return failureCount < 2;

@@ -1,28 +1,30 @@
-import { Doughnut } from 'react-chartjs-2';
+'use client';
+
+import { IDistributionChart } from '@/core/dashboard/model/IDashboard';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
-const MonthlyActivityChart = () => {
+const CHART_COLORS = ['#cfe0e9', '#57b6e6', '#3e88a4', '#0d0a2d', '#92c5de'];
+
+interface MonthlyActivityChartProps {
+   chart: IDistributionChart;
+}
+
+const MonthlyActivityChart = ({ chart }: MonthlyActivityChartProps) => {
+   const total = chart.data.reduce((acc, value) => acc + value, 0);
    const data = {
-      labels: [
-         'Alimentos sólidos',
-         'Alimentos líquidos',
-         'Roupas',
-         'Brinquedos',
-      ],
+      labels: chart.labels,
       datasets: [
          {
-            data: [39, 26, 24, 11],
-            backgroundColor: [
-               '#cfe0e9', // Alimentos sólidos
-               '#57b6e6', // Alimentos líquidos
-               '#3e88a4', // Roupas
-               '#0d0a2d', // Brinquedos
-            ],
+            data: chart.data,
+            backgroundColor: chart.labels.map(
+               (_, index) => CHART_COLORS[index % CHART_COLORS.length]
+            ),
             borderWidth: 0,
-            cutout: '60%',
+            cutout: '62%',
             borderRadius: 10,
          },
       ],
@@ -35,48 +37,63 @@ const MonthlyActivityChart = () => {
             color: '#fff',
             font: {
                weight: 'bold',
-               size: 14,
+               size: 12,
             } as const,
-            formatter: (value: any) => `${value}%`,
+            formatter: (value: number) => {
+               if (!total) return '0%';
+               return `${Math.round((value / total) * 100)}%`;
+            },
+         },
+         tooltip: {
+            callbacks: {
+               label: (context: any) =>
+                  `${context.label}: ${context.raw.toLocaleString('pt-BR')} registros`,
+            },
          },
       },
    };
 
-   const legendItems = [
-      { label: 'Alimentos sólidos', value: '39%', color: '#cfe0e9' },
-      { label: 'Alimentos Liquidos', value: '26%', color: '#57b6e6' },
-      { label: 'Roupas', value: '24%', color: '#3e88a4' },
-      { label: 'Brinquedos', value: '11%', color: '#0d0a2d' },
-   ];
-
    return (
-      <div className="w-full p-4 text-center border rounded-lg shadow">
-         <h3 className="text-gray-500 text-sm font-medium">Estatística</h3>
-         <h2 className="text-lg font-bold mb-2">
-            Atividade mensal - Categoria
+      <div className="w-full rounded-2xl border border-[#dbe7ef] bg-white p-5 shadow-sm">
+         <h3 className="text-sm font-medium text-slate-500">Estatística</h3>
+         <h2 className="mb-4 text-xl font-bold text-[#090934]">
+            Doações ativas por categoria
          </h2>
-         <Doughnut data={data} options={options} />
-         <div className="mt-6 space-y-2 text-left">
-            {legendItems.map((item, idx) => (
-               <div
-                  key={idx}
-                  className="px-10 flex items-center justify-between text-sm"
-               >
-                  <div className="flex items-center">
-                     <span
-                        className="w-3 h-3 rounded-full mr-2"
-                        style={{ backgroundColor: item.color }}
-                     ></span>
-                     <span className="text-gray-700 text-2xl font-semibold">
-                        {item.label}
-                     </span>
-                  </div>
-                  <span className="text-gray-700 text-2xl font-medium">
-                     {item.value}
-                  </span>
+         {total > 0 ? (
+            <>
+               <div className="mx-auto max-w-[360px]">
+                  <Doughnut data={data} options={options} />
                </div>
-            ))}
-         </div>
+               <div className="mt-6 space-y-3">
+                  {chart.labels.map((label, index) => (
+                     <div
+                        key={label}
+                        className="flex items-center justify-between gap-4 text-sm"
+                     >
+                        <div className="flex items-center gap-2">
+                           <span
+                              className="h-3 w-3 rounded-full"
+                              style={{
+                                 backgroundColor:
+                                    CHART_COLORS[index % CHART_COLORS.length],
+                              }}
+                           ></span>
+                           <span className="font-medium text-slate-700">
+                              {label}
+                           </span>
+                        </div>
+                        <span className="font-semibold text-[#090934]">
+                           {chart.data[index].toLocaleString('pt-BR')}
+                        </span>
+                     </div>
+                  ))}
+               </div>
+            </>
+         ) : (
+            <div className="rounded-xl bg-[#f5f8fb] px-4 py-10 text-sm text-slate-500">
+               Nenhuma doação ativa cadastrada para compor a distribuição.
+            </div>
+         )}
       </div>
    );
 };

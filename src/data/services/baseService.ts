@@ -1,3 +1,124 @@
+const AUTH_COOKIE_NAME = '_conectasocial_token';
+
+export type ApiAuthMode = 'required' | 'none';
+
+export interface ApiRequestBehavior {
+   auth?: ApiAuthMode;
+   redirectOn401?: boolean;
+   ignoreStatuses?: number[];
+}
+
+interface ApiErrorBody {
+   message?: string;
+   error?: string;
+   [key: string]: unknown;
+}
+
+export class ApiRequestError extends Error {
+   constructor(
+      message: string,
+      readonly status: number,
+      readonly body: ApiErrorBody = {},
+      readonly ignored = false
+   ) {
+      super(message);
+      this.name = 'ApiRequestError';
+   }
+}
+
+const DEFAULT_REQUEST_BEHAVIOR: Required<ApiRequestBehavior> = {
+   auth: 'required',
+   redirectOn401: true,
+   ignoreStatuses: [],
+};
+
+async function getAuthToken(auth: ApiAuthMode): Promise<string | null> {
+   if (auth === 'none') {
+      return null;
+   }
+
+   const cookies = await import('js-cookie');
+   return cookies.default.get(AUTH_COOKIE_NAME) ?? null;
+}
+
+async function clearAuthAndRedirect() {
+   if (typeof window === 'undefined') {
+      return;
+   }
+
+   const { default: cookies } = await import('js-cookie');
+   cookies.remove(AUTH_COOKIE_NAME);
+   window.location.href = '/login';
+}
+
+function getErrorMessage(errorData: ApiErrorBody, status: number) {
+   return errorData.message || errorData.error || `Erro HTTP! Status: ${status}`;
+}
+
+function buildApiUrl(baseUrl: string | undefined, endpoint: string) {
+   if (!baseUrl) {
+      throw new Error('NEXT_PUBLIC_API_URL não está configurada.');
+   }
+
+   return `${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+}
+
+export async function requestJson<U>(
+   baseUrl: string | undefined,
+   endpoint: string,
+   options: RequestInit = {},
+   behavior: ApiRequestBehavior = {}
+): Promise<U> {
+   const resolvedBehavior: Required<ApiRequestBehavior> = {
+      ...DEFAULT_REQUEST_BEHAVIOR,
+      ...behavior,
+      ignoreStatuses: behavior.ignoreStatuses ?? [],
+   };
+
+   const url = buildApiUrl(baseUrl, endpoint);
+
+   const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(options.headers as Record<string, string>),
+   };
+
+   const token = await getAuthToken(resolvedBehavior.auth);
+   if (token) {
+      headers.Authorization = `Bearer ${token}`;
+   }
+
+   const response = await fetch(url, {
+      ...options,
+      headers,
+   });
+
+   if (!response.ok) {
+      const errorData = (await response.json().catch(() => ({}))) as ApiErrorBody;
+      const ignored = resolvedBehavior.ignoreStatuses.includes(response.status);
+
+      if (
+         response.status === 401 &&
+         resolvedBehavior.redirectOn401 &&
+         !ignored
+      ) {
+         await clearAuthAndRedirect();
+      }
+
+      throw new ApiRequestError(
+         getErrorMessage(errorData, response.status),
+         response.status,
+         errorData,
+         ignored
+      );
+   }
+
+   try {
+      return await response.json();
+   } catch {
+      return {} as U;
+   }
+}
+
 // Serviço base para futuras entidades
 export interface BaseFilters {
    search?: string;
@@ -32,53 +153,9 @@ export abstract class BaseService<
    public async request<U>(
       endpoint: string,
       options: RequestInit = {},
-      noAuth = false
+      behavior: ApiRequestBehavior = {}
    ): Promise<U> {
-      const url = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`
-         }`;
-
-      const headers: Record<string, string> = {
-         'Content-Type': 'application/json',
-         ...(options.headers as Record<string, string>),
-      };
-
-      if (!noAuth) {
-         // Importar dinamicamente para evitar problemas de SSR
-         const cookies = await import('js-cookie');
-         const token = cookies.default.get('_conectasocial_token');
-         if (token) {
-            headers.Authorization = `Bearer ${token}`;
-         }
-      }
-
-      const response = await fetch(url, {
-         ...options,
-         headers,
-      });
-
-      if (!response.ok) {
-         const errorData = await response.json().catch(() => ({}));
-
-         if (response.status === 401) {
-            // Redirecionar para login se não autenticado
-            if (typeof window !== 'undefined') {
-               const { default: cookies } = await import('js-cookie');
-               cookies.remove('_conectasocial_token');
-               window.location.href = '/login';
-            }
-            throw new Error('Unauthorized - Session expired');
-         }
-
-         throw new Error(
-            errorData.message || `Erro HTTP! Status: ${response.status}`
-         );
-      }
-
-      try {
-         return await response.json();
-      } catch {
-         return {} as U;
-      }
+      return requestJson<U>(this.baseUrl, endpoint, options, behavior);
    }
 
    // Métodos CRUD genéricos
