@@ -1,4 +1,9 @@
 import { IEvent } from '@/core/event';
+import {
+   ApiRequestBehavior,
+   ApiRequestError,
+   BaseService,
+} from './baseService';
 
 export interface EventFilters {
    search?: string;
@@ -34,75 +39,30 @@ export interface EventDetailResponse {
    data: IEvent;
 }
 
-class EventService {
-   private baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const PUBLIC_EVENT_REQUEST: ApiRequestBehavior = {
+   auth: 'none',
+   redirectOn401: false,
+   ignoreStatuses: [404],
+};
 
-   private async request<T>(
-      endpoint: string,
-      options: RequestInit = {},
-      noAuth = false
-   ): Promise<T> {
-      const url = `${this.baseUrl}${
-         endpoint.startsWith('/') ? endpoint : `/${endpoint}`
-      }`;
+class EventService extends BaseService<IEvent> {
+   constructor() {
+      super('events');
+   }
 
-      const headers: Record<string, string> = {
-         'Content-Type': 'application/json',
-         ...(options.headers as Record<string, string>),
-      };
-
-      if (!noAuth) {
-         // Importar dinamicamente para evitar problemas de SSR
-         const cookies = await import('js-cookie');
-         const token = cookies.default.get('_conectasocial_token');
-         if (token) {
-            headers.Authorization = `Bearer ${token}`;
-         }
-      }
-
-      const response = await fetch(url, {
-         ...options,
-         headers,
-      });
-
-      if (!response.ok) {
-         let errorData = {};
-         try {
-            errorData = await response.json();
-         } catch {
-            // Se não conseguir fazer parse do JSON, usar erro genérico
-         }
-
-         if (response.status === 401) {
-            // Redirecionar para login se não autenticado
-            if (typeof window !== 'undefined') {
-               const { default: cookies } = await import('js-cookie');
-               cookies.remove('_conectasocial_token');
-               window.location.href = '/login';
-            }
-            throw new Error('Unauthorized - Session expired');
-         }
-
-         // Melhor tratamento de erro para 400 Bad Request
-         if (response.status === 400) {
-            const errorMessage =
-               (errorData as any).message ||
-               (errorData as any).error ||
-               'Dados inválidos';
-            throw new Error(errorMessage);
-         }
-
-         throw new Error(
-            (errorData as any).message ||
-               (errorData as any).error ||
-               `Erro HTTP! Status: ${response.status}`
-         );
-      }
-
+   private async requestPublicEvents(endpoint: string): Promise<EventResponse> {
       try {
-         return await response.json();
-      } catch {
-         return {} as T;
+         return await this.request<EventResponse>(
+            endpoint,
+            {},
+            PUBLIC_EVENT_REQUEST
+         );
+      } catch (error) {
+         if (error instanceof ApiRequestError && error.status === 404) {
+            return { data: [] };
+         }
+
+         throw error;
       }
    }
 
@@ -117,7 +77,9 @@ class EventService {
          queryParams.append('offset', filters.offset.toString());
 
       const queryString = queryParams.toString();
-      const endpoint = `/events/actives${queryString ? `?${queryString}` : ''}`;
+      const endpoint = `/${this.entityPath}/actives${
+         queryString ? `?${queryString}` : ''
+      }`;
 
       return this.request<EventResponse>(endpoint);
    }
@@ -137,7 +99,7 @@ class EventService {
       if (filters?.status) queryParams.append('status', filters.status);
 
       const queryString = queryParams.toString();
-      const endpoint = `/events/paginated?${queryString}`;
+      const endpoint = `/${this.entityPath}/paginated?${queryString}`;
 
       const apiResponse = await this.request<PaginatedEventApiResponse>(
          endpoint
@@ -154,26 +116,24 @@ class EventService {
 
    // Buscar eventos públicos (não autenticado)
    async getPublicEvents(limit = 3): Promise<EventResponse> {
-      return this.request<EventResponse>(
-         `/events/recent-with-instagram?limit=${limit}`,
-         {},
-         true
+      return this.requestPublicEvents(
+         `/${this.entityPath}/recent-with-instagram?limit=${limit}`
       );
    }
 
    // Buscar eventos para o calendário (próximos eventos)
    async getEventsOnCalendar(limit: number = 100): Promise<EventResponse> {
-      return this.request<EventResponse>(`/events/upcoming?limit=${limit}`);
+      return this.requestPublicEvents(`/${this.entityPath}/upcoming?limit=${limit}`);
    }
 
    // Buscar evento por ID
    async getEventById(id: string): Promise<EventDetailResponse> {
-      return this.request<EventDetailResponse>(`/events/${id}`);
+      return this.request<EventDetailResponse>(`/${this.entityPath}/${id}`);
    }
 
    // Criar evento
    async createEvent(event: Omit<IEvent, 'id'>): Promise<EventDetailResponse> {
-      return this.request<EventDetailResponse>('/events', {
+      return this.request<EventDetailResponse>(`/${this.entityPath}`, {
          method: 'POST',
          body: JSON.stringify(event),
       });
@@ -184,7 +144,7 @@ class EventService {
       id: string,
       event: Partial<IEvent>
    ): Promise<EventDetailResponse> {
-      return this.request<EventDetailResponse>(`/events/${id}`, {
+      return this.request<EventDetailResponse>(`/${this.entityPath}/${id}`, {
          method: 'PUT',
          body: JSON.stringify(event),
       });
@@ -195,7 +155,7 @@ class EventService {
       id: string,
       event: Partial<IEvent>
    ): Promise<EventDetailResponse> {
-      return this.request<EventDetailResponse>(`/events/${id}`, {
+      return this.request<EventDetailResponse>(`/${this.entityPath}/${id}`, {
          method: 'PATCH',
          body: JSON.stringify(event),
       });
@@ -203,7 +163,7 @@ class EventService {
 
    // Deletar evento
    async deleteEvent(id: string): Promise<void> {
-      return this.request<void>(`/events/${id}`, {
+      return this.request<void>(`/${this.entityPath}/${id}`, {
          method: 'DELETE',
       });
    }

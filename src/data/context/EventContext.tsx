@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useState } from 'react';
 import { IEvent } from '@/core/event';
-import { usePaginatedEvents, usePublicEvents } from '../hooks/useEventQueries';
+import { usePaginatedEvents } from '../hooks/useEventQueries';
 import { useEventMutations } from '../hooks/useEventMutations';
 import useAuth from '../hooks/useAuth';
 
@@ -12,11 +12,9 @@ export interface EventContextProps {
 
    // Dados dos eventos
    events: IEvent[];
-   publicEvents: IEvent[];
 
    // Estados de loading
    isLoading: boolean;
-   isPublicLoading: boolean;
 
    // Funções de mutação
    addEvent: (event: IEvent) => void;
@@ -25,7 +23,6 @@ export interface EventContextProps {
 
    // Funções de refetch
    refetchEvents: () => void;
-   refetchPublicEvents: () => void;
 }
 
 const EventContext = createContext<EventContextProps>({} as any);
@@ -43,12 +40,6 @@ export function EventProvider(props: any) {
       enabled: !!token,
    });
 
-   const {
-      data: publicEventsData,
-      isLoading: isPublicLoading,
-      refetch: refetchPublicEvents,
-   } = usePublicEvents(3);
-
    // Hooks de mutação
    const {
       createEvent,
@@ -58,7 +49,6 @@ export function EventProvider(props: any) {
 
    // Extrair dados dos eventos
    const events = eventsData?.data ?? [];
-   const publicEvents = publicEventsData?.data ?? [];
 
    // Funções de mutação que usam React Query
    const addEvent = (event: IEvent) => {
@@ -84,14 +74,11 @@ export function EventProvider(props: any) {
             search,
             setSearch,
             events,
-            publicEvents,
             isLoading,
-            isPublicLoading,
             addEvent,
             updateEvent,
             removeEvent,
             refetchEvents,
-            refetchPublicEvents,
          }}
       >
          {props.children}

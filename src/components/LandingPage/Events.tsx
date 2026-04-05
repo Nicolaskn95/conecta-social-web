@@ -1,10 +1,17 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import EventsSkeleton from '../shared/EventsSkeleton';
-import { useEvents } from '@/data/hooks/useEvents';
+import { usePublicEvents } from '@/data/hooks/useEventQueries';
 
 const Events = () => {
-   const { publicEvents, isPublicLoading } = useEvents();
+   const { data: publicEventsData, isLoading: isPublicLoading } =
+      usePublicEvents(3);
+   const publicEvents = useMemo(
+      () =>
+         publicEventsData?.data?.filter((event) => event.embedded_instagram) ??
+         [],
+      [publicEventsData?.data]
+   );
 
    useEffect(() => {
       if (
@@ -61,18 +68,16 @@ const Events = () => {
                </div>
             ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {publicEvents
-                     .filter((event) => event.embedded_instagram) // Filtra apenas eventos com Instagram
-                     .map((event, index) => (
-                        <div
-                           className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                           key={event.id || index}
-                           suppressHydrationWarning={true}
-                           dangerouslySetInnerHTML={{
-                              __html: event.embedded_instagram!,
-                           }}
-                        />
-                     ))}
+                  {publicEvents.map((event, index) => (
+                     <div
+                        className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                        key={event.id || index}
+                        suppressHydrationWarning={true}
+                        dangerouslySetInnerHTML={{
+                           __html: event.embedded_instagram!,
+                        }}
+                     />
+                  ))}
                </div>
             )}
          </div>

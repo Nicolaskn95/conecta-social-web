@@ -1,16 +1,27 @@
 'use client';
+
+import { IDistributionChart } from '@/core/dashboard/model/IDashboard';
+import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const DonationsChart = () => {
+const CHART_COLORS = ['#246896', '#bdd6e6', '#3eaee1', '#9fb4c5'];
+
+interface DonationsChartProps {
+   chart: IDistributionChart;
+}
+
+const DonationsChart = ({ chart }: DonationsChartProps) => {
+   const total = chart.data.reduce((acc, value) => acc + value, 0);
    const data = {
-      labels: ['Eventos', 'Direta', 'Anônimo', 'Vazio'],
+      labels: chart.labels,
       datasets: [
          {
-            data: [513, 741, 121, 0], // A soma dá 1375
-            backgroundColor: ['#246896', '#bdd6e6', '#3eaee1', 'transparent'],
+            data: chart.data,
+            backgroundColor: chart.labels.map(
+               (_, index) => CHART_COLORS[index % CHART_COLORS.length]
+            ),
             borderWidth: 0,
             circumference: 180,
             rotation: -90,
@@ -19,52 +30,63 @@ const DonationsChart = () => {
       ],
    };
 
-   const total = 1375;
-
    const options = {
       plugins: {
          legend: {
             display: false,
          },
          tooltip: {
-            enabled: true,
+            callbacks: {
+               label: (context: any) =>
+                  `${context.label}: ${context.raw.toLocaleString('pt-BR')} eventos`,
+            },
          },
-         datalabels: { display: false },
       },
    };
 
    return (
-      <div className="w-full text-center p-4 shadow-md rounded-lg border">
-         <h3 className="text-gray-500 text-sm font-medium">Estatística</h3>
-         <h2 className="text-xl font-bold mb-2">Total de doações - Origem</h2>
-         <div
-            className="relative flex justify-center items-center w-full"
-            style={{ minHeight: 20 }}
-         >
-            <Doughnut data={data} options={options} />
-            <div className="absolute inset-30 flex flex-col items-center justify-center pointer-events-none">
-               <p className="text-2xl text-gray-500 mt-10 pt-20">
-                  Contagem Total
-               </p>
-               <p className="text-6xl font-bold">
-                  {total.toLocaleString('pt-BR')}
-               </p>
+      <div className="w-full rounded-2xl border border-[#dbe7ef] bg-white p-5 text-center shadow-sm">
+         <h3 className="text-sm font-medium text-slate-500">Estatística</h3>
+         <h2 className="mb-2 text-xl font-bold text-[#090934]">
+            Eventos por status
+         </h2>
+         {total > 0 ? (
+            <>
+               <div
+                  className="relative flex items-center justify-center"
+                  style={{ minHeight: 20 }}
+               >
+                  <Doughnut data={data} options={options} />
+                  <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center pt-12">
+                     <p className="text-base text-slate-500">Eventos ativos</p>
+                     <p className="text-5xl font-bold text-[#090934]">
+                        {total.toLocaleString('pt-BR')}
+                     </p>
+                  </div>
+               </div>
+               <div className="mt-6 flex flex-wrap justify-center gap-5 text-sm text-slate-700">
+                  {chart.labels.map((label, index) => (
+                     <div key={label} className="flex items-center">
+                        <span
+                           className="mr-2 inline-block h-3 w-3 rounded-full"
+                           style={{
+                              backgroundColor:
+                                 CHART_COLORS[index % CHART_COLORS.length],
+                           }}
+                        ></span>
+                        {label}{' '}
+                        <strong className="ml-1 text-[#090934]">
+                           {chart.data[index].toLocaleString('pt-BR')}
+                        </strong>
+                     </div>
+                  ))}
+               </div>
+            </>
+         ) : (
+            <div className="rounded-xl bg-[#f5f8fb] px-4 py-10 text-sm text-slate-500">
+               Nenhum evento ativo disponível para compor o gráfico.
             </div>
-         </div>
-         <div className="mt-6 flex justify-around text-2xl text-gray-700">
-            <div>
-               <span className="inline-block w-3 h-3 bg-[#246896] rounded-full mr-2"></span>
-               Eventos <strong>513</strong>
-            </div>
-            <div>
-               <span className="inline-block w-3 h-3 bg-[#bdd6e6] rounded-full mr-2"></span>
-               Direta <strong>741</strong>
-            </div>
-            <div>
-               <span className="inline-block w-3 h-3 bg-[#3eaee1] rounded-full mr-2"></span>
-               Anônimo <strong>121</strong>
-            </div>
-         </div>
+         )}
       </div>
    );
 };
