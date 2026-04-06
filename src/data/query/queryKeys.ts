@@ -60,4 +60,11 @@ export const queryKeys = {
       overview: (period: string) =>
          [...queryKeys.dashboard.all, 'overview', { period }] as const,
    },
+
+   resources: {
+      all: ['resources'] as const,
+      roles: () => [...queryKeys.resources.all, 'roles'] as const,
+      eventStatus: () =>
+         [...queryKeys.resources.all, 'event-status'] as const,
+   },
 } as const;

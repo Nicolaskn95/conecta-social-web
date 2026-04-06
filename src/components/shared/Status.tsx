@@ -5,63 +5,61 @@ import {
    ShoppingCartIcon,
    RobotIcon,
    TShirtIcon,
-   UserIcon,
    IdentificationBadgeIcon,
 } from '@phosphor-icons/react';
-import { EventStatus } from '@/core/event/model/IEvent';
+import {
+   EventStatus,
+   getEventStatusLabel,
+   parseEventStatus,
+} from '@/core/event/model/IEvent';
 import { Category } from '@/core/donation/model/IDonation';
 import { VolunteerRole } from '@/core/volunteer/model/IVolunteer';
 
 interface StatusProps {
-   status: EventStatus | Category | VolunteerRole;
+   status: string | Category | VolunteerRole;
    selected?: boolean;
 }
 
-// Type guards
-const isEventStatus = (
-   status: EventStatus | Category | VolunteerRole
-): status is EventStatus => {
-   return Object.values(EventStatus).includes(status as EventStatus);
-};
-
-const isCategory = (
-   status: EventStatus | Category | VolunteerRole
-): status is Category => {
+const isCategory = (status: string | Category | VolunteerRole): status is Category => {
    return Object.values(Category).includes(status as Category);
 };
 
 const isVolunteerRole = (
-   status: EventStatus | Category | VolunteerRole
+   status: string | Category | VolunteerRole
 ): status is VolunteerRole => {
    return Object.values(VolunteerRole).includes(status as VolunteerRole);
 };
 
-const getStatusStyles = (
-   status: EventStatus | Category | VolunteerRole
-): string => {
-   if (isEventStatus(status)) {
-      switch (status) {
-         case EventStatus.CANCELADO:
-            return 'bg-warning_light text-danger border border-warning_light ';
-         case EventStatus.ABERTO:
+const getStatusStyles = (status: string | Category | VolunteerRole): string => {
+   const eventStatus = parseEventStatus(status);
+
+   if (eventStatus) {
+      switch (eventStatus) {
+         case EventStatus.CANCELED:
+            return 'bg-warning_light text-danger border border-warning_light';
+         case EventStatus.SCHEDULED:
             return 'bg-tertiary text-primary border border-tertiary';
-         case EventStatus.CONCLUIDO:
+         case EventStatus.COMPLETED:
             return 'bg-success_light text-success border border-success_light';
          default:
             return 'bg-gray-100 text-gray-800 hover:text-gray-800';
       }
-   } else if (isCategory(status)) {
+   }
+
+   if (isCategory(status)) {
       switch (status) {
          case Category.ALIMENTO:
-            return 'bg-success_light text-success border border-success_light ';
+            return 'bg-success_light text-success border border-success_light';
          case Category.BRINQUEDO:
-            return 'bg-danger_hover text-danger border border-danger_hover ';
+            return 'bg-danger_hover text-danger border border-danger_hover';
          case Category.VESTIMENTA:
-            return 'bg-tertiary text-primary border border-tertiary ';
+            return 'bg-tertiary text-primary border border-tertiary';
          default:
             return 'bg-gray-100 text-gray-800 hover:text-gray-800';
       }
-   } else if (isVolunteerRole(status)) {
+   }
+
+   if (isVolunteerRole(status)) {
       switch (status) {
          case VolunteerRole.ADMIN:
             return 'bg-danger text-white border border-danger';
@@ -77,22 +75,26 @@ const getStatusStyles = (
 };
 
 const getStatusIcon = (
-   status: EventStatus | Category | VolunteerRole
+   status: string | Category | VolunteerRole
 ) => {
-   if (isEventStatus(status)) {
-      switch (status) {
-         case EventStatus.CANCELADO:
+   const eventStatus = parseEventStatus(status);
+
+   if (eventStatus) {
+      switch (eventStatus) {
+         case EventStatus.CANCELED:
             return <XIcon size={20} className="text-danger mr-1" />;
-         case EventStatus.ABERTO:
+         case EventStatus.SCHEDULED:
             return (
                <ExclamationMarkIcon size={20} className="text-primary mr-1" />
             );
-         case EventStatus.CONCLUIDO:
+         case EventStatus.COMPLETED:
             return <CheckIcon size={20} className="text-green-600 mr-1" />;
          default:
             return null;
       }
-   } else if (isCategory(status)) {
+   }
+
+   if (isCategory(status)) {
       switch (status) {
          case Category.ALIMENTO:
             return (
@@ -109,27 +111,25 @@ const getStatusIcon = (
          default:
             return null;
       }
-   } else if (isVolunteerRole(status)) {
+   }
+
+   if (isVolunteerRole(status)) {
       return <IdentificationBadgeIcon size={20} className="mr-1" />;
    }
+
    return null;
 };
 
 const getStatusText = (
-   status: EventStatus | Category | VolunteerRole
+   status: string | Category | VolunteerRole
 ): string => {
-   if (isEventStatus(status)) {
-      switch (status) {
-         case EventStatus.CANCELADO:
-            return 'Cancelado';
-         case EventStatus.ABERTO:
-            return 'Aberto';
-         case EventStatus.CONCLUIDO:
-            return 'Concluído';
-         default:
-            return 'Desconhecido';
-      }
-   } else if (isCategory(status)) {
+   const eventStatus = parseEventStatus(status);
+
+   if (eventStatus) {
+      return getEventStatusLabel(eventStatus);
+   }
+
+   if (isCategory(status)) {
       switch (status) {
          case Category.ALIMENTO:
             return 'Alimento';
@@ -140,7 +140,9 @@ const getStatusText = (
          default:
             return 'Desconhecido';
       }
-   } else if (isVolunteerRole(status)) {
+   }
+
+   if (isVolunteerRole(status)) {
       switch (status) {
          case VolunteerRole.ADMIN:
             return 'Admin';
@@ -152,6 +154,7 @@ const getStatusText = (
             return 'Desconhecido';
       }
    }
+
    return 'Desconhecido';
 };
 

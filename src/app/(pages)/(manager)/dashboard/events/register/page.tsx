@@ -1,6 +1,6 @@
 'use client';
 
-import { eventSchema, IEvent } from '@/core/event';
+import { eventSchema, EventStatus, IEvent } from '@/core/event';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -8,10 +8,12 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import Breadcrumb from '@/components/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
 import { useEventMutations } from '@/data/hooks/useEventMutations';
+import { useEventStatusOptions } from '@/data/hooks/useResources';
 
 function Register() {
    const router = useRouter();
    const { createEvent } = useEventMutations();
+   const { options: eventStatusOptions } = useEventStatusOptions();
 
    // useCEP hook
    const {
@@ -170,11 +172,16 @@ function Register() {
                               id="status"
                               className="input"
                               {...register('status')}
-                              defaultValue="Aberto"
+                              defaultValue={EventStatus.SCHEDULED}
                            >
-                              <option value="Cancelado">Cancelado</option>
-                              <option value="Aberto">Aberto</option>
-                              <option value="Concluído">Concluído</option>
+                              {eventStatusOptions.map((statusOption) => (
+                                 <option
+                                    key={statusOption.value}
+                                    value={statusOption.value}
+                                 >
+                                    {statusOption.label}
+                                 </option>
+                              ))}
                            </select>
                            {errors.status && (
                               <p className="text-red-500 text-sm">

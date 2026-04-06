@@ -14,6 +14,7 @@ import {
    IRecentFamily,
    IUpcomingEvent,
 } from '@/core/dashboard/model/IDashboard';
+import { getEventStatusLabel } from '@/core/event';
 import {
    ArrowClockwiseIcon,
    CalendarBlankIcon,
@@ -31,18 +32,7 @@ const formatDate = (value: string) =>
       day: 'numeric',
    });
 
-const formatStatus = (status: string) => {
-   const normalized = status
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase();
-
-   if (normalized.includes('concl')) return 'Concluído';
-   if (normalized.includes('cancel')) return 'Cancelado';
-   if (normalized.includes('aberto') || normalized.includes('ativo'))
-      return 'Aberto';
-   return status;
-};
+const formatStatus = (status: string) => getEventStatusLabel(status);
 
 function LoadingState() {
    return (

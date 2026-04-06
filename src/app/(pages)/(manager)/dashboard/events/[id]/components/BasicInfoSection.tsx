@@ -1,5 +1,6 @@
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { IEventForm } from '@/core/event/model/IEvent';
+import { EventStatus, IEventForm } from '@/core/event/model/IEvent';
+import { useEventStatusOptions } from '@/data/hooks/useResources';
 
 interface BasicInfoSectionProps {
    register: UseFormRegister<IEventForm>;
@@ -10,6 +11,8 @@ export default function BasicInfoSection({
    register,
    errors,
 }: BasicInfoSectionProps) {
+   const { options: eventStatusOptions } = useEventStatusOptions();
+
    return (
       <div className="space-y-4">
          <h2 className="text-xl font-bold text-gray-800">
@@ -108,11 +111,13 @@ export default function BasicInfoSection({
                   id="status"
                   className="input"
                   {...register('status')}
-                  defaultValue="Aberto"
+                  defaultValue={EventStatus.SCHEDULED}
                >
-                  <option value="Aberto">Aberto</option>
-                  <option value="Cancelado">Cancelado</option>
-                  <option value="Concluído">Concluído</option>
+                  {eventStatusOptions.map((statusOption) => (
+                     <option key={statusOption.value} value={statusOption.value}>
+                        {statusOption.label}
+                     </option>
+                  ))}
                </select>
                {errors.status && (
                   <p className="text-red-500 text-sm">

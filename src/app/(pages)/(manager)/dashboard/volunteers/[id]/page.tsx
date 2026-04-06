@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import useCEP from '@/data/hooks/useCEP';
+import { useRoleOptions } from '@/data/hooks/useResources';
 import { formatCPF, formatCEP, formatPhone } from '@/utils/masks';
 
 // Mock data for volunteers
@@ -83,6 +84,7 @@ export default function EditVolunteerPage() {
    const [volunteer, setVolunteer] = useState<IVolunteer | null>(null);
    const [loading, setLoading] = useState(true);
    const [isLoading, setIsLoading] = useState(false);
+   const { options: roleOptions } = useRoleOptions();
 
    const {
       register,
@@ -387,15 +389,14 @@ export default function EditVolunteerPage() {
                               className="input"
                               {...register('role')}
                            >
-                              <option value={VolunteerRole.VOLUNTEER}>
-                                 Voluntário
-                              </option>
-                              <option value={VolunteerRole.MANAGER}>
-                                 Gerente
-                              </option>
-                              <option value={VolunteerRole.ADMIN}>
-                                 Administrador
-                              </option>
+                              {roleOptions.map((roleOption) => (
+                                 <option
+                                    key={roleOption.value}
+                                    value={roleOption.value}
+                                 >
+                                    {roleOption.label}
+                                 </option>
+                              ))}
                            </select>
                            {errors.role && (
                               <p className="text-red-500 text-sm">

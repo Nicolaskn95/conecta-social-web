@@ -1,5 +1,5 @@
-import { object, string, date, ZodType } from 'zod';
-import { IEventForm } from '../model/IEvent';
+import { object, string, nativeEnum, ZodType } from 'zod';
+import { EventStatus, IEventForm } from '../model/IEvent';
 import { isValidInstagramUrl, isValidInstagramEmbed } from '@/utils/instagram';
 
 // Helper function to extract only digits from a string
@@ -81,11 +81,10 @@ export const eventSchema: ZodType<IEventForm> = object({
          }
       ),
 
-   status: string()
-      .min(5, 'Status é obrigatório')
-      .max(20, 'Status não pode ter mais de 20 caracteres')
-      .refine((val) => ['Aberto', 'Cancelado', 'Concluído'].includes(val), {
-         message: 'Status deve ser "Aberto", "Cancelado" ou "Concluído"',
+   status: nativeEnum(EventStatus, {
+      errorMap: () => ({
+         message: 'Status inválido. Use SCHEDULED, COMPLETED ou CANCELED',
       }),
+   }),
    greeting_description: string().optional().default(''),
 });
