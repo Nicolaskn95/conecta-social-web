@@ -33,7 +33,7 @@ export default function Pagination({
    return (
       <div className="flex gap-2 justify-center mt-4">
          <button
-            className="px-3 py-1 rounded bg-tertiary text-primary disabled:opacity-50"
+            className="min-w-12 px-3 py-2 rounded-md bg-tertiary text-primary font-semibold border border-primary/20 transition-colors hover:bg-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
          >
@@ -41,16 +41,19 @@ export default function Pagination({
          </button>
          {filteredPages.map((page, idx) =>
             page === '...' ? (
-               <span key={idx} className="px-3 py-1">
+               <span
+                  key={idx}
+                  className="min-w-12 px-3 py-2 text-center text-primary/70 font-semibold"
+               >
                   ...
                </span>
             ) : (
                <button
                   key={idx}
-                  className={`px-3 py-1 rounded ${
+                  className={`min-w-12 px-3 py-2 rounded-md border font-semibold transition-all ${
                      page === currentPage
-                        ? 'bg-secondary text-white'
-                        : 'bg-secondary text-secondary'
+                        ? 'bg-primary text-white border-primary ring-2 ring-primary/30 shadow-sm'
+                        : 'bg-tertiary text-primary border-primary/20 hover:bg-secondary/20'
                   }`}
                   onClick={() => onPageChange(Number(page))}
                >
@@ -59,7 +62,7 @@ export default function Pagination({
             )
          )}
          <button
-            className="px-3 py-1 rounded bg-tertiary text-primary disabled:opacity-50"
+            className="min-w-12 px-3 py-2 rounded-md bg-tertiary text-primary font-semibold border border-primary/20 transition-colors hover:bg-secondary/20 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
          >

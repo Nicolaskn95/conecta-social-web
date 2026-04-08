@@ -9,7 +9,6 @@ import { IEvent } from '@/core/event';
 import { useEvents } from '@/data/hooks/useEvents';
 import { useEventMutations } from '@/data/hooks/useEventMutations';
 import { Status } from '@/components/shared/Status';
-import { EventStatus } from '@/core/event/model/IEvent';
 import { toast } from 'react-toastify';
 
 function Events() {
@@ -58,7 +57,7 @@ function Events() {
       {
          key: 'status',
          label: 'Status',
-         render: (value: string) => <Status status={value as EventStatus} />,
+         render: (value: string) => <Status status={value} />,
       },
    ];
 

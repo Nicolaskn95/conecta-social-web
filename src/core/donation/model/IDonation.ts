@@ -22,9 +22,3 @@ export interface IDonation {
    created_at?: Date | null;
    updated_at?: Date | null;
 }
-
-export enum Category {
-   VESTIMENTA = 'Vestimenta',
-   ALIMENTO = 'Alimento',
-   BRINQUEDO = 'Brinquedo',
-}

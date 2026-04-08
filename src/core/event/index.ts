@@ -1,5 +1,21 @@
 import { eventSchema } from './validation/eventSchema';
-import { IEvent } from './model/IEvent';
+import {
+   IEvent,
+   IEventForm,
+   EventStatus,
+   EventStatusOption,
+   EVENT_STATUS_OPTIONS,
+   getEventStatusLabel,
+   normalizeEventStatusValue,
+   parseEventStatus,
+} from './model/IEvent';
 
-export type { IEvent };
-export { eventSchema };
+export type { IEvent, IEventForm, EventStatusOption };
+export {
+   eventSchema,
+   EventStatus,
+   EVENT_STATUS_OPTIONS,
+   getEventStatusLabel,
+   normalizeEventStatusValue,
+   parseEventStatus,
+};

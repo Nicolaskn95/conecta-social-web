@@ -1,4 +1,4 @@
-import { IEvent } from '@/core/event';
+import { EventStatus, IEvent } from '@/core/event';
 import {
    ApiRequestBehavior,
    ApiRequestError,
@@ -7,7 +7,7 @@ import {
 
 export interface EventFilters {
    search?: string;
-   status?: string;
+   status?: EventStatus;
    limit?: number;
    offset?: number;
    page?: number;

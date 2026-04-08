@@ -3,7 +3,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { eventSchema, IEvent } from '@/core/event';
-import { IEventForm } from '@/core/event/model/IEvent';
+import { IEventForm, normalizeEventStatusValue } from '@/core/event/model/IEvent';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import useCEP from '@/data/hooks/useCEP';
@@ -49,6 +49,7 @@ export default function EditEventPage() {
             date: eventData.data.date
                ? new Date(eventData.data.date).toISOString().slice(0, 16)
                : '',
+            status: normalizeEventStatusValue(eventData.data.status),
          };
          reset(formattedEventData);
       }

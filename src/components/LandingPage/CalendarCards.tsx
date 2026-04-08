@@ -5,6 +5,7 @@ import Calendar from 'react-calendar';
 import { format, isSameDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useEventsOnCalendar } from '@/data/hooks/useEventQueries';
+import { getEventStatusLabel } from '@/core/event';
 import 'react-calendar/dist/Calendar.css';
 import CalendarSkeleton from '../shared/CalendarSkeleton';
 
@@ -171,7 +172,7 @@ export default function CalendarCards() {
                                  </div>
                                  <div className="ml-4">
                                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                                       {event.status}
+                                       {getEventStatusLabel(event.status)}
                                     </span>
                                  </div>
                               </div>
