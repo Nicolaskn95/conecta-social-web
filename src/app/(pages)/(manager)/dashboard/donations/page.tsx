@@ -32,7 +32,7 @@ function Donations() {
          key: 'category',
          label: 'Categoria',
          render: (value: IDonation['category']) => 
-            value ? <Status status={value.name as any} /> : '-',
+            value ? <Status status={value.name} /> : '-',
       },
       { key: 'donator_name', label: 'Doador' },
       {
