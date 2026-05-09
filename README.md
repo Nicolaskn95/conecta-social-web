@@ -270,6 +270,10 @@ Crie um arquivo `.env.local` na raiz do projeto:
 NEXT_PUBLIC_API_URL=your_api_url
 ```
 
+> Em produção na Vercel, `NEXT_PUBLIC_API_URL` precisa estar configurada antes
+> do build/deploy, porque variáveis `NEXT_PUBLIC_*` são embutidas no bundle do
+> Next.js. Sempre inclua a URL oficial da Vercel em `CORS_ORIGINS` no backend.
+
 ## 🤝 Contribuição
 
 1. Faça um fork do projeto
