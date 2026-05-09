@@ -1,5 +1,6 @@
 'use client';
 import Banner from '@/components/LandingPage/Banner';
+import FaqVoiceSearch from '@/components/LandingPage/FaqVoiceSearch';
 import {
    InstagramLogoIcon,
    LinkedinLogoIcon,
@@ -355,6 +356,7 @@ export default function ContactUs() {
                   </div>
                </div>
             </section>
+            <FaqVoiceSearch />
          </main>
       </div>
    );
