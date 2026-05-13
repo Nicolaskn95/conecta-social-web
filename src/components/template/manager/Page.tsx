@@ -11,15 +11,15 @@ interface PageProps {
 function Page(props: PageProps) {
    return (
       <div
-         className="flex flex-col min-h-screen"
+         className="flex h-screen flex-col overflow-hidden"
          style={{
             background: 'white',
          }}
       >
          {!props.noHeader && <Header logged />}
-         <div className="flex-1 flex w-screen">
+         <div className="flex min-h-0 flex-1 w-full overflow-hidden">
             <Sidebar />
-            <div className="flex-1 flex flex-col overflow-y-auto">
+            <div className="min-w-0 flex-1 flex flex-col overflow-y-auto">
                <main
                   className={`flex-1 flex flex-col ${props.className ?? ''}`}
                >

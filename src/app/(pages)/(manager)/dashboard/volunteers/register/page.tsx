@@ -12,11 +12,21 @@ import Breadcrumb from '@/components/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
 import { useRoleOptions } from '@/data/hooks/useResources';
 import { formatCPF, formatCEP, formatPhone } from '@/utils/masks';
+import useAuth from '@/data/hooks/useAuth';
+import {
+   canChangeEmployeeRole,
+   canManageVolunteers,
+} from '@/core/auth/permissions';
+import { useEmployeeMutations } from '@/data/hooks/employee/useEmployeeMutations';
 
 function Register() {
-   const router = useRouter();
-   const [isLoading, setIsLoading] = useState(false);
-   const { options: roleOptions } = useRoleOptions();
+	   const router = useRouter();
+	   const { user } = useAuth();
+	   const [isLoading, setIsLoading] = useState(false);
+	   const { createEmployee } = useEmployeeMutations();
+	   const canManage = canManageVolunteers(user?.role);
+	   const canSelectRole = canChangeEmployeeRole(user?.role);
+	   const { options: roleOptions } = useRoleOptions({ enabled: canManage });
 
    // useCEP hook
    const {
@@ -65,22 +75,67 @@ function Register() {
       router.push('/dashboard/volunteers');
    };
 
-   const submit: SubmitHandler<IVolunteer> = async (data) => {
-      setIsLoading(true);
-      try {
-         // Mock API call - simulate success
-         await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
-         toast.success('Voluntário cadastrado com sucesso!');
-         router.push('/dashboard/volunteers');
-      } catch (error: any) {
-         toast.error(
-            error?.response?.data?.message ||
-               'Erro ao cadastrar voluntário. Tente novamente.'
-         );
-      } finally {
-         setIsLoading(false);
-      }
-   };
+	   const submit: SubmitHandler<IVolunteer> = async (data) => {
+	      setIsLoading(true);
+	      try {
+	         createEmployee.mutate(
+	            {
+	               ...data,
+	               role: canSelectRole ? data.role : VolunteerRole.VOLUNTEER,
+	            },
+	            {
+	               onSuccess: () => router.push('/dashboard/volunteers'),
+	               onSettled: () => setIsLoading(false),
+	            }
+	         );
+	      } catch (error: any) {
+	         toast.error(
+	            error?.response?.data?.message ||
+	               'Erro ao cadastrar voluntário. Tente novamente.'
+	         );
+	         setIsLoading(false);
+	      }
+	   };
+
+	   if (!canManage) {
+	      return (
+	         <div className="min-h-screen p-4 bg-gray-100">
+	            <Breadcrumb items={breadcrumbItems} />
+	            <div className="mt-6 rounded-xl bg-white p-6 shadow-sm">
+	               Você não tem permissão para cadastrar voluntários.
+	            </div>
+	         </div>
+	      );
+	   }
+
+	   const roleField = canSelectRole ? (
+	      <div className="flex flex-col flex-1 min-w-[250px]">
+	         <label htmlFor="funcao" className="font-semibold mb-1">
+	            Função <span className="text-red-500">*</span>
+	         </label>
+	         <select
+	            id="funcao"
+	            className="input"
+	            {...register('role')}
+	            defaultValue={VolunteerRole.VOLUNTEER}
+	         >
+	            {roleOptions.map((roleOption) => (
+	               <option key={roleOption.value} value={roleOption.value}>
+	                  {roleOption.label}
+	               </option>
+	            ))}
+	         </select>
+	         {errors.role && (
+	            <p className="text-red-500 text-sm">{errors.role.message}</p>
+	         )}
+	      </div>
+	   ) : (
+	      <input
+	         type="hidden"
+	         value={VolunteerRole.VOLUNTEER}
+	         {...register('role')}
+	      />
+	   );
 
    return (
       <div className="h-screen flex flex-col bg-gray-100">
@@ -258,34 +313,7 @@ function Register() {
                            )}
                         </div>
 
-                        <div className="flex flex-col flex-1 min-w-[250px]">
-                           <label
-                              htmlFor="funcao"
-                              className="font-semibold mb-1"
-                           >
-                              Função <span className="text-red-500">*</span>
-                           </label>
-                           <select
-                              id="funcao"
-                              className="input"
-                              {...register('role')}
-                              defaultValue={VolunteerRole.VOLUNTEER}
-                           >
-                              {roleOptions.map((roleOption) => (
-                                 <option
-                                    key={roleOption.value}
-                                    value={roleOption.value}
-                                 >
-                                    {roleOption.label}
-                                 </option>
-                              ))}
-                           </select>
-                           {errors.role && (
-                              <p className="text-red-500 text-sm">
-                                 {errors.role.message}
-                              </p>
-                           )}
-                        </div>
+                        {roleField}
                      </div>
                   </div>
 

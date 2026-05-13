@@ -53,7 +53,8 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
             <CalendarIcon size={28} weight="duotone" className="text-primary" />
          ),
       },
-      {
+      ...(summary.active_employees !== undefined && summary.employees_by_role
+         ? [{
          title: 'Funcionários ativos',
          value: summary.active_employees,
          helper: `A ${summary.employees_by_role.ADMIN} | G ${summary.employees_by_role.MANAGER} | V ${summary.employees_by_role.VOLUNTEER}`,
@@ -64,7 +65,8 @@ export function SummaryCards({ summary }: SummaryCardsProps) {
                className="text-primary"
             />
          ),
-      },
+      }]
+         : []),
       {
          title: 'Estoque crítico',
          value: summary.critical_stock_items,

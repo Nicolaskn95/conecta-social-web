@@ -1,87 +1,34 @@
 'use client';
+
 import TableContainer from '@/components/Panel/TableContainer';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { PencilIcon, TrashIcon } from '@phosphor-icons/react';
 import Modal from '@/components/Modal/Modal';
-import { toast } from 'react-toastify';
 import { IVolunteer } from '@/core/volunteer';
 import { VolunteerRole } from '@/core/volunteer/model/IVolunteer';
 import { Status } from '@/components/shared/Status';
-
-// Mock data for volunteers
-const mockVolunteers: IVolunteer[] = [
-   {
-      id: '1',
-      name: 'João',
-      surname: 'Silva',
-      birth_date: new Date('1990-05-15'),
-      cpf: '12345678901',
-      email: 'joao.silva@email.com',
-      phone: '(11) 99999-9999',
-      password: 'hashedPassword123',
-      role: VolunteerRole.VOLUNTEER,
-      cep: '01234-567',
-      street: 'Rua das Flores',
-      neighborhood: 'Centro',
-      number: '123',
-      city: 'São Paulo',
-      uf: 'SP',
-      state: 'São Paulo',
-      complement: 'Apto 45',
-      created_at: new Date('2024-01-15'),
-      updated_at: new Date('2024-01-15'),
-   },
-   {
-      id: '2',
-      name: 'Maria',
-      surname: 'Santos',
-      birth_date: new Date('1985-08-22'),
-      cpf: '98765432100',
-      email: 'maria.santos@email.com',
-      phone: '(11) 88888-8888',
-      password: 'hashedPassword456',
-      role: VolunteerRole.MANAGER,
-      cep: '04567-890',
-      street: 'Avenida Paulista',
-      neighborhood: 'Bela Vista',
-      number: '456',
-      city: 'São Paulo',
-      uf: 'SP',
-      state: 'São Paulo',
-      created_at: new Date('2024-02-10'),
-      updated_at: new Date('2024-02-10'),
-   },
-   {
-      id: '3',
-      name: 'Pedro',
-      surname: 'Oliveira',
-      birth_date: new Date('1992-03-10'),
-      cpf: '11122233344',
-      email: 'pedro.oliveira@email.com',
-      phone: '(11) 77777-7777',
-      password: 'hashedPassword789',
-      role: VolunteerRole.ADMIN,
-      cep: '07890-123',
-      street: 'Rua Augusta',
-      neighborhood: 'Consolação',
-      number: '789',
-      city: 'São Paulo',
-      uf: 'SP',
-      state: 'São Paulo',
-      complement: 'Sala 101',
-      created_at: new Date('2024-03-05'),
-      updated_at: new Date('2024-03-05'),
-   },
-];
+import useAuth from '@/data/hooks/useAuth';
+import {
+   canDeleteEmployees,
+   canManageVolunteers,
+} from '@/core/auth/permissions';
+import { useEmployees } from '@/data/hooks/employee/useEmployeeQueries';
+import { useEmployeeMutations } from '@/data/hooks/employee/useEmployeeMutations';
 
 function Volunteers() {
    const router = useRouter();
+   const { user } = useAuth();
+   const canManage = canManageVolunteers(user?.role);
+   const canDelete = canDeleteEmployees(user?.role);
+   const { data, isLoading } = useEmployees(canManage);
+   const { deleteEmployee } = useEmployeeMutations();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-   const [volunteers, setVolunteers] = useState<IVolunteer[]>(mockVolunteers);
    const [selectedVolunteer, setSelectedVolunteer] =
       useState<IVolunteer | null>(null);
+
+   const volunteers = data?.data ?? [];
 
    const register = () => {
       router.push('/dashboard/volunteers/register');
@@ -96,7 +43,7 @@ function Volunteers() {
       {
          key: 'created_at',
          label: 'Data de cadastro',
-         render: (value: Date) =>
+         render: (value: Date | string) =>
             value
                ? new Date(value).toLocaleDateString('pt-BR', {
                     year: 'numeric',
@@ -108,7 +55,7 @@ function Volunteers() {
       {
          key: 'name',
          label: 'Nome',
-         render: (value: string, volunteer: IVolunteer) =>
+         render: (_value: string, volunteer: IVolunteer) =>
             `${volunteer.name} ${volunteer.surname}`,
       },
       { key: 'email', label: 'Email' },
@@ -131,18 +78,14 @@ function Volunteers() {
    };
 
    const handleDeleteConfirm = async () => {
-      try {
-         // Mock delete - remove from local state
-         setVolunteers((prev) =>
-            prev.filter((v) => v.id !== selectedVolunteer?.id)
-         );
-         toast.success('Voluntário excluído com sucesso!');
-         setIsDeleteModalOpen(false);
-         setSelectedVolunteer(null);
-      } catch (error) {
-         toast.error('Erro ao excluir voluntário');
-         console.error('Erro ao excluir voluntário:', error);
-      }
+      if (!selectedVolunteer?.id) return;
+
+      deleteEmployee.mutate(selectedVolunteer.id, {
+         onSuccess: () => {
+            setIsDeleteModalOpen(false);
+            setSelectedVolunteer(null);
+         },
+      });
    };
 
    const actions = [
@@ -157,35 +100,37 @@ function Volunteers() {
          onClick: handleEdit,
          className: '',
       },
-      {
-         key: 'delete',
-         label: 'Deletar',
-         icon: (
-            <div className="text-danger hover:text-white bg-danger_hover rounded-md p-2 hover:bg-danger">
-               <TrashIcon size={24} />
-            </div>
-         ),
-         onClick: handleDelete,
-         className: '',
-      },
+      ...(canDelete
+         ? [
+              {
+                 key: 'delete',
+                 label: 'Deletar',
+                 icon: (
+                    <div className="text-danger hover:text-white bg-danger_hover rounded-md p-2 hover:bg-danger">
+                       <TrashIcon size={24} />
+                    </div>
+                 ),
+                 onClick: handleDelete,
+                 className: '',
+              },
+           ]
+         : []),
    ];
 
    const onSearch = (value: string) => {
-      // Mock search functionality
-      if (!value.trim()) {
-         setVolunteers(mockVolunteers);
-         return;
-      }
-
-      const filtered = mockVolunteers.filter(
-         (volunteer) =>
-            volunteer.name.toLowerCase().includes(value.toLowerCase()) ||
-            volunteer.surname.toLowerCase().includes(value.toLowerCase()) ||
-            volunteer.email.toLowerCase().includes(value.toLowerCase()) ||
-            volunteer.city.toLowerCase().includes(value.toLowerCase())
-      );
-      setVolunteers(filtered);
+      // A busca local será substituída por filtro de API quando o endpoint suportar search.
    };
+
+   if (!canManage) {
+      return (
+         <div className="min-h-screen p-4 bg-gray-100">
+            <Breadcrumb items={breadcrumbItems} />
+            <div className="mt-6 rounded-xl bg-white p-6 shadow-sm">
+               Você não tem permissão para gerenciar voluntários.
+            </div>
+         </div>
+      );
+   }
 
    return (
       <div className="min-h-screen p-4 bg-gray-100">
@@ -199,7 +144,7 @@ function Volunteers() {
             </button>
          </div>
          <TableContainer
-            title="Todos os Voluntários"
+            title={isLoading ? 'Carregando voluntários...' : 'Todos os Voluntários'}
             columns={columns}
             data={volunteers}
             actions={actions}
@@ -220,11 +165,16 @@ function Volunteers() {
                   <button
                      onClick={() => setIsDeleteModalOpen(false)}
                      className="btn-secondary"
+                     disabled={deleteEmployee.isPending}
                   >
                      Cancelar
                   </button>
-                  <button onClick={handleDeleteConfirm} className="btn-danger">
-                     Excluir
+                  <button
+                     onClick={handleDeleteConfirm}
+                     className="btn-danger"
+                     disabled={deleteEmployee.isPending}
+                  >
+                     {deleteEmployee.isPending ? 'Excluindo...' : 'Excluir'}
                   </button>
                </div>
             </div>

@@ -3,7 +3,12 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { eventSchema, IEvent } from '@/core/event';
-import { IEventForm, normalizeEventStatusValue } from '@/core/event/model/IEvent';
+import {
+   EVENT_STATUS_OPTIONS,
+   EventStatus,
+   IEventForm,
+   normalizeEventStatusValue,
+} from '@/core/event/model/IEvent';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import useCEP from '@/data/hooks/useCEP';
@@ -13,11 +18,24 @@ import BasicInfoSection from './components/BasicInfoSection';
 import AddressSection from './components/AddressSection';
 import SocialMediaSection from './components/SocialMediaSection';
 import LottieAnimation from '@/components/shared/LottieAnimation';
+import useAuth from '@/data/hooks/useAuth';
+import {
+   canCancelEvent,
+   canPublishEventInstagram,
+} from '@/core/auth/permissions';
 
 export default function EditEventPage() {
-   const params = useParams();
-   const router = useRouter();
-   const { updateEvent } = useEventMutations();
+	   const params = useParams();
+	   const router = useRouter();
+	   const { user } = useAuth();
+	   const {
+	      updateEvent,
+	      updateEventStatus,
+	      updateEventAttendance,
+	      updateEventInstagram,
+	   } = useEventMutations();
+	   const canPublishInstagram = canPublishEventInstagram(user?.role);
+	   const canUseAllStatuses = canCancelEvent(user?.role);
 
    const eventId = Array.isArray(params.id) ? params.id[0] : params.id;
    const { data: eventData, isLoading: loading, error } = useEventById(eventId);
@@ -75,24 +93,49 @@ export default function EditEventPage() {
       router.push('/dashboard/events');
    };
 
-   const submit: SubmitHandler<IEventForm> = async (data) => {
-      const apiData: IEvent = {
-         ...data,
-         date: new Date(data.date),
-      };
+	   const submit: SubmitHandler<IEventForm> = async (data) => {
+	      const apiData: IEvent = {
+	         ...data,
+	         date: new Date(data.date),
+	      };
 
-      updateEvent.mutate(
-         { id: eventId, event: apiData },
-         {
-            onSuccess: () => {
-               router.push('/dashboard/events');
-            },
-            onError: (error) => {
-               console.error('Erro ao atualizar evento:', error);
-            },
-         }
-      );
-   };
+	      try {
+	         await updateEvent.mutateAsync({ id: eventId, event: apiData });
+
+	         const currentStatus = normalizeEventStatusValue(event?.status);
+	         if (data.status && data.status !== currentStatus) {
+	            await updateEventStatus.mutateAsync({
+	               id: eventId,
+	               status: data.status,
+	            });
+	         }
+
+	         const attendance = Number(data.attendance ?? 0);
+	         if (
+	            Number.isFinite(attendance) &&
+	            attendance !== (event?.attendance ?? 0)
+	         ) {
+	            await updateEventAttendance.mutateAsync({
+	               id: eventId,
+	               attendance,
+	            });
+	         }
+
+	         if (
+	            canPublishInstagram &&
+	            data.embedded_instagram !== event?.embedded_instagram
+	         ) {
+	            await updateEventInstagram.mutateAsync({
+	               id: eventId,
+	               embedded_instagram: data.embedded_instagram,
+	            });
+	         }
+
+	         router.push('/dashboard/events');
+	      } catch (error) {
+	         console.error('Erro ao atualizar evento:', error);
+	      }
+	   };
 
    const event = eventData?.data;
    const breadcrumbItems = [
@@ -105,9 +148,23 @@ export default function EditEventPage() {
       return <LottieAnimation status="loading" />;
    }
 
-   if (error || !event) {
-      return <div>Evento não encontrado</div>;
-   }
+	   if (error || !event) {
+	      return <div>Evento não encontrado</div>;
+	   }
+
+	   const currentStatus = normalizeEventStatusValue(event.status);
+	   const statusOptions = canUseAllStatuses
+	      ? EVENT_STATUS_OPTIONS
+	      : EVENT_STATUS_OPTIONS.filter(
+	           (statusOption) =>
+	              statusOption.value === currentStatus ||
+	              statusOption.value === EventStatus.COMPLETED
+	        );
+	   const isSaving =
+	      updateEvent.isPending ||
+	      updateEventStatus.isPending ||
+	      updateEventAttendance.isPending ||
+	      updateEventInstagram.isPending;
 
    return (
       <div className="h-screen flex flex-col bg-gray-100">
@@ -120,29 +177,35 @@ export default function EditEventPage() {
          <div className="flex-1 overflow-y-auto p-4">
             <div className="p-6 bg-white rounded-3xl shadow-md border border-[#4AA1D3] space-y-6 pb-24">
                <form onSubmit={handleSubmit(submit)} className="space-y-6">
-                  <BasicInfoSection register={register} errors={errors} />
+	                  <BasicInfoSection
+	                     register={register}
+	                     errors={errors}
+	                     statusOptions={statusOptions}
+	                  />
                   <AddressSection
                      register={register}
                      errors={errors}
                      handleCepBlur={handleCepBlur}
                   />
-                  <SocialMediaSection register={register} errors={errors} />
+	                  {canPublishInstagram && (
+	                     <SocialMediaSection register={register} errors={errors} />
+	                  )}
 
                   <div className="flex justify-end gap-4 pt-4 sticky bottom-0 bg-white">
                      <button
                         type="button"
                         className="btn-danger w-32 text-white"
                         onClick={handleCancel}
-                        disabled={updateEvent.isPending}
+	                        disabled={isSaving}
                      >
                         Cancelar
                      </button>
                      <button
                         type="submit"
                         className="btn-primary w-32"
-                        disabled={updateEvent.isPending}
+	                        disabled={isSaving}
                      >
-                        {updateEvent.isPending ? 'Salvando...' : 'Salvar'}
+	                        {isSaving ? 'Salvando...' : 'Salvar'}
                      </button>
                   </div>
                </form>

@@ -1,17 +1,24 @@
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
-import { EventStatus, IEventForm } from '@/core/event/model/IEvent';
+import {
+   EventStatus,
+   EventStatusOption,
+   IEventForm,
+} from '@/core/event/model/IEvent';
 import { useEventStatusOptions } from '@/data/hooks/useResources';
 
 interface BasicInfoSectionProps {
    register: UseFormRegister<IEventForm>;
    errors: FieldErrors<IEventForm>;
+   statusOptions?: EventStatusOption[];
 }
 
 export default function BasicInfoSection({
    register,
    errors,
+   statusOptions,
 }: BasicInfoSectionProps) {
    const { options: eventStatusOptions } = useEventStatusOptions();
+   const resolvedStatusOptions = statusOptions ?? eventStatusOptions;
 
    return (
       <div className="space-y-4">
@@ -113,7 +120,7 @@ export default function BasicInfoSection({
                   {...register('status')}
                   defaultValue={EventStatus.SCHEDULED}
                >
-                  {eventStatusOptions.map((statusOption) => (
+                  {resolvedStatusOptions.map((statusOption) => (
                      <option key={statusOption.value} value={statusOption.value}>
                         {statusOption.label}
                      </option>

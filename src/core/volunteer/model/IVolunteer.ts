@@ -2,11 +2,11 @@ export interface IVolunteer {
    id?: string;
    name: string;
    surname: string;
-   birth_date: Date;
+   birth_date: Date | string;
    cpf: string;
    email: string;
    phone: string;
-   password: string;
+   password?: string;
 
    role: VolunteerRole;
 
@@ -15,7 +15,7 @@ export interface IVolunteer {
    neighborhood: string;
    number: string;
    city: string;
-   uf: string;
+   uf?: string;
    state: string;
    complement?: string;
 

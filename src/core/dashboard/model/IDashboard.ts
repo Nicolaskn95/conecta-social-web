@@ -2,8 +2,8 @@ export type DashboardPeriod = 'month' | 'quarter' | 'semester' | 'year';
 
 export interface IDashboardSummary {
    active_families: number;
-   active_employees: number;
-   employees_by_role: {
+   active_employees?: number;
+   employees_by_role?: {
       ADMIN: number;
       MANAGER: number;
       VOLUNTEER: number;
@@ -81,8 +81,8 @@ export interface IDashboardOverview {
    lists: {
       upcoming_events: IUpcomingEvent[];
       critical_stock: ICriticalStockItem[];
-      recent_donations: IRecentDonation[];
-      recent_families: IRecentFamily[];
+      recent_donations?: IRecentDonation[];
+      recent_families?: IRecentFamily[];
    };
 }
 

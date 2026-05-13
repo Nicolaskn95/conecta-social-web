@@ -35,17 +35,19 @@ export function useEventStatusResources(
    });
 }
 
-export function useRoleOptions(): {
+export function useRoleOptions(
+   queryOptions?: Omit<UseQueryOptions<RolesApiResponse>, 'queryKey' | 'queryFn'>
+): {
    options: RoleOption[];
    isLoading: boolean;
    isError: boolean;
 } {
-   const { data, isLoading, isError } = useRolesResources();
-   const options = data?.data?.roles?.length
+   const { data, isLoading, isError } = useRolesResources(queryOptions);
+   const roleOptions = data?.data?.roles?.length
       ? data.data.roles
       : FALLBACK_ROLE_OPTIONS;
 
-   return { options, isLoading, isError };
+   return { options: roleOptions, isLoading, isError };
 }
 
 export function useEventStatusOptions(): {

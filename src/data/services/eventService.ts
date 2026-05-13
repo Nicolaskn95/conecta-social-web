@@ -45,6 +45,12 @@ const PUBLIC_EVENT_REQUEST: ApiRequestBehavior = {
    ignoreStatuses: [404],
 };
 
+function stripBasicEventFields(event: Partial<IEvent>) {
+   const { status, attendance, embedded_instagram, ...basicEvent } = event;
+
+   return basicEvent;
+}
+
 class EventService extends BaseService<IEvent> {
    constructor() {
       super('events');
@@ -140,14 +146,50 @@ class EventService extends BaseService<IEvent> {
    }
 
    // Atualizar evento
-   async updateEvent(
+	   async updateEvent(
+	      id: string,
+	      event: Partial<IEvent>
+	   ): Promise<EventDetailResponse> {
+	      return this.request<EventDetailResponse>(`/${this.entityPath}/${id}`, {
+	         method: 'PUT',
+	         body: JSON.stringify(stripBasicEventFields(event)),
+	      });
+	   }
+
+   async updateEventStatus(
       id: string,
-      event: Partial<IEvent>
+      status: EventStatus
    ): Promise<EventDetailResponse> {
-      return this.request<EventDetailResponse>(`/${this.entityPath}/${id}`, {
-         method: 'PUT',
-         body: JSON.stringify(event),
+      return this.request<EventDetailResponse>(`/${this.entityPath}/${id}/status`, {
+         method: 'PATCH',
+         body: JSON.stringify({ status }),
       });
+   }
+
+   async updateEventAttendance(
+      id: string,
+      attendance: number
+   ): Promise<EventDetailResponse> {
+      return this.request<EventDetailResponse>(
+         `/${this.entityPath}/${id}/attendance`,
+         {
+            method: 'PATCH',
+            body: JSON.stringify({ attendance }),
+         }
+      );
+   }
+
+   async updateEventInstagram(
+      id: string,
+      embedded_instagram?: string
+   ): Promise<EventDetailResponse> {
+      return this.request<EventDetailResponse>(
+         `/${this.entityPath}/${id}/instagram`,
+         {
+            method: 'PATCH',
+            body: JSON.stringify({ embedded_instagram }),
+         }
+      );
    }
 
    // Atualizar evento parcialmente

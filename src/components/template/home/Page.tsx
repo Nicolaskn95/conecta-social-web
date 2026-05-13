@@ -18,6 +18,7 @@ const publicRoutes = ['/', '/about', '/contactUs', '/login'];
 function Page(props: PageProps) {
    const path = usePathname(); // Obtém a pathname da URL
    const isPublicRoute = publicRoutes.includes(path); // Verifica se a rota é pública
+   const isDashboardRoute = path.startsWith('/dashboard');
 
    return (
       <div
@@ -26,21 +27,21 @@ function Page(props: PageProps) {
             background: 'white',
          }}
       >
-         <div className="flex-1 flex flex-col w-screen">
+         <div className="flex-1 flex flex-col w-full">
             {!props.noHeader &&
                (isPublicRoute ? <Header logged={false} /> : null)}
 
-            {path.startsWith('/dashboard') ? (
+            {isDashboardRoute ? (
                <div
-                  className="flex flex-col min-h-screen"
+                  className="flex h-screen flex-col overflow-hidden"
                   style={{
                      background: 'white',
                   }}
                >
                   <Header logged />
-                  <div className="flex-1 flex w-screen">
+                  <div className="flex min-h-0 flex-1 w-full overflow-hidden">
                      <Sidebar />
-                     <div className="flex-1 flex flex-col overflow-y-auto">
+                     <div className="min-w-0 flex-1 flex flex-col overflow-y-auto">
                         <main
                            className={`flex-1 flex flex-col${
                               props.className ?? ''

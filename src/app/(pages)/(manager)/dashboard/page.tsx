@@ -166,19 +166,19 @@ function Dashboard() {
    const overview = data?.data;
 
    const recentActivityItems = useMemo(
-      () =>
-         overview
-            ? [
-                 ...overview.lists.recent_donations.map((donation) => ({
-                    type: 'donation' as const,
-                    key: donation.id,
-                    createdAt: donation.created_at,
-                    payload: donation,
-                 })),
-                 ...overview.lists.recent_families.map((family) => ({
-                    type: 'family' as const,
-                    key: family.id,
-                    createdAt: family.created_at,
+	      () =>
+	         overview
+	            ? [
+	                 ...(overview.lists.recent_donations ?? []).map((donation) => ({
+	                    type: 'donation' as const,
+	                    key: donation.id,
+	                    createdAt: donation.created_at,
+	                    payload: donation,
+	                 })),
+	                 ...(overview.lists.recent_families ?? []).map((family) => ({
+	                    type: 'family' as const,
+	                    key: family.id,
+	                    createdAt: family.created_at,
                     payload: family,
                  })),
               ]
@@ -248,40 +248,43 @@ function Dashboard() {
                ))}
             </ListCard>
 
-            <ListCard
-               title="Cadastros recentes"
-               subtitle="Atividade"
-               emptyMessage="Nenhum cadastro recente disponível."
-               hasItems={recentActivityItems.length > 0}
-            >
-               {recentActivityItems.map((item) =>
-                  item.type === 'donation' ? (
-                     <div
-                        key={`${item.type}-${item.key}`}
-                        className="flex items-start gap-3"
-                     >
-                        <div className="rounded-xl bg-[#e9f3f9] p-2">
-                           <HandHeartIcon size={20} className="text-primary" />
-                        </div>
-                        <div className="flex-1">
-                           <RecentDonationItem donation={item.payload} />
-                        </div>
-                     </div>
-                  ) : (
-                     <div
-                        key={`${item.type}-${item.key}`}
-                        className="flex items-start gap-3"
-                     >
-                        <div className="rounded-xl bg-[#e9f3f9] p-2">
-                           <HouseLineIcon size={20} className="text-primary" />
-                        </div>
-                        <div className="flex-1">
-                           <RecentFamilyItem family={item.payload} />
-                        </div>
-                     </div>
-                  )
-               )}
-            </ListCard>
+	            {(overview.lists.recent_donations ||
+	               overview.lists.recent_families) && (
+	               <ListCard
+	                  title="Cadastros recentes"
+	                  subtitle="Atividade"
+	                  emptyMessage="Nenhum cadastro recente disponível."
+	                  hasItems={recentActivityItems.length > 0}
+	               >
+	                  {recentActivityItems.map((item) =>
+	                     item.type === 'donation' ? (
+	                        <div
+	                           key={`${item.type}-${item.key}`}
+	                           className="flex items-start gap-3"
+	                        >
+	                           <div className="rounded-xl bg-[#e9f3f9] p-2">
+	                              <HandHeartIcon size={20} className="text-primary" />
+	                           </div>
+	                           <div className="flex-1">
+	                              <RecentDonationItem donation={item.payload} />
+	                           </div>
+	                        </div>
+	                     ) : (
+	                        <div
+	                           key={`${item.type}-${item.key}`}
+	                           className="flex items-start gap-3"
+	                        >
+	                           <div className="rounded-xl bg-[#e9f3f9] p-2">
+	                              <HouseLineIcon size={20} className="text-primary" />
+	                           </div>
+	                           <div className="flex-1">
+	                              <RecentFamilyItem family={item.payload} />
+	                           </div>
+	                        </div>
+	                     )
+	                  )}
+	               </ListCard>
+	            )}
          </div>
 
          <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">

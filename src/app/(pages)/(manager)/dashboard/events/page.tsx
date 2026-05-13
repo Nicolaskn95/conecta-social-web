@@ -10,12 +10,17 @@ import { useEvents } from '@/data/hooks/useEvents';
 import { useEventMutations } from '@/data/hooks/useEventMutations';
 import { Status } from '@/components/shared/Status';
 import { toast } from 'react-toastify';
+import useAuth from '@/data/hooks/useAuth';
+import { canCreateEvents, canDeleteRecords } from '@/core/auth/permissions';
 
 function Events() {
-   const router = useRouter();
-   const { deleteEvent } = useEventMutations();
+	   const router = useRouter();
+	   const { user } = useAuth();
+	   const { deleteEvent } = useEventMutations();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-   const { events } = useEvents();
+	   const { events } = useEvents();
+	   const canDelete = canDeleteRecords(user?.role);
+	   const canCreate = canCreateEvents(user?.role);
 
    const register = () => {
       router.push('/dashboard/events/register');
@@ -83,7 +88,7 @@ function Events() {
       });
    };
 
-   const actions = [
+	   const actions = [
       {
          key: 'edit',
          label: 'Editar',
@@ -95,18 +100,20 @@ function Events() {
          onClick: handleEdit,
          className: '',
       },
-      {
-         key: 'delete',
-         label: 'Deletar',
+	      ...(canDelete
+	         ? [{
+	         key: 'delete',
+	         label: 'Deletar',
          icon: (
             <div className="text-danger hover:text-white bg-danger_hover rounded-md p-2 hover:bg-danger">
                <TrashIcon size={24} />
             </div>
          ),
-         onClick: handleDelete,
-         className: '',
-      },
-   ];
+	         onClick: handleDelete,
+	         className: '',
+	      }]
+	         : []),
+	   ];
 
    const onSearch = (value: string) => {
       // TODO: Implement search/filter logic
@@ -116,12 +123,14 @@ function Events() {
       <div className="min-h-full p-4 bg-gray-100 pb-8">
          <div className="flex justify-between items-center mb-6">
             <Breadcrumb items={breadcrumbItems} />
-            <button
-               className="btn-primary justify-center flex text-nowrap w-32 text-center"
-               onClick={register}
-            >
-               Novo Evento
-            </button>
+            {canCreate && (
+               <button
+                  className="btn-primary justify-center flex text-nowrap w-32 text-center"
+                  onClick={register}
+               >
+                  Novo Evento
+               </button>
+            )}
          </div>
          <TableContainer
             title="Todos os Eventos"
