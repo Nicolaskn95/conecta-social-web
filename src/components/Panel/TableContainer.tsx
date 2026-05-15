@@ -44,7 +44,7 @@ export default function TableContainer({
       : [];
 
    return (
-      <div className="bg-white rounded-3xl shadow-md border border-[#4AA1D3] flex flex-col max-h-[calc(100vh-200px)]">
+      <div className="bg-white rounded-3xl shadow-md border border-[#4AA1D3] flex flex-col">
          {/* Header similar ao Jampack */}
          <div className="p-6 pb-4 flex-shrink-0">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
@@ -82,7 +82,7 @@ export default function TableContainer({
             </div>
          </div>
 
-         <div className="flex-1 overflow-auto min-h-0">
+         <div className="overflow-x-auto">
             <table className="w-full border-collapse">
                <thead className="sticky top-0 bg-white z-10">
                   <tr>

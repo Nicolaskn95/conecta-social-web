@@ -56,6 +56,7 @@ function getSession(): Session {
         email: payload.email,
         name: payload.name,
         surname: payload.surname,
+        role: payload.role,
       },
     };
   } catch (error) {

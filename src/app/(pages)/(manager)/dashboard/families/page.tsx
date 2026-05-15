@@ -7,11 +7,15 @@ import { PencilIcon, TrashIcon } from '@phosphor-icons/react';
 import Modal from '@/components/Modal/Modal';
 import { IFamily } from '@/core/family/model/IFamily';
 import { useFamilies as useFamiliesContext } from '@/data/hooks/family/useFamilies';
+import useAuth from '@/data/hooks/useAuth';
+import { canDeleteRecords } from '@/core/auth/permissions';
 
 function Families() {
    const router = useRouter();
+   const { user } = useAuth();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
    const { families, removeFamily } = useFamiliesContext();
+   const canDelete = canDeleteRecords(user?.role);
 
    const register = () => {
       router.push('/dashboard/families/register');
@@ -81,17 +85,21 @@ function Families() {
          onClick: handleEdit,
          className: '',
       },
-      {
-         key: 'delete',
-         label: 'Deletar',
-         icon: (
-            <div className="text-danger hover:text-white bg-danger_hover rounded-md p-2 hover:bg-danger">
-               <TrashIcon size={24} />
-            </div>
-         ),
-         onClick: handleDelete,
-         className: '',
-      },
+      ...(canDelete
+         ? [
+              {
+                 key: 'delete',
+                 label: 'Deletar',
+                 icon: (
+                    <div className="text-danger hover:text-white bg-danger_hover rounded-md p-2 hover:bg-danger">
+                       <TrashIcon size={24} />
+                    </div>
+                 ),
+                 onClick: handleDelete,
+                 className: '',
+              },
+           ]
+         : []),
    ];
 
    const onSearch = (value: string) => {
@@ -99,7 +107,7 @@ function Families() {
    };
 
    return (
-      <div className="min-h-screen p-4 bg-gray-100">
+      <div className="min-h-full p-4 bg-gray-100">
          <div className="flex justify-between items-center mb-6">
             <Breadcrumb items={breadcrumbItems} />
             <button

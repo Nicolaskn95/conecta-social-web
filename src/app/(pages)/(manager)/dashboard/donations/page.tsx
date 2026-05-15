@@ -8,11 +8,15 @@ import Modal from '@/components/Modal/Modal';
 import { IDonation } from '@/core/donation/model/IDonation';
 import Status from '@/components/shared/Status';
 import { useDonations } from '@/data/hooks/donation/useDonations';
+import useAuth from '@/data/hooks/useAuth';
+import { canDeleteRecords } from '@/core/auth/permissions';
 
 function Donations() {
    const router = useRouter();
+   const { user } = useAuth();
    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
    const { donations, removeDonation } = useDonations();
+   const canDelete = canDeleteRecords(user?.role);
    const [selectedDonation, setSelectedDonation] = useState<IDonation | null>(
       null
    );
@@ -31,7 +35,7 @@ function Donations() {
       {
          key: 'category',
          label: 'Categoria',
-         render: (value: IDonation['category']) => 
+         render: (value: IDonation['category']) =>
             value ? <Status status={value.name} /> : '-',
       },
       { key: 'donator_name', label: 'Doador' },
@@ -83,17 +87,21 @@ function Donations() {
          onClick: handleEdit,
          className: '',
       },
-      {
-         key: 'delete',
-         label: 'Deletar',
-         icon: (
-            <div className="text-danger hover:text-white bg-danger_hover rounded-md p-2 hover:bg-danger">
-               <TrashIcon size={24} />
-            </div>
-         ),
-         onClick: handleDelete,
-         className: '',
-      },
+      ...(canDelete
+         ? [
+              {
+                 key: 'delete',
+                 label: 'Deletar',
+                 icon: (
+                    <div className="text-danger hover:text-white bg-danger_hover rounded-md p-2 hover:bg-danger">
+                       <TrashIcon size={24} />
+                    </div>
+                 ),
+                 onClick: handleDelete,
+                 className: '',
+              },
+           ]
+         : []),
    ];
 
    const onSearch = (value: string) => {
@@ -101,7 +109,7 @@ function Donations() {
    };
 
    return (
-      <div className="min-h-screen p-4 bg-gray-100">
+      <div className="min-h-full p-4 bg-gray-100">
          <div className="flex justify-between items-center mb-6">
             <Breadcrumb items={breadcrumbItems} />
             <button

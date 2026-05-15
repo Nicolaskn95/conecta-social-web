@@ -1,4 +1,4 @@
-import { object, string, nativeEnum, ZodType } from 'zod';
+import { coerce, object, string, nativeEnum, ZodType } from 'zod';
 import { EventStatus, IEventForm } from '../model/IEvent';
 import { isValidInstagramUrl, isValidInstagramEmbed } from '@/utils/instagram';
 
@@ -81,10 +81,11 @@ export const eventSchema: ZodType<IEventForm> = object({
          }
       ),
 
-   status: nativeEnum(EventStatus, {
+	   status: nativeEnum(EventStatus, {
       errorMap: () => ({
          message: 'Status inválido. Use SCHEDULED, COMPLETED ou CANCELED',
       }),
-   }),
-   greeting_description: string().optional().default(''),
+	   }),
+   attendance: coerce.number().int().min(0).optional(),
+	   greeting_description: string().optional().default(''),
 });

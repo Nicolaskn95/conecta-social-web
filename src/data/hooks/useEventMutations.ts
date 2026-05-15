@@ -6,6 +6,7 @@ import {
 import { eventService, EventDetailResponse } from '../services/eventService';
 import { queryKeys } from '../query/queryKeys';
 import { IEvent } from '@/core/event';
+import { EventStatus } from '@/core/event/model/IEvent';
 import { toast } from 'react-toastify';
 
 // Hook para criar evento
@@ -100,6 +101,77 @@ export function usePatchEvent(
    });
 }
 
+export function useUpdateEventStatus(
+   options?: UseMutationOptions<
+      EventDetailResponse,
+      Error,
+      { id: string; status: EventStatus }
+   >
+) {
+   const queryClient = useQueryClient();
+
+   return useMutation({
+      mutationFn: ({ id, status }) => eventService.updateEventStatus(id, status),
+      onSuccess: (data, variables) => {
+         queryClient.setQueryData(queryKeys.events.detail(variables.id), data);
+         queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
+         toast.success('Status do evento atualizado com sucesso!');
+      },
+      onError: (error) => {
+         toast.error(`Erro ao atualizar status: ${error.message}`);
+      },
+      ...options,
+   });
+}
+
+export function useUpdateEventAttendance(
+   options?: UseMutationOptions<
+      EventDetailResponse,
+      Error,
+      { id: string; attendance: number }
+   >
+) {
+   const queryClient = useQueryClient();
+
+   return useMutation({
+      mutationFn: ({ id, attendance }) =>
+         eventService.updateEventAttendance(id, attendance),
+      onSuccess: (data, variables) => {
+         queryClient.setQueryData(queryKeys.events.detail(variables.id), data);
+         queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
+         toast.success('Presença do evento atualizada com sucesso!');
+      },
+      onError: (error) => {
+         toast.error(`Erro ao atualizar presença: ${error.message}`);
+      },
+      ...options,
+   });
+}
+
+export function useUpdateEventInstagram(
+   options?: UseMutationOptions<
+      EventDetailResponse,
+      Error,
+      { id: string; embedded_instagram?: string }
+   >
+) {
+   const queryClient = useQueryClient();
+
+   return useMutation({
+      mutationFn: ({ id, embedded_instagram }) =>
+         eventService.updateEventInstagram(id, embedded_instagram),
+      onSuccess: (data, variables) => {
+         queryClient.setQueryData(queryKeys.events.detail(variables.id), data);
+         queryClient.invalidateQueries({ queryKey: queryKeys.events.all });
+         toast.success('Instagram do evento atualizado com sucesso!');
+      },
+      onError: (error) => {
+         toast.error(`Erro ao atualizar Instagram: ${error.message}`);
+      },
+      ...options,
+   });
+}
+
 // Hook para deletar evento
 export function useDeleteEvent(
    options?: UseMutationOptions<void, Error, string>
@@ -126,15 +198,21 @@ export function useDeleteEvent(
 
 // Hook combinado para operações CRUD de eventos
 export function useEventMutations() {
-   const createEvent = useCreateEvent();
-   const updateEvent = useUpdateEvent();
-   const patchEvent = usePatchEvent();
-   const deleteEvent = useDeleteEvent();
+	   const createEvent = useCreateEvent();
+	   const updateEvent = useUpdateEvent();
+	   const patchEvent = usePatchEvent();
+	   const updateEventStatus = useUpdateEventStatus();
+	   const updateEventAttendance = useUpdateEventAttendance();
+	   const updateEventInstagram = useUpdateEventInstagram();
+	   const deleteEvent = useDeleteEvent();
 
    return {
       createEvent,
-      updateEvent,
-      patchEvent,
-      deleteEvent,
-   };
+	      updateEvent,
+	      patchEvent,
+	      updateEventStatus,
+	      updateEventAttendance,
+	      updateEventInstagram,
+	      deleteEvent,
+	   };
 }

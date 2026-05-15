@@ -12,9 +12,12 @@ import {
 } from '@phosphor-icons/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import useAuth from '@/data/hooks/useAuth';
+import { canManageVolunteers } from '@/core/auth/permissions';
 
 export default function Sidebar() {
    const pathname = usePathname();
+   const { user } = useAuth();
    const sidebarTopics = [
       {
          description: 'Dashboard',
@@ -41,15 +44,19 @@ export default function Sidebar() {
          link: '/dashboard/events',
          icon: <CalendarIcon size={24} />,
       },
-      {
-         description: 'Voluntários',
-         link: '/dashboard/volunteers',
-         icon: <IdentificationBadgeIcon size={24} />,
-      },
+      ...(canManageVolunteers(user?.role)
+         ? [
+              {
+                 description: 'Voluntários',
+                 link: '/dashboard/volunteers',
+                 icon: <IdentificationBadgeIcon size={24} />,
+              },
+           ]
+         : []),
    ];
 
    return (
-      <aside className="sidebar-color w-64 h-screen sticky top-0 self-start flex flex-col justify-between p-4 overflow-y-auto">
+      <aside className="sidebar-color h-full w-64 flex-none flex flex-col justify-between p-4 overflow-y-auto">
          <div>
             {sidebarTopics.map((topic, index) => {
                const isActive =
