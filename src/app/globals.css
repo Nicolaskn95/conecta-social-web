@@ -351,25 +351,28 @@ h3 {
    }
 }
 
-/* Eventos — embeds do Instagram com altura uniforme */
+/* Eventos — área do Instagram com altura uniforme */
 #events .event-instagram-embed {
-   height: var(--event-instagram-embed-height, 420px);
+   height: var(--event-instagram-embed-height, 480px);
    overflow: hidden;
    position: relative;
 }
 
-#events .event-instagram-embed iframe {
-   width: 100% !important;
-   min-width: 100% !important;
-   height: var(--event-instagram-embed-height, 420px) !important;
-   min-height: var(--event-instagram-embed-height, 420px) !important;
-   max-height: var(--event-instagram-embed-height, 420px) !important;
+#events .event-instagram-embed__inner {
+   min-height: 100%;
+   width: 100%;
 }
 
-#events .event-instagram-embed .instagram-media,
-#events .event-instagram-embed > div {
-   margin: 0 !important;
-   max-height: var(--event-instagram-embed-height, 420px) !important;
-   min-width: 100% !important;
+#events .event-instagram-embed iframe {
+   display: block !important;
+   margin: 0 auto !important;
+   max-width: 100% !important;
+   width: 100% !important;
+}
+
+#events .event-instagram-embed .instagram-media {
+   margin: 0 auto !important;
+   max-width: 100% !important;
+   min-width: 0 !important;
    width: 100% !important;
 }

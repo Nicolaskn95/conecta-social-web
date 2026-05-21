@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import EventsSkeleton from '../shared/EventsSkeleton';
@@ -8,9 +8,12 @@ import { SkeletonBox } from '../shared/SkeletonElements';
 import { usePublicEvents } from '@/data/hooks/useEventQueries';
 import { IEvent } from '@/core/event';
 
-const EMBED_LOAD_TIMEOUT_MS = 12_000;
+const EMBED_LOAD_TIMEOUT_MS = 15_000;
 const EMBED_POLL_INTERVAL_MS = 200;
-const INSTAGRAM_EMBED_HEIGHT_PX = 420;
+const EMBED_STABLE_CHECKS_REQUIRED = 3;
+const INSTAGRAM_EMBED_HEIGHT_PX = 480;
+const MIN_LOADED_IFRAME_HEIGHT_PX = 250;
+const MIN_LOADED_IFRAME_WIDTH_PX = 200;
 
 function parseEventDate(date: IEvent['date']): Date {
    return typeof date === 'string' ? parseISO(date) : new Date(date);
@@ -71,211 +74,287 @@ function waitForInstagramScript(maxWaitMs = 8000): Promise<void> {
    });
 }
 
-function isInstagramEmbedRendered(container: HTMLElement): boolean {
-   const iframe = container.querySelector('iframe');
-   return Boolean(iframe && iframe.offsetHeight > 80);
+function getInstagramIframe(container: HTMLElement): HTMLIFrameElement | null {
+   return container.querySelector('iframe');
 }
 
-function useInstagramEmbedReady(
+function isInstagramIframePopulated(iframe: HTMLIFrameElement): boolean {
+   const src = iframe.getAttribute('src') ?? '';
+   return src.length > 0 && src !== 'about:blank';
+}
+
+function isInstagramPostFullyRendered(container: HTMLElement): boolean {
+   const iframe = getInstagramIframe(container);
+   if (!iframe || !isInstagramIframePopulated(iframe)) return false;
+
+   const { offsetHeight, offsetWidth } = iframe;
+   return (
+      offsetHeight >= MIN_LOADED_IFRAME_HEIGHT_PX &&
+      offsetWidth >= MIN_LOADED_IFRAME_WIDTH_PX
+   );
+}
+
+function useInstagramPostLoaded(
    embedHtml: string | undefined,
-   containerRef: React.RefObject<HTMLDivElement | null>
+   container: HTMLDivElement | null
 ) {
-   const [isReady, setIsReady] = useState(false);
+   const [isPostLoaded, setIsPostLoaded] = useState(!embedHtml);
 
    useEffect(() => {
       if (!embedHtml) {
-         setIsReady(true);
+         setIsPostLoaded(true);
          return;
       }
 
-      setIsReady(false);
-      const container = containerRef.current;
       if (!container) return;
+
+      setIsPostLoaded(false);
 
       let disposed = false;
       let pollId: ReturnType<typeof setInterval> | undefined;
       let timeoutId: ReturnType<typeof setTimeout> | undefined;
       let observer: MutationObserver | undefined;
+      let iframeLoadHandler: (() => void) | null = null;
+      let boundIframe: HTMLIFrameElement | null = null;
+      let lastMeasuredHeight = 0;
+      let stableChecks = 0;
+      let hasIframeLoaded = false;
 
-      const markReady = () => {
-         if (disposed) return;
-         disposed = true;
+      const getContainer = () => container;
+
+      const cleanup = () => {
          observer?.disconnect();
          if (pollId) clearInterval(pollId);
          if (timeoutId) clearTimeout(timeoutId);
-         setIsReady(true);
+         if (boundIframe && iframeLoadHandler) {
+            boundIframe.removeEventListener('load', iframeLoadHandler);
+         }
+         boundIframe = null;
+         iframeLoadHandler = null;
       };
 
-      const tryDetectEmbed = () => {
-         if (isInstagramEmbedRendered(container)) {
-            markReady();
+      const markLoaded = () => {
+         const container = getContainer();
+         if (disposed || !container) return;
+
+         disposed = true;
+         cleanup();
+         setIsPostLoaded(true);
+      };
+
+      const bindIframeLoad = (iframe: HTMLIFrameElement) => {
+         if (boundIframe === iframe) return;
+
+         if (boundIframe && iframeLoadHandler) {
+            boundIframe.removeEventListener('load', iframeLoadHandler);
+         }
+
+         boundIframe = iframe;
+         iframeLoadHandler = () => {
+            hasIframeLoaded = true;
+            stableChecks = 0;
+            lastMeasuredHeight = 0;
+         };
+         iframe.addEventListener('load', iframeLoadHandler);
+
+         if (
+            isInstagramIframePopulated(iframe) &&
+            iframe.offsetHeight >= MIN_LOADED_IFRAME_HEIGHT_PX
+         ) {
+            hasIframeLoaded = true;
+         }
+      };
+
+      const tryDetectCompleteLoad = () => {
+         const container = getContainer();
+         if (!container) return;
+
+         if (!isInstagramPostFullyRendered(container)) {
+            stableChecks = 0;
+            lastMeasuredHeight = 0;
+            return;
+         }
+
+         const iframe = getInstagramIframe(container)!;
+         bindIframeLoad(iframe);
+
+         if (!hasIframeLoaded) return;
+
+         const currentHeight = iframe.offsetHeight;
+         if (
+            currentHeight === lastMeasuredHeight &&
+            currentHeight >= MIN_LOADED_IFRAME_HEIGHT_PX
+         ) {
+            stableChecks += 1;
+         } else {
+            stableChecks = 0;
+            lastMeasuredHeight = currentHeight;
+         }
+
+         if (stableChecks >= EMBED_STABLE_CHECKS_REQUIRED) {
+            markLoaded();
          }
       };
 
       const setup = async () => {
          await waitForInstagramScript();
-         if (disposed) return;
+         if (disposed || !getContainer()) return;
 
          processInstagramEmbeds();
-         tryDetectEmbed();
+         tryDetectCompleteLoad();
 
-         observer = new MutationObserver(tryDetectEmbed);
+         const container = getContainer();
+         if (!container) return;
+
+         observer = new MutationObserver(tryDetectCompleteLoad);
          observer.observe(container, { childList: true, subtree: true });
 
-         pollId = setInterval(tryDetectEmbed, EMBED_POLL_INTERVAL_MS);
-         timeoutId = setTimeout(markReady, EMBED_LOAD_TIMEOUT_MS);
-
-         const iframe = container.querySelector('iframe');
-         iframe?.addEventListener('load', markReady, { once: true });
+         pollId = setInterval(tryDetectCompleteLoad, EMBED_POLL_INTERVAL_MS);
+         timeoutId = setTimeout(markLoaded, EMBED_LOAD_TIMEOUT_MS);
       };
 
       setup();
 
       return () => {
          disposed = true;
-         observer?.disconnect();
-         if (pollId) clearInterval(pollId);
-         if (timeoutId) clearTimeout(timeoutId);
+         cleanup();
       };
-   }, [embedHtml, containerRef]);
+   }, [embedHtml, container]);
 
-   return isReady;
+   return isPostLoaded;
 }
 
-function EventCardSkeleton({ delay = 0 }: { delay?: number }) {
+function InstagramPostLoading({ delay = 0 }: { delay?: number }) {
    return (
       <div
-         className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg"
-         aria-hidden
+         className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-gray-50/95 px-6"
+         role="status"
+         aria-live="polite"
+         aria-label="Carregando publicação do Instagram"
       >
-         <div className="bg-gradient-to-br from-tertiary/40 via-white to-primary/5 px-6 pb-5 pt-6">
-            <div className="flex items-start gap-4">
-               <SkeletonBox
-                  width="w-[72px]"
-                  height="h-[88px]"
-                  className="shrink-0 rounded-2xl"
-                  delay={delay}
-               />
-               <div className="min-w-0 flex-1 space-y-3 pt-1">
-                  <SkeletonBox width="w-24" height="h-3" delay={delay + 80} />
-                  <SkeletonBox
-                     width="w-full"
-                     height="h-7"
-                     delay={delay + 160}
-                  />
-                  <SkeletonBox width="w-4/5" height="h-7" delay={delay + 240} />
-                  <SkeletonBox width="w-3/5" height="h-4" delay={delay + 320} />
-               </div>
-            </div>
-         </div>
-
-         <div className="flex flex-1 flex-col border-t border-gray-100 bg-gray-50/50 p-4">
-            <div className="mb-4 flex items-center gap-3">
+         <div className="h-11 w-11 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+         <p className="text-sm font-medium text-gray-500">
+            Carregando publicação...
+         </p>
+         <div className="w-full max-w-xs space-y-3">
+            <div className="flex items-center gap-3">
                <SkeletonBox
                   width="w-10"
                   height="h-10"
                   className="rounded-full"
-                  delay={delay + 400}
+                  delay={delay}
                />
                <div className="flex-1 space-y-2">
-                  <SkeletonBox width="w-28" height="h-4" delay={delay + 480} />
-                  <SkeletonBox width="w-20" height="h-3" delay={delay + 560} />
+                  <SkeletonBox width="w-28" height="h-3" delay={delay + 80} />
+                  <SkeletonBox width="w-20" height="h-3" delay={delay + 160} />
                </div>
             </div>
             <SkeletonBox
                width="w-full"
-               height="h-[420px]"
-               className="shrink-0 rounded-xl"
-               delay={delay + 640}
+               height="h-48"
+               className="rounded-xl"
+               delay={delay + 240}
             />
-            <div className="mt-4 flex gap-3">
-               <SkeletonBox width="w-6" height="h-6" delay={delay + 720} />
-               <SkeletonBox width="w-6" height="h-6" delay={delay + 800} />
-               <SkeletonBox width="w-6" height="h-6" delay={delay + 880} />
-            </div>
          </div>
       </div>
    );
 }
 
 function EventCard({ event, index }: { event: IEvent; index: number }) {
-   const embedRef = useRef<HTMLDivElement>(null);
-   const isEmbedReady = useInstagramEmbedReady(
+   const [embedEl, setEmbedEl] = useState<HTMLDivElement | null>(null);
+
+   const isPostLoaded = useInstagramPostLoaded(
       event.embedded_instagram,
-      embedRef
+      embedEl
    );
+
+   useEffect(() => {
+      if (!isPostLoaded) return;
+      processInstagramEmbeds();
+   }, [isPostLoaded]);
 
    const eventDate = parseEventDate(event.date);
    const { day, month, year, fullLabel, weekday } =
       formatEventDateParts(eventDate);
 
-   const skeletonDelay = index * 120;
+   const loadingDelay = index * 120;
 
    return (
-      <article className="relative flex h-full min-h-0 flex-col">
-         {!isEmbedReady && (
-            <div className="relative z-10 h-full">
-               <EventCardSkeleton delay={skeletonDelay} />
-            </div>
-         )}
+      <article className="flex h-full min-h-0 flex-col">
+         <div className="group flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <div className="relative shrink-0 overflow-hidden bg-gradient-to-br from-tertiary/40 via-white to-primary/5 px-6 pb-5 pt-6">
+               <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-secondary/20 blur-2xl transition-transform duration-500 group-hover:scale-110" />
+               <div className="pointer-events-none absolute -bottom-8 -left-4 h-20 w-20 rounded-full bg-tertiary/50 blur-xl" />
 
-         <div
-            className={`flex h-full min-h-0 flex-col transition-opacity duration-500 ${
-               isEmbedReady
-                  ? 'opacity-100'
-                  : 'pointer-events-none absolute inset-0 opacity-0'
-            }`}
-            aria-hidden={!isEmbedReady}
-         >
-            <div className="group flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-               <div className="relative overflow-hidden bg-gradient-to-br from-tertiary/40 via-white to-primary/5 px-6 pb-5 pt-6">
-                  <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-secondary/20 blur-2xl transition-transform duration-500 group-hover:scale-110" />
-                  <div className="pointer-events-none absolute -bottom-8 -left-4 h-20 w-20 rounded-full bg-tertiary/50 blur-xl" />
-
-                  <div className="relative flex items-start gap-4">
-                     <div
-                        className="flex shrink-0 flex-col items-center justify-center rounded-2xl border border-primary/20 bg-header_sidebar_color px-4 py-3 shadow-sm backdrop-blur-sm"
-                        aria-hidden
-                     >
-                        <div className="text-3xl font-bold leading-none tracking-tight text-primary">
-                           {day}
-                        </div>
-                        <div className="mt-1 text-xs font-semibold tracking-widest text-secondary">
-                           {month}
-                        </div>
-                        <div className="mt-0.5 text-[10px] font-medium text-gray-400">
-                           {year}
-                        </div>
+               <div className="relative flex items-start gap-4">
+                  <div
+                     className="flex shrink-0 flex-col items-center justify-center rounded-2xl border border-primary/20 bg-header_sidebar_color px-4 py-3 shadow-sm backdrop-blur-sm"
+                     aria-hidden
+                  >
+                     <div className="text-3xl font-bold leading-none tracking-tight text-primary">
+                        {day}
                      </div>
-
-                     <div className="min-w-0 flex-1 pt-1 text-left">
-                        <p className="mb-1 text-xs font-medium uppercase tracking-wider text-secondary underline">
-                           {weekday}
-                        </p>
-                        <h3 className="line-clamp-2 text-xl font-bold leading-snug text-primary transition-colors duration-300 group-hover:text-secondary md:text-2xl">
-                           {event.name}
-                        </h3>
-                        <p className="mt-2 flex items-center gap-1.5 text-sm text-gray-500"></p>
+                     <div className="mt-1 text-xs font-semibold tracking-widest text-secondary">
+                        {month}
+                     </div>
+                     <div className="mt-0.5 text-[10px] font-medium text-gray-400">
+                        {year}
                      </div>
                   </div>
-               </div>
 
-               {event.embedded_instagram && (
+                  <div className="min-w-0 flex-1 pt-1 text-left">
+                     <p className="mb-1 text-xs font-medium uppercase tracking-wider text-secondary">
+                        {weekday}
+                     </p>
+                     <h3 className="line-clamp-2 text-xl font-bold leading-snug text-primary transition-colors duration-300 group-hover:text-secondary md:text-2xl">
+                        {event.name}
+                     </h3>
+                     <p className="mt-2 flex items-center gap-1.5 text-sm text-gray-500">
+                        <svg
+                           className="h-4 w-4 shrink-0 text-primary"
+                           fill="none"
+                           stroke="currentColor"
+                           viewBox="0 0 24 24"
+                           aria-hidden
+                        >
+                           <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                           />
+                        </svg>
+                        <time dateTime={eventDate.toISOString()}>{fullLabel}</time>
+                     </p>
+                  </div>
+               </div>
+            </div>
+
+            {event.embedded_instagram && (
+               <div
+                  className="event-instagram-embed relative shrink-0 border-t border-gray-100 bg-gray-50/50"
+                  style={
+                     {
+                        '--event-instagram-embed-height': `${INSTAGRAM_EMBED_HEIGHT_PX}px`,
+                     } as React.CSSProperties
+                  }
+               >
+                  {!isPostLoaded && (
+                     <InstagramPostLoading delay={loadingDelay} />
+                  )}
+
                   <div
-                     ref={embedRef}
-                     className="event-instagram-embed shrink-0 border-t border-gray-100 bg-gray-50/50"
-                     style={
-                        {
-                           '--event-instagram-embed-height': `${INSTAGRAM_EMBED_HEIGHT_PX}px`,
-                        } as React.CSSProperties
-                     }
+                     ref={setEmbedEl}
+                     className={`event-instagram-embed__inner w-full transition-opacity duration-500 ${
+                        isPostLoaded ? 'opacity-100' : 'opacity-0'
+                     }`}
                      suppressHydrationWarning
                      dangerouslySetInnerHTML={{
                         __html: event.embedded_instagram,
                      }}
                   />
-               )}
-            </div>
+               </div>
+            )}
          </div>
       </article>
    );
