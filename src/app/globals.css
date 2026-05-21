@@ -350,3 +350,26 @@ h3 {
       font-size: 0.875rem;
    }
 }
+
+/* Eventos — embeds do Instagram com altura uniforme */
+#events .event-instagram-embed {
+   height: var(--event-instagram-embed-height, 420px);
+   overflow: hidden;
+   position: relative;
+}
+
+#events .event-instagram-embed iframe {
+   width: 100% !important;
+   min-width: 100% !important;
+   height: var(--event-instagram-embed-height, 420px) !important;
+   min-height: var(--event-instagram-embed-height, 420px) !important;
+   max-height: var(--event-instagram-embed-height, 420px) !important;
+}
+
+#events .event-instagram-embed .instagram-media,
+#events .event-instagram-embed > div {
+   margin: 0 !important;
+   max-height: var(--event-instagram-embed-height, 420px) !important;
+   min-width: 100% !important;
+   width: 100% !important;
+}
