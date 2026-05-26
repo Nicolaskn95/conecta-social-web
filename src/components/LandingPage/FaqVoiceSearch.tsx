@@ -8,7 +8,8 @@ import {
    WarningCircleIcon,
 } from '@phosphor-icons/react';
 import {
-   FaqVoiceSearchResponse,
+   FaqChatHistoryMessage,
+   FaqChatbotResponse,
    voiceSearchService,
 } from '@/data/services/voiceSearchService';
 
@@ -60,12 +61,20 @@ const intentLabels: Record<string, string> = {
    desconhecida: 'Não identificada',
 };
 
+const sourceLabels: Record<string, string> = {
+   llm: 'Resposta assistida por IA',
+   faq_fallback: 'Resposta FAQ local',
+};
+
 const showDebugInfo =
    (process.env.NEXT_PUBLIC_FAQ_VOICE_SEARCH_DEBUG ?? '').trim().length > 0;
 
+const MAX_HISTORY_MESSAGES = 6;
+
 export default function FaqVoiceSearch() {
    const [query, setQuery] = useState('');
-   const [response, setResponse] = useState<FaqVoiceSearchResponse | null>(null);
+   const [response, setResponse] = useState<FaqChatbotResponse | null>(null);
+   const [chatHistory, setChatHistory] = useState<FaqChatHistoryMessage[]>([]);
    const [isSpeechSupported, setIsSpeechSupported] = useState(true);
    const [isListening, setIsListening] = useState(false);
    const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,7 +92,7 @@ export default function FaqVoiceSearch() {
       };
    }, []);
 
-   const searchFaq = async (value: string) => {
+   const askFaq = async (value: string) => {
       const trimmedValue = value.trim();
 
       if (!trimmedValue) {
@@ -95,10 +104,27 @@ export default function FaqVoiceSearch() {
       setError(null);
 
       try {
-         const result = await voiceSearchService.searchFaq(trimmedValue);
+         const history = chatHistory.slice(-MAX_HISTORY_MESSAGES);
+         const result = await voiceSearchService.chatFaq(trimmedValue, history);
          setResponse(result);
+         if (result.contextReset) {
+            setChatHistory([
+               { role: 'user', content: trimmedValue },
+               { role: 'assistant', content: result.answer },
+            ]);
+         } else {
+            setChatHistory((prev) => {
+               const updatedHistory: FaqChatHistoryMessage[] = [
+                  ...prev,
+                  { role: 'user', content: trimmedValue },
+                  { role: 'assistant', content: result.answer },
+               ];
+
+               return updatedHistory.slice(-MAX_HISTORY_MESSAGES);
+            });
+         }
       } catch (err) {
-         console.error('Erro ao buscar FAQ por voz:', err);
+         console.error('Erro ao consultar chatbot:', err);
          setError(
             'Não foi possível consultar a FAQ agora. Verifique se a API está rodando.'
          );
@@ -109,7 +135,7 @@ export default function FaqVoiceSearch() {
 
    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      void searchFaq(query);
+      void askFaq(query);
    };
 
    const handleStopListening = () => {
@@ -148,7 +174,7 @@ export default function FaqVoiceSearch() {
       recognition.onresult = (event) => {
          const transcript = event.results[0]?.[0]?.transcript ?? '';
          setQuery(transcript);
-         void searchFaq(transcript);
+         void askFaq(transcript);
       };
 
       recognition.onerror = (event) => {
@@ -306,7 +332,7 @@ export default function FaqVoiceSearch() {
                               type="button"
                               onClick={() => {
                                  setQuery(example);
-                                 void searchFaq(example);
+                                 void askFaq(example);
                               }}
                               className="rounded-full bg-primary/10 px-3 py-2 text-sm text-primary hover:bg-primary hover:text-white transition-colors duration-200"
                            >
@@ -341,47 +367,66 @@ export default function FaqVoiceSearch() {
                               </div>
                               <div className="rounded-xl bg-green-50 p-4">
                                  <p className="text-xs font-semibold text-green-700 uppercase">
-                                    Tokens úteis
+                                    Origem
                                  </p>
                                  <p className="text-text_color mt-2">
-                                    {response.tokens.length
-                                       ? response.tokens.join(', ')
-                                       : 'Nenhum token útil'}
+                                    {sourceLabels[response.source] ??
+                                       response.source}
                                  </p>
                               </div>
                            </div>
                         )}
 
-                        <div className="space-y-4">
-                           {response.results.map((result) => (
-                              <article
-                                 key={result.id}
-                                 className="rounded-2xl border border-primary/10 bg-gradient-to-br from-white to-blue-50/60 p-5"
-                              >
-                                 <div className="flex items-start gap-3">
-                                    <CheckCircleIcon
-                                       size={24}
-                                       weight="fill"
-                                       className="text-primary flex-shrink-0 mt-1"
-                                    />
-                                    <div>
-                                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                                          <h4 className="text-lg font-bold text-text_color">
-                                             {result.question}
-                                          </h4>
-                                          <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary border border-primary/20">
-                                             {intentLabels[result.category] ??
-                                                result.category}
-                                          </span>
-                                       </div>
-                                       <p className="text-gray-700 leading-relaxed">
-                                          {result.answer}
-                                       </p>
-                                    </div>
+                        <article className="rounded-2xl border border-primary/10 bg-gradient-to-br from-white to-blue-50/60 p-5">
+                           <div className="flex items-start gap-3">
+                              <CheckCircleIcon
+                                 size={24}
+                                 weight="fill"
+                                 className="text-primary flex-shrink-0 mt-1"
+                              />
+                              <div className="w-full">
+                                 <div className="flex flex-wrap items-center gap-2 mb-2">
+                                    <h4 className="text-lg font-bold text-text_color">
+                                       Resposta
+                                    </h4>
+                                    <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-primary border border-primary/20">
+                                       {sourceLabels[response.source] ??
+                                          response.source}
+                                    </span>
                                  </div>
-                              </article>
-                           ))}
-                        </div>
+                                 <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                    {response.answer}
+                                 </p>
+                              </div>
+                           </div>
+                        </article>
+
+                        {response.references.length > 0 && (
+                           <div className="mt-5 space-y-3">
+                              <p className="text-sm font-semibold text-text_color">
+                                 Referências usadas
+                              </p>
+                              {response.references.map((result) => (
+                                 <article
+                                    key={result.id}
+                                    className="rounded-xl border border-primary/10 bg-white p-4"
+                                 >
+                                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                                       <h5 className="font-semibold text-text_color">
+                                          {result.question}
+                                       </h5>
+                                       <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+                                          {intentLabels[result.category] ??
+                                             result.category}
+                                       </span>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                       {result.answer}
+                                    </p>
+                                 </article>
+                              ))}
+                           </div>
+                        )}
                      </div>
                   )}
 
