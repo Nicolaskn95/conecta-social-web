@@ -6,22 +6,27 @@ import {
 import {
    donationService,
    DonationDetailResponse,
+   DonationStockAdjustmentResponse,
 } from '../../services/donationService';
 import { queryKeys } from '../../query/queryKeys';
-import { IDonation } from '@/core/donation/model/IDonation';
+import {
+   DonationCreatePayload,
+   DonationStockAdjustmentPayload,
+   DonationUpdatePayload,
+} from '@/core/donation/model/IDonation';
 import { toast } from 'react-toastify';
 
 export function useCreateDonation(
    options?: UseMutationOptions<
       DonationDetailResponse,
       Error,
-      Omit<IDonation, 'id' | 'created_at' | 'updated_at' | 'current_quantity' | 'category'>
+      DonationCreatePayload
    >
 ) {
    const queryClient = useQueryClient();
 
    return useMutation({
-      mutationFn: (donation: Omit<IDonation, 'id' | 'created_at' | 'updated_at' | 'current_quantity' | 'category'>) =>
+      mutationFn: (donation: DonationCreatePayload) =>
          donationService.create(donation),
       onSuccess: (data) => {
          queryClient.invalidateQueries({ queryKey: queryKeys.donations.all });
@@ -50,7 +55,7 @@ export function useUpdateDonation(
    options?: UseMutationOptions<
       DonationDetailResponse,
       Error,
-      { id: string; donation: Partial<Omit<IDonation, 'id' | 'created_at' | 'updated_at'>> }
+      { id: string; donation: DonationUpdatePayload }
    >
 ) {
    const queryClient = useQueryClient();
@@ -71,6 +76,36 @@ export function useUpdateDonation(
       },
       onError: (error) => {
          toast.error(`Erro ao atualizar doação: ${error.message}`);
+      },
+      ...options,
+   });
+}
+
+export function useAdjustDonationStock(
+   options?: UseMutationOptions<
+      DonationStockAdjustmentResponse,
+      Error,
+      { id: string; payload: DonationStockAdjustmentPayload }
+   >
+) {
+   const queryClient = useQueryClient();
+
+   return useMutation({
+      mutationFn: ({ id, payload }) => donationService.adjustStock(id, payload),
+      onSuccess: (data, variables) => {
+         queryClient.setQueryData(
+            queryKeys.donations.detail(variables.id),
+            { data: data.donation }
+         );
+
+         queryClient.invalidateQueries({
+            queryKey: queryKeys.donations.lists(),
+         });
+
+         toast.success('Ajuste de estoque registrado com sucesso!');
+      },
+      onError: (error) => {
+         toast.error(`Erro ao ajustar estoque: ${error.message}`);
       },
       ...options,
    });
@@ -104,12 +139,13 @@ export function useDeleteDonation(
 export function useDonationMutations() {
    const createDonation = useCreateDonation();
    const updateDonation = useUpdateDonation();
+   const adjustDonationStock = useAdjustDonationStock();
    const deleteDonation = useDeleteDonation();
 
    return {
       createDonation,
       updateDonation,
+      adjustDonationStock,
       deleteDonation,
    };
 }
-

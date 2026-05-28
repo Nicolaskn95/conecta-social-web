@@ -9,6 +9,7 @@ import { IFamily } from '@/core/family/model/IFamily';
 import { useFamilies as useFamiliesContext } from '@/data/hooks/family/useFamilies';
 import useAuth from '@/data/hooks/useAuth';
 import { canDeleteRecords } from '@/core/auth/permissions';
+import { formatDateDDMMYYYY } from '@/utils/date';
 
 function Families() {
    const router = useRouter();
@@ -33,14 +34,7 @@ function Families() {
       {
          key: 'created_at',
          label: 'Data de cadastro',
-         render: (value: string) =>
-            value
-               ? new Date(value).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                 })
-               : '',
+         render: (value: string) => formatDateDDMMYYYY(value),
       },
    ];
 

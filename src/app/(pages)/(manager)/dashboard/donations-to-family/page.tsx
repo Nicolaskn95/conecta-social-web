@@ -5,6 +5,7 @@ import TableContainer from '@/components/Panel/TableContainer';
 import { useDonationsToFamily } from '@/data/hooks/donation-to-family/useDonationToFamilyQueries';
 import { IDonationToFamily } from '@/core/donation/model/IDonationToFamily';
 import { useRouter } from 'next/navigation';
+import { formatDateDDMMYYYY } from '@/utils/date';
 
 export default function DonationsToFamilyPage() {
    const router = useRouter();
@@ -20,14 +21,7 @@ export default function DonationsToFamilyPage() {
       {
          key: 'created_at',
          label: 'Data de registro',
-         render: (value: Date | string | null) =>
-            value
-               ? new Date(value).toLocaleDateString('pt-BR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                 })
-               : '',
+         render: (value: Date | string | null) => formatDateDDMMYYYY(value),
       },
       {
          key: 'donation',

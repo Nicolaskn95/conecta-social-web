@@ -10,6 +10,7 @@ import Status from '@/components/shared/Status';
 import { useDonations } from '@/data/hooks/donation/useDonations';
 import useAuth from '@/data/hooks/useAuth';
 import { canDeleteRecords } from '@/core/auth/permissions';
+import { formatDateDDMMYYYY } from '@/utils/date';
 
 function Donations() {
    const router = useRouter();
@@ -42,20 +43,26 @@ function Donations() {
       {
          key: 'current_quantity',
          label: 'Quantidade Atual',
-         render: (value: number | null, item: IDonation) =>
-            `${value?.toString() || '0'} ${item.category?.measure_unity ?? ''}`.trim(),
+         render: (value: number | null, item: IDonation) => {
+            const quantity = value ?? 0;
+            const unit = item.category?.measure_unity ?? '';
+
+            return (
+               <div className="flex items-center gap-2">
+                  <span>{`${quantity.toString()} ${unit}`.trim()}</span>
+                  {quantity <= 0 && (
+                     <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
+                        Sem estoque
+                     </span>
+                  )}
+               </div>
+            );
+         },
       },
       {
          key: 'created_at',
          label: 'Data de cadastro',
-         render: (value: Date | null) =>
-            value
-               ? new Date(value).toLocaleDateString('pt-BR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                 })
-               : '',
+         render: (value: Date | string | null) => formatDateDDMMYYYY(value),
       },
    ];
 
@@ -126,6 +133,11 @@ function Donations() {
             data={donations}
             actions={actions}
             onSearch={onSearch}
+            rowClassName={(item: IDonation) =>
+               (item.current_quantity ?? 0) <= 0
+                  ? 'bg-red-50/60 border-l-2 border-red-300'
+                  : ''
+            }
          />
          <Modal
             isOpen={isDeleteModalOpen}

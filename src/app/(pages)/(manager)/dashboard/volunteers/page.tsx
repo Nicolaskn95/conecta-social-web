@@ -16,6 +16,7 @@ import {
 } from '@/core/auth/permissions';
 import { useEmployees } from '@/data/hooks/employee/useEmployeeQueries';
 import { useEmployeeMutations } from '@/data/hooks/employee/useEmployeeMutations';
+import { formatDateDDMMYYYY } from '@/utils/date';
 
 function Volunteers() {
    const router = useRouter();
@@ -43,14 +44,7 @@ function Volunteers() {
       {
          key: 'created_at',
          label: 'Data de cadastro',
-         render: (value: Date | string) =>
-            value
-               ? new Date(value).toLocaleDateString('pt-BR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                 })
-               : '',
+         render: (value: Date | string) => formatDateDDMMYYYY(value),
       },
       {
          key: 'name',

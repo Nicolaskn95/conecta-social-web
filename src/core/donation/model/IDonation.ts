@@ -22,3 +22,29 @@ export interface IDonation {
    created_at?: Date | null;
    updated_at?: Date | null;
 }
+
+export type DonationCreatePayload = Omit<
+   IDonation,
+   'id' | 'created_at' | 'updated_at' | 'current_quantity' | 'category'
+>;
+
+export type DonationUpdatePayload = Partial<
+   Omit<
+      IDonation,
+      'id' | 'created_at' | 'updated_at' | 'initial_quantity' | 'current_quantity' | 'available' | 'category'
+   >
+>;
+
+export type DonationStockAdjustmentReason =
+   | 'SPOILAGE'
+   | 'LOSS'
+   | 'DAMAGE'
+   | 'EXPIRATION'
+   | 'INVENTORY_CORRECTION'
+   | 'OTHER';
+
+export interface DonationStockAdjustmentPayload {
+   delta_quantity: number;
+   reason: DonationStockAdjustmentReason;
+   note?: string;
+}

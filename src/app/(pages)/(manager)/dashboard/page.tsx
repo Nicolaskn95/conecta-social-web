@@ -27,9 +27,9 @@ const PERIOD_DEFAULT: DashboardPeriod = 'year';
 
 const formatDate = (value: string) =>
    new Date(value).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
       year: 'numeric',
-      month: 'short',
-      day: 'numeric',
    });
 
 const formatStatus = (status: string) => getEventStatusLabel(status);
