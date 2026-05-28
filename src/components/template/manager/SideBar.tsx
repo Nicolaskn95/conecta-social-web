@@ -40,6 +40,11 @@ export default function Sidebar() {
          icon: <HandHeartIcon size={24} />,
       },
       {
+         description: 'Doação p/ Família',
+         link: '/dashboard/donations-to-family',
+         icon: <UserSquareIcon size={24} />,
+      },
+      {
          description: 'Eventos',
          link: '/dashboard/events',
          icon: <CalendarIcon size={24} />,
@@ -62,7 +67,8 @@ export default function Sidebar() {
                const isActive =
                   topic.link === '/dashboard'
                      ? pathname === topic.link
-                     : pathname.startsWith(topic.link);
+                     : pathname === topic.link ||
+                       pathname.startsWith(`${topic.link}/`);
                return (
                   <Link
                      key={index}

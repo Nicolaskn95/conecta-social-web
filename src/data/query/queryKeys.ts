@@ -55,6 +55,16 @@ export const queryKeys = {
       detail: (id: string) => [...queryKeys.donations.details(), id] as const,
    },
 
+   donationsToFamily: {
+      all: ['donations-to-family'] as const,
+      lists: () => [...queryKeys.donationsToFamily.all, 'list'] as const,
+      list: (filters: Record<string, any>) =>
+         [...queryKeys.donationsToFamily.lists(), { filters }] as const,
+      details: () => [...queryKeys.donationsToFamily.all, 'detail'] as const,
+      detail: (id: string) =>
+         [...queryKeys.donationsToFamily.details(), id] as const,
+   },
+
    dashboard: {
       all: ['dashboard'] as const,
       overview: (period: string) =>

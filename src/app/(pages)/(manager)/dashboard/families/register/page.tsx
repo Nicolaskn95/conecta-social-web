@@ -7,9 +7,10 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import Breadcrumb from '@/components/Breadcrumb';
+import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
 import { useFamilyMutations } from '@/data/hooks/family/useFamilyMutations';
+import FormActionBar from '@/components/Form/FormActionBar';
 
 function RegisterFamily() {
    const router = useRouter();
@@ -292,24 +293,12 @@ function RegisterFamily() {
                      </div>
                   </div>
 
-                  {/* Botões de ação */}
-                  <div className="flex justify-end gap-4 pt-4 sticky bottom-0 bg-white">
-                     <button
-                        type="button"
-                        className="btn-danger w-32 text-white"
-                        onClick={handleCancel}
-                        disabled={isLoading}
-                     >
-                        Cancelar
-                     </button>
-                     <button
-                        type="submit"
-                        className="btn-primary w-32"
-                        disabled={isLoading}
-                     >
-                        {isLoading ? 'Cadastrando...' : 'Cadastrar'}
-                     </button>
-                  </div>
+                  <FormActionBar
+                     onCancel={handleCancel}
+                     isLoading={isLoading}
+                     submitLabel="Cadastrar"
+                     loadingLabel="Cadastrando..."
+                  />
                </form>
             </div>
          </div>

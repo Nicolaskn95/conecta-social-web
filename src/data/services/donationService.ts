@@ -27,6 +27,12 @@ class DonationService extends BaseService<IDonation> {
       return super.getById(id);
    }
 
+   async getAllWithStock(): Promise<DonationResponse> {
+      return this.request<DonationResponse>(`/${this.entityPath}/with-stock`, {
+         method: 'GET',
+      });
+   }
+
    async create(donation: Omit<IDonation, 'id' | 'created_at' | 'updated_at' | 'current_quantity' | 'category'>): Promise<DonationDetailResponse> {
       return super.create(donation as Omit<IDonation, 'id'>);
    }
@@ -41,4 +47,3 @@ class DonationService extends BaseService<IDonation> {
 }
 
 export const donationService = new DonationService();
-

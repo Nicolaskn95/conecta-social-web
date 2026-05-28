@@ -42,7 +42,8 @@ function Donations() {
       {
          key: 'current_quantity',
          label: 'Quantidade Atual',
-         render: (value: number | null) => value?.toString() || '0',
+         render: (value: number | null, item: IDonation) =>
+            `${value?.toString() || '0'} ${item.category?.measure_unity ?? ''}`.trim(),
       },
       {
          key: 'created_at',

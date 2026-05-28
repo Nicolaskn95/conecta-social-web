@@ -9,6 +9,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useDonations } from '@/data/hooks/donation/useDonations';
 import { useCategories } from '@/data/hooks/donation/useCategoryQueries';
+import FormActionBar from '@/components/Form/FormActionBar';
 
 export default function RegisterDonationPage() {
    const router = useRouter();
@@ -65,12 +66,13 @@ export default function RegisterDonationPage() {
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                            <label htmlFor="name" className="font-semibold mb-1">
-                              Nome
+                              Nome <span className="text-red-500">*</span>
                            </label>
                            <input
                               type="text"
                               id="name"
                               className="input"
+                              required
                               {...register('name')}
                            />
                            {errors.name && (
@@ -89,12 +91,13 @@ export default function RegisterDonationPage() {
                            <select
                               id="category_id"
                               className="input"
+                              required
                               {...register('category_id')}
                            >
                               <option value="">Selecione uma categoria</option>
                               {categories.map((cat) => (
                                  <option key={cat.id} value={cat.id}>
-                                    {cat.name}
+                                    {`${cat.name} (${cat.measure_unity})`}
                                  </option>
                               ))}
                            </select>
@@ -146,12 +149,14 @@ export default function RegisterDonationPage() {
                               htmlFor="initial_quantity"
                               className="font-semibold mb-1"
                            >
-                              Quantidade Inicial
+                              Quantidade Inicial{' '}
+                              <span className="text-red-500">*</span>
                            </label>
                            <input
                               type="number"
                               id="initial_quantity"
                               className="input"
+                              required
                               {...register('initial_quantity', {
                                  valueAsNumber: true,
                               })}
@@ -159,27 +164,6 @@ export default function RegisterDonationPage() {
                            {errors.initial_quantity && (
                               <p className="text-red-500 text-sm">
                                  {errors.initial_quantity.message}
-                              </p>
-                           )}
-                        </div>
-                        <div>
-                           <label
-                              htmlFor="current_quantity"
-                              className="font-semibold mb-1"
-                           >
-                              Quantidade Atual
-                           </label>
-                           <input
-                              type="number"
-                              id="current_quantity"
-                              className="input"
-                              {...register('current_quantity', {
-                                 valueAsNumber: true,
-                              })}
-                           />
-                           {errors.current_quantity && (
-                              <p className="text-red-500 text-sm">
-                                 {errors.current_quantity.message}
                               </p>
                            )}
                         </div>
@@ -221,24 +205,12 @@ export default function RegisterDonationPage() {
                      </div>
                   </div>
 
-                  {/* Botões de ação */}
-                  <div className="flex justify-end gap-4 pt-4 sticky bottom-0 bg-white">
-                     <button
-                        type="button"
-                        className="btn-danger w-32 text-white"
-                        onClick={handleCancel}
-                        disabled={isLoading}
-                     >
-                        Cancelar
-                     </button>
-                     <button
-                        type="submit"
-                        className="btn-primary w-32"
-                        disabled={isLoading}
-                     >
-                        {isLoading ? 'Cadastrando...' : 'Cadastrar'}
-                     </button>
-                  </div>
+                  <FormActionBar
+                     onCancel={handleCancel}
+                     isLoading={isLoading}
+                     submitLabel="Cadastrar"
+                     loadingLabel="Cadastrando..."
+                  />
                </form>
             </div>
          </div>

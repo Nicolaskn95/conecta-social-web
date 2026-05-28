@@ -6,19 +6,26 @@ export const donationSchema: ZodType<
    Omit<IDonation, 'id' | 'created_at' | 'updated_at' | 'category'>
 > = object({
    category_id: string().uuid('ID da categoria deve ser um UUID válido'),
-   name: string()
+   name: string({
+      required_error: 'Nome é obrigatório',
+      invalid_type_error: 'Nome é obrigatório',
+   })
       .min(2, 'Nome é obrigatório')
       .max(60, 'Nome não pode ter mais de 60 caracteres'),
    description: string()
       .max(250, 'Descrição não pode ter mais de 250 caracteres')
       .nullable()
       .optional(),
-   initial_quantity: number()
+   initial_quantity: number({
+      required_error: 'Quantidade inicial é obrigatória',
+      invalid_type_error: 'Quantidade inicial é obrigatória',
+   })
       .int('Quantidade inicial deve ser um número inteiro')
-      .min(0, 'Quantidade inicial não pode ser negativa'),
+      .min(1, 'Quantidade inicial deve ser maior que zero'),
    current_quantity: number()
       .int('Quantidade atual deve ser um número inteiro')
-      .min(0, 'Quantidade atual não pode ser negativa'),
+      .min(0, 'Quantidade atual não pode ser negativa')
+      .optional(),
    donator_name: string()
       .max(90, 'Nome do doador não pode ter mais de 90 caracteres')
       .nullable()
