@@ -3,7 +3,7 @@ import TableContainer from '@/components/Panel/TableContainer';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { PencilIcon, TrashIcon } from '@phosphor-icons/react';
+import { HandHeartIcon, PencilIcon, TrashIcon } from '@phosphor-icons/react';
 import Modal from '@/components/Modal/Modal';
 import { IFamily } from '@/core/family/model/IFamily';
 import { useFamilies as useFamiliesContext } from '@/data/hooks/family/useFamilies';
@@ -27,36 +27,34 @@ function Families() {
    ];
 
    const columns = [
-      {
-         key: 'created_at',
-         label: 'Data de criação',
-         render: (value: string) =>
-            value
-               ? new Date(value).toLocaleDateString('pt-BR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                 })
-               : '',
-      },
       { key: 'name', label: 'Nome da Família' },
+      { key: 'neighborhood', label: 'Bairro' },
+      { key: 'city', label: 'Cidade' },
       {
          key: 'created_at',
          label: 'Data de cadastro',
          render: (value: string) =>
             value
                ? new Date(value).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
                     year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
                  })
                : '',
       },
-      { key: 'city', label: 'Cidade' },
    ];
 
    const handleEdit = (family: IFamily) => {
       router.push(`/dashboard/families/${family.id}`);
+   };
+
+   const handleDonate = (family: IFamily) => {
+      if (!family.id) return;
+      router.push(
+         `/dashboard/donations-to-family/register?familyId=${encodeURIComponent(
+            family.id
+         )}`
+      );
    };
 
    const [selectedFamily, setSelectedFamily] = useState<IFamily | null>(null);
@@ -74,6 +72,17 @@ function Families() {
    };
 
    const actions = [
+      {
+         key: 'donate',
+         label: 'Doar',
+         icon: (
+            <div className="rounded-md p-2 text-green-700 bg-green-100 hover:bg-green-700 hover:text-white">
+               <HandHeartIcon size={24} />
+            </div>
+         ),
+         onClick: handleDonate,
+         className: '',
+      },
       {
          key: 'edit',
          label: 'Editar',

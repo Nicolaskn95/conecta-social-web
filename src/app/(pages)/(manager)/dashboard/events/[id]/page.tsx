@@ -19,6 +19,7 @@ import AddressSection from './components/AddressSection';
 import SocialMediaSection from './components/SocialMediaSection';
 import LottieAnimation from '@/components/shared/LottieAnimation';
 import useAuth from '@/data/hooks/useAuth';
+import FormActionBar from '@/components/Form/FormActionBar';
 import {
    canCancelEvent,
    canPublishEventInstagram,
@@ -191,23 +192,12 @@ export default function EditEventPage() {
 	                     <SocialMediaSection register={register} errors={errors} />
 	                  )}
 
-                  <div className="flex justify-end gap-4 pt-4 sticky bottom-0 bg-white">
-                     <button
-                        type="button"
-                        className="btn-danger w-32 text-white"
-                        onClick={handleCancel}
-	                        disabled={isSaving}
-                     >
-                        Cancelar
-                     </button>
-                     <button
-                        type="submit"
-                        className="btn-primary w-32"
-	                        disabled={isSaving}
-                     >
-	                        {isSaving ? 'Salvando...' : 'Salvar'}
-                     </button>
-                  </div>
+                  <FormActionBar
+                     onCancel={handleCancel}
+                     isLoading={isSaving}
+                     submitLabel="Salvar"
+                     loadingLabel="Salvando..."
+                  />
                </form>
             </div>
          </div>

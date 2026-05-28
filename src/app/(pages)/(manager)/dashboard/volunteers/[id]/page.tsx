@@ -20,6 +20,7 @@ import {
    canManageVolunteers,
 } from '@/core/auth/permissions';
 import LottieAnimation from '@/components/shared/LottieAnimation';
+import FormActionBar from '@/components/Form/FormActionBar';
 
 function formatBirthDate(value?: Date | string) {
    if (!value) return '';
@@ -69,7 +70,6 @@ export default function EditVolunteerPage() {
       reset({
          ...volunteer,
          birth_date: formatBirthDate(volunteer.birth_date),
-         uf: volunteer.uf ?? '',
          password: undefined,
       });
       setRoleValue(volunteer.role);
@@ -77,7 +77,6 @@ export default function EditVolunteerPage() {
 
    useEffect(() => {
       if (cepData) {
-         if (cepData.uf) setValue('uf', cepData.uf);
          if (cepData.localidade) setValue('city', cepData.localidade);
          if (cepData.logradouro) setValue('street', cepData.logradouro);
          if (cepData.bairro) setValue('neighborhood', cepData.bairro);
@@ -299,22 +298,6 @@ export default function EditVolunteerPage() {
                               </p>
                            )}
                         </div>
-                        <div className="flex flex-col flex-1 min-w-[250px]">
-                           <label htmlFor="uf" className="font-semibold mb-1">
-                              UF <span className="text-red-500">*</span>
-                           </label>
-                           <input
-                              id="uf"
-                              className="input"
-                              {...register('uf')}
-                              maxLength={2}
-                           />
-                           {errors.uf && (
-                              <p className="text-red-500 text-sm">
-                                 {errors.uf.message}
-                              </p>
-                           )}
-                        </div>
                      </div>
 
                      <div className="flex flex-wrap gap-4">
@@ -404,23 +387,12 @@ export default function EditVolunteerPage() {
                      </div>
                   </div>
 
-                  <div className="flex justify-end gap-4 pt-4 sticky bottom-0 bg-white">
-                     <button
-                        type="button"
-                        className="btn-danger w-32 text-white"
-                        onClick={handleCancel}
-                        disabled={updateBasic.isPending}
-                     >
-                        Cancelar
-                     </button>
-                     <button
-                        type="submit"
-                        className="btn-primary w-32"
-                        disabled={updateBasic.isPending}
-                     >
-                        {updateBasic.isPending ? 'Salvando...' : 'Salvar'}
-                     </button>
-                  </div>
+                  <FormActionBar
+                     onCancel={handleCancel}
+                     isLoading={updateBasic.isPending}
+                     submitLabel="Salvar"
+                     loadingLabel="Salvando..."
+                  />
                </form>
 
                {(canEditRole || canEditPassword) && (

@@ -1,13 +1,19 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
+import LottieAnimation from '@/components/shared/LottieAnimation';
+import FormActionBar from '@/components/Form/FormActionBar';
 import { IFamily } from '@/core/family/model/IFamily';
+import { familySchema } from '@/core/family/validation/familySchema';
 import { useFamilyById } from '@/data/hooks/family/useFamilyQueries';
 import { useFamilyMutations } from '@/data/hooks/family/useFamilyMutations';
-import LottieAnimation from '@/components/shared/LottieAnimation';
+import useCEP from '@/data/hooks/useCEP';
 
-export default function EditFamily() {
+export default function EditFamilyPage() {
    const params = useParams();
    const router = useRouter();
    const [isLoading, setIsLoading] = useState(false);
@@ -18,53 +24,62 @@ export default function EditFamily() {
       isLoading: isLoadingData,
       error,
    } = useFamilyById(id || '');
-
    const { updateFamily } = useFamilyMutations();
 
-   const [formData, setFormData] = useState<IFamily>({
-      name: '',
-      street: '',
-      number: '',
-      neighborhood: '',
-      city: '',
-      state: '',
-      cep: '',
-      active: true,
+   const {
+      data: cepData,
+      loading: cepLoading,
+      error: cepError,
+      fetchCEP,
+   } = useCEP();
+
+   const {
+      register,
+      handleSubmit,
+      setValue,
+      formState: { errors },
+      watch,
+      reset,
+   } = useForm<IFamily>({
+      resolver: zodResolver(familySchema),
    });
 
-   const breadcrumbItems = [
-      { label: 'Início', href: '/dashboard' },
-      { label: 'Famílias', href: '/dashboard/families' },
-      { label: 'Editar Família' },
-   ];
+   const cepValue = watch('cep');
 
    useEffect(() => {
       if (familyData?.data) {
-         setFormData(familyData.data);
+         reset(familyData.data);
       }
-   }, [familyData]);
+   }, [familyData, reset]);
 
-   const handleInputChange = (
-      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-   ) => {
-      const { name, value } = e.target;
-      setFormData((prev) => ({
-         ...prev,
-         [name]: value,
-      }));
+   useEffect(() => {
+      if (cepData) {
+         if (cepData.localidade) setValue('city', cepData.localidade);
+         if (cepData.logradouro) setValue('street', cepData.logradouro);
+         if (cepData.bairro) setValue('neighborhood', cepData.bairro);
+         if (cepData.estado) setValue('state', cepData.estado);
+      }
+   }, [cepData, setValue]);
+
+   const handleCepBlur = async () => {
+      if (cepValue && cepValue.replace(/\D/g, '').length === 8) {
+         await fetchCEP(cepValue);
+      }
    };
 
-   const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
+   const handleCancel = () => {
+      router.push('/dashboard/families');
+   };
+
+   const submit: SubmitHandler<IFamily> = async (data) => {
       if (!id) return;
 
       setIsLoading(true);
       try {
-         // Remove id, created_at e updated_at antes de enviar
-         const { id: _, created_at, updated_at, ...familyData } = formData;
+         const { id: _id, created_at, updated_at, ...familyPayload } = data;
 
          updateFamily.mutate(
-            { id, family: familyData },
+            { id, family: familyPayload },
             {
                onSuccess: () => {
                   router.push('/dashboard/families');
@@ -74,10 +89,16 @@ export default function EditFamily() {
                },
             }
          );
-      } catch (error) {
+      } catch {
          setIsLoading(false);
       }
    };
+
+   const breadcrumbItems = [
+      { label: 'Início', href: '/dashboard' },
+      { label: 'Famílias', href: '/dashboard/families' },
+      { label: familyData?.data?.name || 'Editar Família' },
+   ];
 
    if (isLoadingData) {
       return <LottieAnimation status="loading" />;
@@ -94,167 +115,225 @@ export default function EditFamily() {
    }
 
    return (
-      <div className="min-h-screen p-4 bg-gray-100">
-         <div className="mb-6">
-            <Breadcrumb items={breadcrumbItems} />
+      <div className="h-screen flex flex-col bg-gray-100">
+         <div className="flex-none p-4 bg-gray-100">
+            <div className="flex justify-between items-center p-2">
+               <Breadcrumb items={breadcrumbItems} />
+            </div>
          </div>
 
-         <div className="bg-white rounded-lg shadow-md p-6">
-            <h1 className="text-2xl font-semibold mb-6">Editar Família</h1>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Nome da Família */}
-                  <div>
-                     <label
-                        htmlFor="name"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                     >
-                        Nome da Família *
-                     </label>
-                     <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                     />
+         <div className="flex-1 overflow-y-auto p-4">
+            <div className="p-6 bg-white rounded-3xl shadow-md border border-[#4AA1D3] space-y-6 pb-24">
+               <form onSubmit={handleSubmit(submit)} className="space-y-6">
+                  <div className="space-y-4">
+                     <h2 className="text-xl font-bold text-gray-800">
+                        Informações da Família
+                     </h2>
+                     <div className="flex flex-wrap gap-4">
+                        <div className="flex flex-col flex-1 min-w-[250px]">
+                           <label
+                              htmlFor="family_name"
+                              className="font-semibold mb-1"
+                           >
+                              Nome da família{' '}
+                              <span className="text-red-500">*</span>
+                           </label>
+                           <input
+                              type="text"
+                              id="family_name"
+                              className="input"
+                              placeholder="Informe o nome da família"
+                              {...register('name')}
+                           />
+                           {errors.name && (
+                              <p className="text-red-500 text-sm">
+                                 {errors.name.message as string}
+                              </p>
+                           )}
+                        </div>
+                     </div>
                   </div>
 
-                  {/* CEP */}
-                  <div>
-                     <label
-                        htmlFor="cep"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                     >
-                        CEP *
-                     </label>
-                     <input
-                        type="text"
-                        id="cep"
-                        name="cep"
-                        value={formData.cep}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                     />
+                  <div className="space-y-4">
+                     <h2 className="text-xl font-bold text-gray-800">
+                        Endereço
+                     </h2>
+                     <div className="flex flex-wrap gap-4">
+                        <div className="flex flex-col flex-1 min-w-[250px]">
+                           <label htmlFor="cep" className="font-semibold mb-1">
+                              CEP <span className="text-red-500">*</span>
+                           </label>
+                           <input
+                              type="text"
+                              id="cep"
+                              className="input"
+                              placeholder="Digite o CEP"
+                              {...register('cep')}
+                              onBlur={handleCepBlur}
+                              maxLength={9}
+                           />
+                           {cepLoading && (
+                              <p className="text-blue-500 text-sm">
+                                 Buscando CEP...
+                              </p>
+                           )}
+                           {cepError && (
+                              <p className="text-red-500 text-sm">{cepError}</p>
+                           )}
+                           {errors.cep && (
+                              <p className="text-red-500 text-sm">
+                                 {errors.cep.message as string}
+                              </p>
+                           )}
+                        </div>
+                     </div>
+                     <div className="flex flex-wrap gap-4">
+                        <div className="flex flex-col flex-1 min-w-[250px]">
+                           <label
+                              htmlFor="estado"
+                              className="font-semibold mb-1"
+                           >
+                              Estado <span className="text-red-500">*</span>
+                           </label>
+                           <input
+                              type="text"
+                              id="estado"
+                              className="input"
+                              placeholder="Digite o estado"
+                              {...register('state')}
+                              value={
+                                 typeof cepData?.estado === 'string' &&
+                                 cepData.estado !== ''
+                                    ? cepData.estado
+                                    : watch('state') || ''
+                              }
+                              onChange={(e) =>
+                                 setValue('state', e.target.value)
+                              }
+                           />
+                           {errors.state && (
+                              <p className="text-red-500 text-sm">
+                                 {errors.state.message as string}
+                              </p>
+                           )}
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-[250px]">
+                           <label
+                              htmlFor="cidade"
+                              className="font-semibold mb-1"
+                           >
+                              Cidade <span className="text-red-500">*</span>
+                           </label>
+                           <input
+                              type="text"
+                              id="cidade"
+                              className="input"
+                              placeholder="Digite a cidade"
+                              {...register('city')}
+                              value={
+                                 typeof cepData?.localidade === 'string' &&
+                                 cepData.localidade !== ''
+                                    ? cepData.localidade
+                                    : watch('city') || ''
+                              }
+                              onChange={(e) => setValue('city', e.target.value)}
+                           />
+                           {errors.city && (
+                              <p className="text-red-500 text-sm">
+                                 {errors.city.message as string}
+                              </p>
+                           )}
+                        </div>
+                     </div>
+                     <div className="flex flex-wrap gap-4">
+                        <div className="flex flex-col flex-1 min-w-[250px]">
+                           <label
+                              htmlFor="bairro"
+                              className="font-semibold mb-1"
+                           >
+                              Bairro <span className="text-red-500">*</span>
+                           </label>
+                           <input
+                              type="text"
+                              id="bairro"
+                              className="input"
+                              placeholder="Digite o bairro"
+                              {...register('neighborhood')}
+                              value={
+                                 typeof cepData?.bairro === 'string' &&
+                                 cepData.bairro !== ''
+                                    ? cepData.bairro
+                                    : watch('neighborhood') || ''
+                              }
+                              onChange={(e) =>
+                                 setValue('neighborhood', e.target.value)
+                              }
+                           />
+                           {errors.neighborhood && (
+                              <p className="text-red-500 text-sm">
+                                 {errors.neighborhood.message as string}
+                              </p>
+                           )}
+                        </div>
+                     </div>
+                     <div className="flex flex-wrap gap-4">
+                        <div className="flex flex-col flex-1 min-w-[250px]">
+                           <label htmlFor="rua" className="font-semibold mb-1">
+                              Rua <span className="text-red-500">*</span>
+                           </label>
+                           <input
+                              type="text"
+                              id="rua"
+                              className="input"
+                              placeholder="Logradouro"
+                              {...register('street')}
+                              value={
+                                 typeof cepData?.logradouro === 'string' &&
+                                 cepData.logradouro !== ''
+                                    ? cepData.logradouro
+                                    : watch('street') || ''
+                              }
+                              onChange={(e) =>
+                                 setValue('street', e.target.value)
+                              }
+                           />
+                           {errors.street && (
+                              <p className="text-red-500 text-sm">
+                                 {errors.street?.message as string}
+                              </p>
+                           )}
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-[250px]">
+                           <label
+                              htmlFor="numero"
+                              className="font-semibold mb-1"
+                           >
+                              Número <span className="text-red-500">*</span>
+                           </label>
+                           <input
+                              type="text"
+                              id="numero"
+                              className="input"
+                              placeholder="Digite o número"
+                              {...register('number')}
+                           />
+                           {errors.number && (
+                              <p className="text-red-500 text-sm">
+                                 {errors.number?.message as string}
+                              </p>
+                           )}
+                        </div>
+                     </div>
                   </div>
 
-                  {/* Rua */}
-                  <div>
-                     <label
-                        htmlFor="street"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                     >
-                        Rua *
-                     </label>
-                     <input
-                        type="text"
-                        id="street"
-                        name="street"
-                        value={formData.street}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                     />
-                  </div>
-
-                  {/* Número */}
-                  <div>
-                     <label
-                        htmlFor="number"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                     >
-                        Número *
-                     </label>
-                     <input
-                        type="text"
-                        id="number"
-                        name="number"
-                        value={formData.number}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                     />
-                  </div>
-
-                  {/* Bairro */}
-                  <div>
-                     <label
-                        htmlFor="neighborhood"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                     >
-                        Bairro *
-                     </label>
-                     <input
-                        type="text"
-                        id="neighborhood"
-                        name="neighborhood"
-                        value={formData.neighborhood}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                     />
-                  </div>
-
-                  {/* Cidade */}
-                  <div>
-                     <label
-                        htmlFor="city"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                     >
-                        Cidade *
-                     </label>
-                     <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                     />
-                  </div>
-
-                  {/* Estado */}
-                  <div>
-                     <label
-                        htmlFor="state"
-                        className="block text-sm font-medium text-gray-700 mb-1"
-                     >
-                        Estado *
-                     </label>
-                     <input
-                        type="text"
-                        id="state"
-                        name="state"
-                        value={formData.state}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                     />
-                  </div>
-               </div>
-
-               <div className="flex justify-end space-x-3 pt-6">
-                  <button
-                     type="button"
-                     onClick={() => router.push('/dashboard/families')}
-                     className="btn-secondary"
-                  >
-                     Cancelar
-                  </button>
-                  <button
-                     type="submit"
-                     className="btn-primary"
-                     disabled={isLoading}
-                  >
-                     {isLoading ? 'Salvando...' : 'Salvar'}
-                  </button>
-               </div>
-            </form>
+                  <FormActionBar
+                     onCancel={handleCancel}
+                     isLoading={isLoading}
+                     submitLabel="Salvar"
+                     loadingLabel="Salvando..."
+                  />
+               </form>
+            </div>
          </div>
       </div>
    );

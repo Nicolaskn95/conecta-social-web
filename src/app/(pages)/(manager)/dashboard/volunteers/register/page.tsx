@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import Breadcrumb from '@/components/Breadcrumb';
+import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
 import { useRoleOptions } from '@/data/hooks/useResources';
 import { formatCPF, formatCEP, formatPhone } from '@/utils/masks';
@@ -18,6 +18,7 @@ import {
    canManageVolunteers,
 } from '@/core/auth/permissions';
 import { useEmployeeMutations } from '@/data/hooks/employee/useEmployeeMutations';
+import FormActionBar from '@/components/Form/FormActionBar';
 
 function Register() {
 	   const router = useRouter();
@@ -62,7 +63,6 @@ function Register() {
 
    React.useEffect(() => {
       if (cepData) {
-         if (cepData.uf) setValue('uf', cepData.uf);
          if (cepData.localidade) setValue('city', cepData.localidade);
          if (cepData.logradouro) setValue('street', cepData.logradouro);
          if (cepData.bairro) setValue('neighborhood', cepData.bairro);
@@ -355,28 +355,6 @@ function Register() {
                            )}
                         </div>
 
-                        <div className="flex flex-col flex-1 min-w-[250px]">
-                           <label htmlFor="uf" className="font-semibold mb-1">
-                              UF <span className="text-red-500">*</span>
-                           </label>
-                           <input
-                              type="text"
-                              id="uf"
-                              className="input"
-                              placeholder="UF"
-                              {...register('uf')}
-                              value={cepData?.uf || watch('uf') || ''}
-                              onChange={(e) =>
-                                 setValue('uf', e.target.value.toUpperCase())
-                              }
-                              maxLength={2}
-                           />
-                           {errors.uf && (
-                              <p className="text-red-500 text-sm">
-                                 {errors.uf.message}
-                              </p>
-                           )}
-                        </div>
                      </div>
 
                      <div className="flex flex-wrap gap-4">
@@ -532,24 +510,12 @@ function Register() {
                      </div>
                   </div>
 
-                  {/* Botões de ação */}
-                  <div className="flex justify-end gap-4 pt-4 sticky bottom-0 bg-white">
-                     <button
-                        type="button"
-                        className="btn-danger w-32 text-white"
-                        onClick={handleCancel}
-                        disabled={isLoading}
-                     >
-                        Cancelar
-                     </button>
-                     <button
-                        type="submit"
-                        className="btn-primary w-32"
-                        disabled={isLoading}
-                     >
-                        {isLoading ? 'Cadastrando...' : 'Cadastrar'}
-                     </button>
-                  </div>
+                  <FormActionBar
+                     onCancel={handleCancel}
+                     isLoading={isLoading}
+                     submitLabel="Cadastrar"
+                     loadingLabel="Cadastrando..."
+                  />
                </form>
             </div>
          </div>

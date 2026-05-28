@@ -15,7 +15,6 @@ export interface IVolunteer {
    neighborhood: string;
    number: string;
    city: string;
-   uf?: string;
    state: string;
    complement?: string;
 

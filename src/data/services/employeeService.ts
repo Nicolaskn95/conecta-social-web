@@ -27,7 +27,6 @@ function stripUiFields(data: Partial<IVolunteer>) {
       created_at,
       updated_at,
       logs,
-      uf,
       password,
       role,
       ...payload

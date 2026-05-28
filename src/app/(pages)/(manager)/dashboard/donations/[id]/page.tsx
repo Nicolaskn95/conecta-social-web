@@ -12,6 +12,7 @@ import { useDonationMutations } from '@/data/hooks/donation/useDonationMutations
 import { useCategories } from '@/data/hooks/donation/useCategoryQueries';
 import LottieAnimation from '@/components/shared/LottieAnimation';
 import { toast } from 'react-toastify';
+import FormActionBar from '@/components/Form/FormActionBar';
 
 export default function EditDonationPage() {
    const params = useParams();
@@ -107,12 +108,13 @@ export default function EditDonationPage() {
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                            <label htmlFor="name" className="font-semibold mb-1">
-                              Nome
+                              Nome <span className="text-red-500">*</span>
                            </label>
                            <input
                               type="text"
                               id="name"
                               className="input"
+                              required
                               {...register('name')}
                            />
                            {errors.name && (
@@ -131,12 +133,13 @@ export default function EditDonationPage() {
                            <select
                               id="category_id"
                               className="input"
+                              required
                               {...register('category_id')}
                            >
                               <option value="">Selecione uma categoria</option>
                               {categories.map((cat) => (
                                  <option key={cat.id} value={cat.id}>
-                                    {cat.name}
+                                    {`${cat.name} (${cat.measure_unity})`}
                                  </option>
                               ))}
                            </select>
@@ -188,12 +191,14 @@ export default function EditDonationPage() {
                               htmlFor="initial_quantity"
                               className="font-semibold mb-1"
                            >
-                              Quantidade Inicial
+                              Quantidade Inicial{' '}
+                              <span className="text-red-500">*</span>
                            </label>
                            <input
                               type="number"
                               id="initial_quantity"
                               className="input"
+                              required
                               {...register('initial_quantity', {
                                  valueAsNumber: true,
                               })}
@@ -262,23 +267,12 @@ export default function EditDonationPage() {
                         </div>
                      </div>
                   </div>
-                  <div className="flex justify-end gap-4 pt-4">
-                     <button
-                        type="button"
-                        className="btn-danger"
-                        onClick={handleCancel}
-                        disabled={isLoading}
-                     >
-                        Cancelar
-                     </button>
-                     <button
-                        type="submit"
-                        className="btn-primary"
-                        disabled={isLoading}
-                     >
-                        {isLoading ? 'Salvando...' : 'Salvar'}
-                     </button>
-                  </div>
+                  <FormActionBar
+                     onCancel={handleCancel}
+                     isLoading={isLoading}
+                     submitLabel="Salvar"
+                     loadingLabel="Salvando..."
+                  />
                </form>
             </div>
          </div>

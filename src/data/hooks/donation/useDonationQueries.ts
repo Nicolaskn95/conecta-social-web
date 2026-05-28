@@ -33,6 +33,18 @@ export function useDonationById(
    });
 }
 
+export function useDonationsWithStock(
+   options?: Omit<UseQueryOptions<DonationResponse>, 'queryKey' | 'queryFn'>
+) {
+   return useQuery({
+      queryKey: queryKeys.donations.list({ with_stock: true }),
+      queryFn: () => donationService.getAllWithStock(),
+      enabled: true,
+      staleTime: 5 * 60 * 1000,
+      ...options,
+   });
+}
+
 export function useDonationsWithSearch(
    search: string,
    options?: Omit<UseQueryOptions<DonationResponse>, 'queryKey' | 'queryFn'>
@@ -45,4 +57,3 @@ export function useDonationsWithSearch(
       }
    );
 }
-

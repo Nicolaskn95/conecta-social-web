@@ -5,10 +5,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import Breadcrumb from '@/components/Breadcrumb';
+import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import useCEP from '@/data/hooks/useCEP';
 import { useEventMutations } from '@/data/hooks/useEventMutations';
 import { useEventStatusOptions } from '@/data/hooks/useResources';
+import FormActionBar from '@/components/Form/FormActionBar';
 
 function Register() {
    const router = useRouter();
@@ -432,24 +433,12 @@ function Register() {
                      </div>
                   </div>
 
-                  {/* Botões de ação */}
-                  <div className="flex justify-end gap-4 pt-4 sticky bottom-0 bg-white">
-                     <button
-                        type="button"
-                        className="btn-danger w-32 text-white"
-                        onClick={handleCancel}
-                        disabled={createEvent.isPending}
-                     >
-                        Cancelar
-                     </button>
-                     <button
-                        type="submit"
-                        className="btn-primary w-32"
-                        disabled={createEvent.isPending}
-                     >
-                        {createEvent.isPending ? 'Cadastrando...' : 'Cadastrar'}
-                     </button>
-                  </div>
+                  <FormActionBar
+                     onCancel={handleCancel}
+                     isLoading={createEvent.isPending}
+                     submitLabel="Cadastrar"
+                     loadingLabel="Cadastrando..."
+                  />
                </form>
             </div>
          </div>
