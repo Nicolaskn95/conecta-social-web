@@ -10,6 +10,7 @@ import {
 import {
    FaqChatHistoryMessage,
    FaqChatbotResponse,
+   FaqSearchResult,
    voiceSearchService,
 } from '@/data/services/voiceSearchService';
 
@@ -70,11 +71,26 @@ const showDebugInfo =
    (process.env.NEXT_PUBLIC_FAQ_VOICE_SEARCH_DEBUG ?? '').trim().length > 0;
 
 const MAX_HISTORY_MESSAGES = 6;
+type ChatMode = 'rules' | 'llm';
+
+function getFallbackReferences(): FaqSearchResult[] {
+   return [
+      {
+         id: 'faq-fallback',
+         category: 'geral',
+         question: 'Não encontramos uma resposta exata.',
+         answer:
+            'Tente perguntar sobre doações, voluntariado, eventos, localização, horário, contato ou chave PIX.',
+         score: 0,
+      },
+   ];
+}
 
 export default function FaqVoiceSearch() {
    const [query, setQuery] = useState('');
    const [response, setResponse] = useState<FaqChatbotResponse | null>(null);
    const [chatHistory, setChatHistory] = useState<FaqChatHistoryMessage[]>([]);
+   const [chatMode, setChatMode] = useState<ChatMode>('rules');
    const [isSpeechSupported, setIsSpeechSupported] = useState(true);
    const [isListening, setIsListening] = useState(false);
    const [isSubmitting, setIsSubmitting] = useState(false);
@@ -104,6 +120,37 @@ export default function FaqVoiceSearch() {
       setError(null);
 
       try {
+         if (chatMode === 'rules') {
+            const faqResponse = await voiceSearchService.searchFaq(trimmedValue);
+            const references = faqResponse.results.slice(0, 3);
+            const best = references[0];
+            const answer = best?.answer
+               ? best.answer
+               : 'Não foi possível identificar a intenção. Tente perguntar sobre doação, voluntariado, eventos, localização, horário, contato ou PIX.';
+
+            const mappedResponse: FaqChatbotResponse = {
+               query: faqResponse.query,
+               answer,
+               source: 'faq_fallback',
+               intent: faqResponse.intent,
+               references: references.length ? references : getFallbackReferences(),
+               contextReset: false,
+            };
+
+            setResponse(mappedResponse);
+            setChatHistory((prev) => {
+               const updatedHistory: FaqChatHistoryMessage[] = [
+                  ...prev,
+                  { role: 'user', content: trimmedValue },
+                  { role: 'assistant', content: answer },
+               ];
+
+               return updatedHistory.slice(-MAX_HISTORY_MESSAGES);
+            });
+
+            return;
+         }
+
          const history = chatHistory.slice(-MAX_HISTORY_MESSAGES);
          const result = await voiceSearchService.chatFaq(trimmedValue, history);
          setResponse(result);
@@ -216,6 +263,17 @@ export default function FaqVoiceSearch() {
       ? 'Buscando resposta...'
       : 'Aguardando busca';
 
+   const changeChatMode = (mode: ChatMode) => {
+      if (mode === chatMode) {
+         return;
+      }
+
+      setChatMode(mode);
+      setChatHistory([]);
+      setResponse(null);
+      setError(null);
+   };
+
    return (
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-50 to-indigo-50">
          <div className="max-w-7xl mx-auto">
@@ -253,6 +311,36 @@ export default function FaqVoiceSearch() {
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
+                     <div>
+                        <p className="text-sm font-semibold text-text_color mb-2">
+                           Modo do chatbot
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                           <button
+                              type="button"
+                              onClick={() => changeChatMode('rules')}
+                              className={`rounded-full px-4 py-2 text-sm font-semibold border transition-colors duration-200 ${
+                                 chatMode === 'rules'
+                                    ? 'bg-primary text-white border-primary'
+                                    : 'bg-white text-primary border-primary/40'
+                              }`}
+                           >
+                              Regras + TF-IDF + SVM
+                           </button>
+                           <button
+                              type="button"
+                              onClick={() => changeChatMode('llm')}
+                              className={`rounded-full px-4 py-2 text-sm font-semibold border transition-colors duration-200 ${
+                                 chatMode === 'llm'
+                                    ? 'bg-secondary text-white border-secondary'
+                                    : 'bg-white text-secondary border-secondary/40'
+                              }`}
+                           >
+                              IA (Maritaca)
+                           </button>
+                        </div>
+                     </div>
+
                      <label
                         htmlFor="faq-search"
                         className="block font-semibold text-text_color"
