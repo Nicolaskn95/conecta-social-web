@@ -1,7 +1,7 @@
 'use client';
 
 import { donationSchema } from '@/core/donation/validation/donationSchema';
-import { IDonation } from '@/core/donation/model/IDonation';
+import { DonationCreatePayload } from '@/core/donation/model/IDonation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -28,14 +28,14 @@ export default function RegisterDonationPage() {
       register,
       handleSubmit,
       formState: { errors },
-   } = useForm<IDonation>({
+   } = useForm<DonationCreatePayload>({
       resolver: zodResolver(donationSchema),
    });
 
    const handleCancel = () => {
       router.push('/dashboard/donations');
    };
-   const submit: SubmitHandler<IDonation> = async (data) => {
+   const submit: SubmitHandler<DonationCreatePayload> = async (data) => {
       setIsLoading(true);
       try {
          addDonation(data);

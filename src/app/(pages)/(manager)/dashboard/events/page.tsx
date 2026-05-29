@@ -9,9 +9,9 @@ import { IEvent } from '@/core/event';
 import { useEvents } from '@/data/hooks/useEvents';
 import { useEventMutations } from '@/data/hooks/useEventMutations';
 import { Status } from '@/components/shared/Status';
-import { toast } from 'react-toastify';
 import useAuth from '@/data/hooks/useAuth';
 import { canCreateEvents, canDeleteRecords } from '@/core/auth/permissions';
+import { formatDateDDMMYYYY } from '@/utils/date';
 
 function Events() {
 	   const router = useRouter();
@@ -35,28 +35,37 @@ function Events() {
       {
          key: 'created_at',
          label: 'Data de criação',
-         render: (value: string) =>
-            value
-               ? new Date(value).toLocaleDateString('pt-BR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                 })
-               : '',
+         render: (value: string) => formatDateDDMMYYYY(value),
       },
-      { key: 'name', label: 'Nome' },
-      { key: 'description', label: 'Descrição' },
+      {
+         key: 'name',
+         label: 'Título',
+         headerClassName: 'w-[24%]',
+         cellClassName: 'w-[24%]',
+         render: (value: string) => (
+            <span className="block max-w-full truncate whitespace-nowrap" title={value}>
+               {value || '-'}
+            </span>
+         ),
+      },
+      {
+         key: 'description',
+         label: 'Descrição',
+         headerClassName: 'w-[18%]',
+         cellClassName: 'w-[18%]',
+         render: (value: string | null) => (
+            <span
+               className="block max-w-full truncate whitespace-nowrap text-slate-600"
+               title={value ?? '-'}
+            >
+               {value || '-'}
+            </span>
+         ),
+      },
       {
          key: 'date',
          label: 'Data',
-         render: (value: string) =>
-            value
-               ? new Date(value).toLocaleDateString('pt-BR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                 })
-               : '',
+         render: (value: string) => formatDateDDMMYYYY(value),
       },
       { key: 'city', label: 'Cidade' },
       {
@@ -139,6 +148,7 @@ function Events() {
             actions={actions}
             onSearch={onSearch}
             showFilters={true}
+            tableClassName="table-fixed"
          />
          <Modal
             isOpen={isDeleteModalOpen}

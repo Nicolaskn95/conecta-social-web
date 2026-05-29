@@ -9,6 +9,8 @@ interface Column {
    key: string;
    label: string;
    render?: (value: any, item: any) => React.ReactNode;
+   headerClassName?: string;
+   cellClassName?: string;
 }
 
 interface Action {
@@ -25,6 +27,8 @@ interface DashboardTableContainerProps {
    actions?: Action[];
    onSearch?: (value: string) => void;
    showFilters?: boolean;
+   rowClassName?: (item: any) => string;
+   tableClassName?: string;
 }
 
 export default function TableContainer({
@@ -34,6 +38,8 @@ export default function TableContainer({
    actions = [],
    onSearch,
    showFilters = false,
+   rowClassName,
+   tableClassName,
 }: DashboardTableContainerProps) {
    const [currentPage, setCurrentPage] = useState<number>(1);
    const itemsPerPage = 10;
@@ -83,13 +89,13 @@ export default function TableContainer({
          </div>
 
          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
+            <table className={`w-full border-collapse ${tableClassName ?? ''}`}>
                <thead className="sticky top-0 bg-white z-10">
                   <tr>
                      {columns.map((column, index) => (
                         <th
                            key={index}
-                           className="px-4 py-2 text-start text-primary font-bold bg-white"
+                           className={`px-4 py-2 text-start text-primary font-bold bg-white ${column.headerClassName ?? ''}`}
                         >
                            {column.label}
                         </th>
@@ -106,9 +112,15 @@ export default function TableContainer({
                </thead>
                <tbody>
                   {paginatedData.map((item, index) => (
-                     <tr className="row-data" key={index}>
+                     <tr
+                        className={`row-data ${rowClassName ? rowClassName(item) : ''}`}
+                        key={index}
+                     >
                         {columns.map((column, columnIndex) => (
-                           <td key={columnIndex} className="px-4 py-2">
+                           <td
+                              key={columnIndex}
+                              className={`px-4 py-2 ${column.cellClassName ?? ''}`}
+                           >
                               {column.render
                                  ? column.render(item[column.key], item)
                                  : item[column.key]}
