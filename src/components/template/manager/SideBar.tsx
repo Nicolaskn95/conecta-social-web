@@ -29,11 +29,11 @@ export default function Sidebar() {
          link: '/dashboard/families',
          icon: <UsersIcon size={24} />,
       },
-      // {
-      //    description: 'Beneficiários',
-      //    link: '/dashboard/beneficiaries',
-      //    icon: <UserSquareIcon size={24} />,
-      // },
+      {
+         description: 'Beneficiários',
+         link: '/dashboard/beneficiaries',
+         icon: <UserIcon size={24} />,
+      },
       {
          description: 'Doações',
          link: '/dashboard/donations',

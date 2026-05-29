@@ -3,7 +3,12 @@ import TableContainer from '@/components/Panel/TableContainer';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { HandHeartIcon, PencilIcon, TrashIcon } from '@phosphor-icons/react';
+import {
+   HandHeartIcon,
+   PencilIcon,
+   TrashIcon,
+   UserSquareIcon,
+} from '@phosphor-icons/react';
 import Modal from '@/components/Modal/Modal';
 import { IFamily } from '@/core/family/model/IFamily';
 import { useFamilies as useFamiliesContext } from '@/data/hooks/family/useFamilies';
@@ -51,6 +56,13 @@ function Families() {
       );
    };
 
+   const handleManageBeneficiaries = (family: IFamily) => {
+      if (!family.id) return;
+      router.push(
+         `/dashboard/beneficiaries?familyId=${encodeURIComponent(family.id)}`
+      );
+   };
+
    const [selectedFamily, setSelectedFamily] = useState<IFamily | null>(null);
 
    const handleDelete = (family: IFamily) => {
@@ -75,6 +87,17 @@ function Families() {
             </div>
          ),
          onClick: handleDonate,
+         className: '',
+      },
+      {
+         key: 'beneficiaries',
+         label: 'Beneficiários',
+         icon: (
+            <div className="rounded-md p-2 text-blue-700 bg-blue-100 hover:bg-blue-700 hover:text-white">
+               <UserSquareIcon size={24} />
+            </div>
+         ),
+         onClick: handleManageBeneficiaries,
          className: '',
       },
       {

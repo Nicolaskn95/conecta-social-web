@@ -65,6 +65,18 @@ export const queryKeys = {
          [...queryKeys.donationsToFamily.details(), id] as const,
    },
 
+   beneficiaries: {
+      all: ['beneficiaries'] as const,
+      lists: () => [...queryKeys.beneficiaries.all, 'list'] as const,
+      list: (filters: Record<string, any>) =>
+         [...queryKeys.beneficiaries.lists(), { filters }] as const,
+      details: () => [...queryKeys.beneficiaries.all, 'detail'] as const,
+      detail: (id: string) =>
+         [...queryKeys.beneficiaries.details(), id] as const,
+      disabilitySuggestions: (search?: string) =>
+         [...queryKeys.beneficiaries.all, 'disability-suggestions', { search }] as const,
+   },
+
    dashboard: {
       all: ['dashboard'] as const,
       overview: (period: string) =>
