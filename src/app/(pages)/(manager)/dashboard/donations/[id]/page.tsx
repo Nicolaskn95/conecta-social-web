@@ -356,7 +356,7 @@ export default function EditDonationPage() {
                   >
                      <div>
                         <label htmlFor="delta_quantity" className="font-semibold mb-1">
-                           Ajuste (delta) <span className="text-red-500">*</span>
+                           Quantidade de ajuste <span className="text-red-500">*</span>
                         </label>
                         <input
                            type="number"
@@ -416,7 +416,7 @@ export default function EditDonationPage() {
                            className="btn-primary w-48"
                            disabled={isAdjustingStock}
                         >
-                           {isAdjustingStock ? 'Registrando...' : 'Registrar ajuste'}
+                           {isAdjustingStock ? 'Registrando...' : 'Registrar movimentação'}
                         </button>
                      </div>
                   </form>
