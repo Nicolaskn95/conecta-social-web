@@ -8,6 +8,7 @@ O Conecta Social nasce para resolver um desafio comum: organizações sociais co
 
 -  [Sobre o Projeto](#-sobre-o-projeto)
 -  [Funcionalidades](#-funcionalidades)
+-  [Chatbot e Voz](#-chatbot-e-voz)
 -  [Diagramas](#-diagramas)
 -  [Entregas de Sprints](#-entregas-de-sprints)
 -  [Tecnologias](#-tecnologias)
@@ -86,6 +87,20 @@ O Conecta Social é a plataforma tecnológica que facilita a gestão de projetos
 -  Controle de quantidades (inicial e atual)
 -  Informações do doador
 -  Categorização por tipo e características
+
+## 🤖 Chatbot e Voz
+
+A aplicação possui um chatbot de FAQ com suporte a reconhecimento de voz.
+
+-  **Entrada de voz**: o usuário pode falar a pergunta pelo microfone (Web Speech API).
+-  **Classificação de intenção**: a busca usa PLN para identificar a intenção e retornar respostas relevantes da FAQ.
+-  **Resposta conversacional**: quando habilitado no backend, o fluxo também pode usar LLM para complementar as respostas.
+
+### Onde acessar
+
+1. Abra a página **Fale Conosco**: `/contactUs`.
+2. Vá até a seção **Perguntas frequentes**.
+3. Digite a pergunta ou use o botão **Falar** para consultar por voz.
 
 ## 🚀 Entregas de Sprints
 
