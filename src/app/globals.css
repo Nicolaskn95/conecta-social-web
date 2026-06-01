@@ -358,6 +358,18 @@ h3 {
    position: relative;
 }
 
+@media (max-width: 767px) {
+   #events .event-instagram-embed {
+      height: calc(100dvh - var(--event-header-height, 180px));
+   }
+}
+
+@media (min-width: 768px) {
+   #events .event-instagram-embed {
+      height: var(--event-instagram-embed-height, 480px);
+   }
+}
+
 #events .event-instagram-embed__inner {
    min-height: 100%;
    width: 100%;

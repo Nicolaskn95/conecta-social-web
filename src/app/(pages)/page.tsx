@@ -24,7 +24,7 @@ export default function Home() {
                </div>
             </section>
 
-            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <section className="py-20 px-0 md:px-6 lg:px-8 bg-gradient-to-r from-blue-50 to-indigo-50">
                <div className="max-w-7xl mx-auto">
                   <Events />
                </div>

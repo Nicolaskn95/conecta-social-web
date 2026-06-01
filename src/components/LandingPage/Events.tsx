@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+   useCallback,
+   useEffect,
+   useLayoutEffect,
+   useMemo,
+   useRef,
+   useState,
+} from 'react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import EventsSkeleton from '../shared/EventsSkeleton';
@@ -227,7 +234,7 @@ function useInstagramPostLoaded(
 function InstagramPostLoading({ delay = 0 }: { delay?: number }) {
    return (
       <div
-         className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-gray-50/95 px-6"
+         className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-gray-50/95 px-0 md:px-6"
          role="status"
          aria-live="polite"
          aria-label="Carregando publicação do Instagram"
@@ -260,7 +267,41 @@ function InstagramPostLoading({ delay = 0 }: { delay?: number }) {
    );
 }
 
-function EventCard({ event, index }: { event: IEvent; index: number }) {
+function EventTitle({ text }: { text: string }) {
+   return (
+      <h3 className="text-xl font-bold leading-snug text-primary md:text-2xl">
+         {text}
+      </h3>
+   );
+}
+
+function EventDescription({ text }: { text: string }) {
+   return (
+      <p className="mt-2 text-sm leading-relaxed text-gray-600 md:text-[15px]">
+         {text}
+      </p>
+   );
+}
+
+function getEventCardDescription(event: IEvent): string | undefined {
+   const description = event.description?.trim();
+   if (description) return description;
+
+   const greetingDescription = event.greeting_description?.trim();
+   return greetingDescription || undefined;
+}
+
+function EventCard({
+   event,
+   index,
+   headerRef,
+   headerMinHeight,
+}: {
+   event: IEvent;
+   index: number;
+   headerRef: (element: HTMLDivElement | null) => void;
+   headerMinHeight?: number;
+}) {
    const [embedEl, setEmbedEl] = useState<HTMLDivElement | null>(null);
 
    const isPostLoaded = useInstagramPostLoaded(
@@ -278,15 +319,24 @@ function EventCard({ event, index }: { event: IEvent; index: number }) {
       formatEventDateParts(eventDate);
 
    const loadingDelay = index * 120;
+   const description = getEventCardDescription(event);
 
    return (
-      <article className="flex h-full min-h-0 flex-col">
-         <div className="group flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-            <div className="relative shrink-0 overflow-hidden bg-gradient-to-br from-tertiary/40 via-white to-primary/5 px-6 pb-5 pt-6">
-               <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-secondary/20 blur-2xl transition-transform duration-500 group-hover:scale-110" />
+      <article className="event-card flex h-full w-full min-h-[100dvh] flex-col md:min-h-0 lg:w-[380px] lg:shrink-0">
+         <div className="group flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-none border-y border-gray-100 bg-white md:rounded-2xl md:border md:shadow-lg">
+            <div
+               ref={headerRef}
+               className="event-card__header relative shrink-0 overflow-hidden bg-gradient-to-br from-tertiary/40 via-white to-primary/5 px-4 pb-5 pt-6 md:px-6"
+               style={
+                  headerMinHeight
+                     ? { minHeight: `${headerMinHeight}px` }
+                     : undefined
+               }
+            >
+               <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-secondary/20 blur-2xl" />
                <div className="pointer-events-none absolute -bottom-8 -left-4 h-20 w-20 rounded-full bg-tertiary/50 blur-xl" />
 
-               <div className="relative flex items-start gap-4">
+               <div className="relative flex h-full items-start gap-4">
                   <div
                      className="flex shrink-0 flex-col items-center justify-center rounded-2xl border border-primary/20 bg-header_sidebar_color px-4 py-3 shadow-sm backdrop-blur-sm"
                      aria-hidden
@@ -306,16 +356,15 @@ function EventCard({ event, index }: { event: IEvent; index: number }) {
                      <p className="mb-1 text-xs font-medium uppercase tracking-wider text-secondary">
                         {weekday}
                      </p>
-                     <h3 className="line-clamp-2 text-xl font-bold leading-snug text-primary transition-colors duration-300 group-hover:text-secondary md:text-2xl">
-                        {event.name}
-                     </h3>
+                     <EventTitle text={event.name} />
+                     {description && <EventDescription text={description} />}
                   </div>
                </div>
             </div>
 
             {event.embedded_instagram && (
                <div
-                  className="event-instagram-embed relative shrink-0 border-t border-gray-100 bg-gray-50/50"
+                  className="event-instagram-embed relative min-h-0 flex-1 border-t border-gray-100 bg-gray-50/50"
                   style={
                      {
                         '--event-instagram-embed-height': `${INSTAGRAM_EMBED_HEIGHT_PX}px`,
@@ -352,10 +401,64 @@ const Events = () => {
          [],
       [publicEventsData?.data]
    );
+   const headerRefs = useRef<(HTMLDivElement | null)[]>([]);
+   const [headerHeight, setHeaderHeight] = useState<number>();
+
+   const setHeaderRef = useCallback(
+      (index: number) => (element: HTMLDivElement | null) => {
+         headerRefs.current[index] = element;
+      },
+      []
+   );
+
+   useLayoutEffect(() => {
+      if (publicEvents.length === 0) {
+         setHeaderHeight(undefined);
+         return;
+      }
+
+      const measureHeaders = () => {
+         const heights = headerRefs.current
+            .slice(0, publicEvents.length)
+            .map((element) => element?.offsetHeight ?? 0);
+         const maxHeight = Math.max(...heights, 0);
+
+         if (maxHeight > 0) {
+            setHeaderHeight((current) =>
+               current === maxHeight ? current : maxHeight
+            );
+         }
+      };
+
+      measureHeaders();
+
+      const observer = new ResizeObserver(measureHeaders);
+      headerRefs.current
+         .slice(0, publicEvents.length)
+         .forEach((element) => {
+            if (element) observer.observe(element);
+         });
+      window.addEventListener('resize', measureHeaders);
+
+      return () => {
+         observer.disconnect();
+         window.removeEventListener('resize', measureHeaders);
+      };
+   }, [publicEvents]);
 
    const pageContent = (
-      <section id="events" className="text-center">
-         <div className="mb-16">
+      <section
+         id="events"
+         className="text-center"
+         style={
+            headerHeight
+               ? ({
+                    '--event-header-height': `${headerHeight}px`,
+                 } as React.CSSProperties)
+               : undefined
+         }
+      >
+         <div className="mb-16 px-4 md:px-0">
             <h2 className="mb-4 text-4xl font-bold text-text_color md:text-5xl lg:text-6xl">
                Eventos
             </h2>
@@ -365,7 +468,7 @@ const Events = () => {
             </p>
          </div>
 
-         <div className="mx-auto max-w-6xl">
+         <div className="mx-auto w-full max-w-7xl">
             {publicEvents.length === 0 ? (
                <div className="rounded-2xl border border-gray-100 bg-white p-12 shadow-lg">
                   <div className="text-center">
@@ -393,12 +496,14 @@ const Events = () => {
                   </div>
                </div>
             ) : (
-               <div className="grid grid-cols-1 items-stretch gap-8 md:grid-cols-2 lg:grid-cols-3">
+               <div className="events-cards flex w-full flex-col items-stretch gap-8 lg:flex-row lg:items-stretch lg:justify-center">
                   {publicEvents.map((event, index) => (
                      <EventCard
                         key={event.id || index}
                         event={event}
                         index={index}
+                        headerRef={setHeaderRef(index)}
+                        headerMinHeight={headerHeight}
                      />
                   ))}
                </div>
@@ -407,9 +512,7 @@ const Events = () => {
       </section>
    );
 
-   return (
-      <EventsSkeleton isLoading={isPublicLoading}>{pageContent}</EventsSkeleton>
-   );
+   return <EventsSkeleton isLoading={isPublicLoading}>{pageContent}</EventsSkeleton>;
 };
 
 export default Events;
