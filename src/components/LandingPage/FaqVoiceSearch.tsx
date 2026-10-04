@@ -210,8 +210,11 @@ export default function FaqVoiceSearch() {
       const recognition = new SpeechRecognitionConstructor();
       recognition.lang = 'pt-BR';
       recognition.continuous = false;
-      recognition.interimResults = false;
+      recognition.interimResults = true;
       recognition.maxAlternatives = 1;
+
+      let hasSubmitted = false;
+      let latestTranscript = '';
 
       recognition.onstart = () => {
          setIsListening(true);
@@ -219,17 +222,66 @@ export default function FaqVoiceSearch() {
       };
 
       recognition.onresult = (event) => {
-         const transcript = event.results[0]?.[0]?.transcript ?? '';
-         setQuery(transcript);
-         void askFaq(transcript);
+         let interim = '';
+         let final = '';
+
+         for (let i = 0; i < event.results.length; i++) {
+            const item = event.results[i];
+            const text = item[0]?.transcript ?? '';
+            if (item.isFinal) {
+               final += text;
+            } else {
+               interim += text;
+            }
+         }
+
+         const currentSpeech = (final || interim).trim();
+         if (currentSpeech) {
+            latestTranscript = currentSpeech;
+            setQuery(currentSpeech);
+         }
+
+         if (final.trim() && !hasSubmitted) {
+            hasSubmitted = true;
+            setIsListening(false);
+            recognition.stop();
+            void askFaq(final.trim());
+         }
       };
 
       recognition.onerror = (event) => {
+         console.warn('SpeechRecognition error:', event.error, event);
          setIsListening(false);
+
+         // Interrupções normais (usuário clicou para cancelar ou fechou o microfone)
+         if (event.error === 'aborted') {
+            return;
+         }
 
          if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
             setError(
-               'Permissão do microfone negada. Você ainda pode pesquisar digitando.'
+               'Permissão do microfone negada. Clique no ícone de cadeado/permissões na barra de endereço do navegador para permitir o acesso ao microfone.'
+            );
+            return;
+         }
+
+         if (event.error === 'no-speech') {
+            setError(
+               'Nenhum som foi detectado pelo microfone. Verifique se o microfone está conectado e desmutado, e tente falar novamente.'
+            );
+            return;
+         }
+
+         if (event.error === 'network') {
+            setError(
+               'Não foi possível conectar ao serviço de voz do navegador. Se estiver usando o Brave, habilite "Google Services for Speech" em brave://settings/privacy, ou verifique sua conexão.'
+            );
+            return;
+         }
+
+         if (event.error === 'audio-capture') {
+            setError(
+               'Nenhum microfone encontrado ou o dispositivo de áudio está sendo usado por outro aplicativo.'
             );
             return;
          }
@@ -241,6 +293,11 @@ export default function FaqVoiceSearch() {
 
       recognition.onend = () => {
          setIsListening(false);
+         // Se captou alguma transcrição mas não disparou isFinal antes do encerramento
+         if (!hasSubmitted && latestTranscript.trim()) {
+            hasSubmitted = true;
+            void askFaq(latestTranscript.trim());
+         }
       };
 
       recognitionRef.current = recognition;
