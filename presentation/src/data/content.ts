@@ -1,4 +1,4 @@
-export type SlideId = 'abertura' | 'pitch' | 'timeline' | 'matriz' | 'tratamento' | 'arquitetura' | 'eventos' | 'dashboard' | 'operacao' | 'resumo' | 'demo'
+export type SlideId = 'abertura' | 'pitch' | 'timeline' | 'matriz' | 'tratamento' | 'arquitetura' | 'cloudstack' | 'eventos' | 'dashboard' | 'operacao' | 'resumo' | 'demo'
 export interface SlideMeta { id: SlideId; title: string; section: string; seconds: number }
 export const teamMembers = [
   'Guilherme Pazetti de Oliveira',
@@ -12,7 +12,8 @@ export const slides: SlideMeta[] = [
   { id: 'timeline', title: 'Evolução do projeto', section: 'Projeto', seconds: 30 },
   { id: 'matriz', title: 'Mapa de riscos', section: 'Segurança', seconds: 60 },
   { id: 'tratamento', title: 'Riscos mitigados: R01 e R07', section: 'Segurança', seconds: 60 },
-  { id: 'arquitetura', title: 'Arquitetura do Conecta Social', section: 'Nuvem', seconds: 90 },
+  { id: 'arquitetura', title: 'Arquitetura do Conecta Social', section: 'Nuvem', seconds: 70 },
+  { id: 'cloudstack', title: 'Apache CloudStack na Azure', section: 'Nuvem', seconds: 60 },
   { id: 'eventos', title: 'Eventos: web e mobile', section: 'Experiência', seconds: 70 },
   { id: 'dashboard', title: 'Dashboard em duas telas', section: 'Experiência', seconds: 70 },
   { id: 'operacao', title: 'Operação de doações no mobile', section: 'Experiência', seconds: 70 },
@@ -49,20 +50,35 @@ export const architecture = {
   replacementImage: '' as string,
   nodes: [
     { id: 'clients', label: 'Web + mobile', detail: 'Clientes do produto', status: 'codigo' },
-    { id: 'caddy', label: 'Caddy', detail: 'HTTPS · Oracle', status: 'relatorio' },
+    { id: 'azure', label: 'Azure', detail: 'VM Ubuntu com KVM · NSG 80/443 · DNAT', status: 'codigo' },
+    { id: 'cloudstack', label: 'Apache CloudStack', detail: 'Virtual Router · rede isolada', status: 'codigo' },
+    { id: 'caddy', label: 'Caddy', detail: 'HTTPS na VM da aplicação', status: 'codigo' },
     { id: 'api', label: 'NestJS', detail: 'API + JWT', status: 'codigo' },
-    { id: 'db', label: 'PostgreSQL', detail: 'Rede Docker interna', status: 'relatorio' },
-    { id: 's3', label: 'S3', detail: 'Imagens de doações', status: 'validar' },
-    { id: 'logs', label: 'Better Stack', detail: 'Envio de logs', status: 'validar' },
+    { id: 'db', label: 'MongoDB Atlas', detail: 'Banco oficial do time, fora da Azure', status: 'codigo' },
   ] as ArchitectureNode[],
   edges: [
-    { from: 'clients', to: 'caddy', label: 'endpoint configurado' },
+    { from: 'clients', to: 'azure', label: 'HTTPS' },
+    { from: 'azure', to: 'cloudstack', label: 'DNAT 80/443' },
+    { from: 'cloudstack', to: 'caddy', label: 'NAT estático + firewall' },
     { from: 'caddy', to: 'api', label: 'proxy' },
-    { from: 'api', to: 'db', label: 'rede privada' },
-    { from: 'api', to: 's3', label: 'integração no código' },
-    { from: 'api', to: 'logs', label: 'integração no código' },
+    { from: 'api', to: 'db', label: 'conexão TLS' },
   ] as ArchitectureEdge[],
 }
+
+export const cloudstackContent = {
+  hierarchy: [
+    ['Zona', 'Azure-Zone · rede Advanced'],
+    ['Pod e cluster', 'Azure-Pod · Azure-KVM-Cluster'],
+    ['Host', 'gerência, MySQL, agente KVM e NFS na mesma VM'],
+    ['Rede', 'rede-conecta-social · roteador virtual'],
+    ['Instância', 'vm-conecta-social · Ubuntu 24.04 · 2 vCPU / 4 GB'],
+  ],
+  challenges: [
+    ['Rede da Azure', 'A Azure descarta MACs desconhecidos: bridges internas em interfaces dummy e NAT com nftables.'],
+    ['Virtualização aninhada', 'KVM dentro de uma VM D4s_v4, com Trusted Launch.'],
+    ['Custo e acesso', 'Desligamento diário automático, VMs religadas no boot e conta do professor só de leitura.'],
+  ],
+} as const
 
 export const abstractContent = {
   objective: 'Centralizar doações, famílias, voluntários e eventos para apoiar a gestão de organizações sociais.',

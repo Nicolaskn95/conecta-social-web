@@ -1,39 +1,31 @@
 # Arquitetura do Conecta Social
 
-## Escopo do slide
+## Escopo dos slides
 
-O slide 5 explica o caminho da aplicação no **deploy da API documentado em 06/10/2026**. A POC CloudStack foi parte do trabalho acadêmico de infraestrutura e permanece nas fontes, mas seus nós e testes não aparecem na apresentação principal. O laboratório e o deploy Oracle são ambientes distintos.
+Os slides 6 (arquitetura) e 7 (CloudStack) mostram o **deploy atual**: a API roda numa VM do **Apache CloudStack 4.22**, que por sua vez está instalado numa VM da **Azure**. O deploy anterior na Oracle Cloud (relatório de 06/10/2026) foi substituído e fica só como histórico.
 
-## Componentes e evidência
+## Componentes
 
-| Componente | Papel no fluxograma | Evidência |
+| Componente | Papel no fluxograma | Onde está documentado |
 |---|---|---|
-| Web (Next.js) e mobile (React Native/Expo) | Clientes com endpoint configurável | Código e manifestos das aplicações |
-| Oracle VCN, Security List e VM Ubuntu | Ambiente do deploy documentado | Relatório de nuvem de 06/10/2026 |
-| Docker Compose | Organização dos serviços na VM | Relatório de nuvem |
-| Caddy | Entrada HTTPS e proxy reverso | Relatório de nuvem |
-| NestJS + JWT | API e autenticação | Código da API e relatório |
-| PostgreSQL 15 | Banco em rede Docker interna, sem porta pública | Relatório de nuvem |
-| S3 | Imagens e URLs assinadas | Código da API; ativação nesse deploy a confirmar |
-| Better Stack | Destino opcional de logs | Código da API; ativação nesse deploy a confirmar |
+| Web (Next.js) e mobile (React Native/Expo) | Clientes; o app escolhe a API pelo botão de ambientes | Código das aplicações |
+| Azure: VM `vm-cloudstack` (D4s_v4, Ubuntu 24.04, KVM aninhado) | Host da nuvem privada | `conecta-social-api/deploy/azure-cloudstack/README.md` |
+| NSG + DNAT (nftables) | Só 80/443 públicas; tráfego encaminhado ao IP público do CloudStack | idem |
+| Apache CloudStack 4.22 | Zona Advanced, pod, cluster KVM, host único (gerência + MySQL + KVM + NFS) | idem |
+| Virtual Router | NAT estático e firewall da rede isolada 10.1.1.0/24 | idem |
+| `vm-conecta-social` + Docker Compose | Caddy (HTTPS) e API NestJS (JWT) | `deploy/azure-cloudstack/` |
+| MongoDB Atlas | Banco oficial do time, fora da Azure | `DATABASE_PROVIDER=mongo` |
+| GitHub Actions → Docker Hub → atualizador | Entrega contínua por *pull*: a VM baixa a imagem nova a cada 5 min | `.github/workflows/main.yml` da API |
+| S3 e Better Stack | Integrações presentes no código, **não configuradas** neste deploy | Código da API |
 
-MongoDB permanece alternativa selecionável no código, mas não é o banco descrito no deploy Oracle. O endpoint efetivo dos clientes também precisa ser confirmado antes de afirmar que a demonstração usa essa instância.
+## Leitura visual
 
-## Relações e leitura visual
+1. Faixa superior: Web + mobile → NSG/DNAT (Azure) → Virtual Router (CloudStack) → Caddy → NestJS → MongoDB Atlas. As molduras tracejadas mostram o que está dentro da Azure e o que está dentro do CloudStack.
+2. Faixa inferior: GitHub Actions → Docker Hub → atualizador na VM, e um bloco de operação (desligamento diário às 23h, VMs religadas no boot).
 
-1. A seta **tracejada** de web/mobile para Caddy representa uma ligação configurável cujo destino Oracle ainda exige validação.
-2. No deploy documentado, Caddy recebe HTTPS e encaminha chamadas à API NestJS.
-3. A API aplica autenticação JWT e consulta PostgreSQL pela rede interna Docker. O banco não expõe porta pública.
-4. S3 e Better Stack são exibidos em uma faixa própria, com bordas tracejadas e sem ligação de rede afirmada no deploy. A implementação contém integrações para esses serviços, mas sua ativação nesse ambiente não foi confirmada.
+O fluxograma é SVG editável em `src/components/Architecture.tsx`; estilos nas classes `.flow-*` de `src/style.css`. O conteúdo do slide do CloudStack está em `cloudstackContent` (`src/data/content.ts`). Para trocar o SVG por uma imagem, coloque-a em `public/images/` e configure `architecture.replacementImage`.
 
-O fluxograma é SVG editável em `src/components/Architecture.tsx`; estilos estão nas classes `.flow-*` de `src/style.css`. Para substituí-lo por uma imagem local, coloque-a em `public/images/` e configure `architecture.replacementImage` em `src/data/content.ts`. O valor vazio mantém o SVG.
+## Histórico
 
-## POC como referência técnica
-
-A POC original está em `references/POC-Apache-CloudStack-2026.pdf`. Ela especifica um laboratório CloudStack com `cs-mgmt` e `cs-kvm01`; o relatório de outubro registra sua execução e testes. Essa documentação sustenta o histórico do trabalho de nuvem, mas não deve ser apresentada como se o Conecta Social estivesse hospedado no laboratório. A imagem isométrica anterior permanece em `public/images/arquitetura-poc-oracle.png` como referência não utilizada.
-
-## Prompt para futura imagem do fluxograma
-
-> Crie uma imagem de arquitetura em formato horizontal 16:9 para uma apresentação de engenharia de software, com fundo azul-marinho e fluxograma de alto contraste. O foco é o Conecta Social. Mostre, da esquerda para a direita: aplicações web Next.js e mobile Expo; seta tracejada rotulada “endpoint Oracle a confirmar”; ambiente Oracle Cloud com VCN e Security List; VM Ubuntu com Docker Compose; Caddy recebendo HTTPS e atuando como proxy reverso; API NestJS com autenticação JWT; PostgreSQL 15 na rede Docker interna, sem porta pública. Mostre a relação Caddy → NestJS → PostgreSQL com setas sólidas. Em uma faixa separada, represente S3 para imagens e Better Stack para logs como “integrações no código — ativação no deploy a confirmar”, sem desenhar tráfego ativo não documentado. Não inclua CloudStack, nós de laboratório, endereços IP, números de desempenho, provedores extras ou funcionalidades presumidas. Tipografia grande e legível para projeção, caixas alinhadas e conexões sem cruzamentos.
-
-Compare qualquer substituição visual com o relatório e o código antes de usar na banca.
+- `references/POC-Apache-CloudStack-2026.pdf`: POC de setembro (laboratório `cs-mgmt` + `cs-kvm01`). A implantação na Azure usou faixas de rede diferentes.
+- `public/images/arquitetura-poc-oracle.png`: imagem do deploy Oracle, não utilizada.

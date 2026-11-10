@@ -1,6 +1,6 @@
 # Notas do apresentador
 
-O roteiro de fala soma **10 minutos** antes de uma demonstração de **5 minutos**. As notas não aparecem na interface projetada. Adapte o ritmo à banca e evite ler os textos da tela.
+O roteiro de fala soma **cerca de 10 min 40 s** antes de uma demonstração de **5 minutos**. As notas não aparecem na interface projetada. Adapte o ritmo à banca e evite ler os textos da tela.
 
 ## 1. Conecta Social — 0:30
 
@@ -54,17 +54,29 @@ O roteiro de fala soma **10 minutos** antes de uma demonstração de **5 minutos
 
 **Transição:** Explicar onde os componentes da aplicação se encontram.
 
-## 6. Arquitetura do Conecta Social — 1:30
+## 6. Arquitetura do Conecta Social — 1:10
 
-**Objetivo:** Explicar como os componentes do projeto se relacionam no deploy documentado.
+**Objetivo:** Acompanhar uma chamada do usuário até o banco, no deploy atual.
 
-**Pontos essenciais:** Web e mobile usam endpoint configurável. O relatório descreve VCN, Security List, VM Ubuntu e Docker Compose; no fluxo da API, Caddy recebe HTTPS, NestJS autentica com JWT e acessa PostgreSQL sem porta pública. S3 e Better Stack são integrações presentes no código da API.
+**Pontos essenciais:** Web e mobile chegam por HTTPS a uma VM na Azure, que só libera 80/443 (NSG) e encaminha o tráfego por DNAT ao Apache CloudStack instalado nela. O roteador virtual do CloudStack aplica NAT estático e firewall e entrega à `vm-conecta-social`. Nela, o Caddy faz o HTTPS e repassa à API NestJS (JWT), que usa o MongoDB Atlas do time. Na entrega contínua, o GitHub Actions publica a imagem no Docker Hub e um atualizador na VM baixa a versão nova a cada 5 minutos. S3 e Better Stack existem no código, mas não estão configurados neste deploy.
 
-**Fala sugerida:** “O fluxograma acompanha uma chamada do usuário. A web, feita em Next.js, e o aplicativo mobile, em Expo, acessam a API por um endereço configurável. Na arquitetura descrita no relatório, a entrada HTTPS chega ao Caddy. Ele encaminha a requisição para a API NestJS, que aplica a autenticação por JWT e consulta o PostgreSQL. O banco fica na rede interna do Docker, sem porta pública. Por trás desse fluxo estão a VCN, a Security List e uma máquina virtual Ubuntu na Oracle Cloud. O Docker Compose organiza os contêineres da aplicação. A API também contém integração com S3 para imagens e Better Stack para logs. Assim, separamos a interface usada pela equipe, a lógica de negócio e a persistência, com controle de acesso na entrada e na API.”
+**Fala sugerida:** “O fluxograma acompanha uma chamada do usuário. A web e o aplicativo acessam a API por HTTPS. A requisição chega a uma máquina virtual na Azure, que só aceita as portas 80 e 443 e repassa o tráfego para o Apache CloudStack, instalado dentro dessa máquina. O CloudStack tem seu próprio roteador virtual, com NAT e firewall, que entrega a requisição à máquina da aplicação. Lá, o Caddy cuida do HTTPS e encaminha para a API NestJS, que autentica por JWT e consulta o MongoDB Atlas. Embaixo está a entrega contínua: a pipeline publica a imagem no Docker Hub e a própria VM busca a versão nova sozinha, sem precisar abrir acesso de fora para dentro.”
+
+**Transição:** Mostrar como o CloudStack foi montado.
+
+## 7. Apache CloudStack na Azure — 1:00
+
+**Objetivo:** Mostrar a nuvem privada que hospeda a aplicação e os problemas resolvidos para montá-la.
+
+**Pontos essenciais:** CloudStack 4.22 em uma VM D4s_v4 com virtualização aninhada. Hierarquia: zona `Azure-Zone` (Advanced), pod, cluster KVM, host único com gerência, MySQL, agente KVM e NFS; rede isolada `rede-conecta-social` com roteador virtual; instância `vm-conecta-social`. Desafios: a Azure descarta MACs desconhecidos (bridges em interfaces dummy + NAT), KVM aninhado, custo (desligamento automático às 23h e VMs religadas no boot) e uma conta somente leitura para o professor.
+
+**Fala sugerida:** “Em vez de hospedar direto na nuvem pública, montamos uma nuvem privada com o Apache CloudStack dentro dela. Todos os papéis ficam numa VM só: gerência, banco do CloudStack, hipervisor KVM e armazenamento NFS. Dentro dele criamos zona, pod, cluster, uma rede isolada com roteador virtual e a máquina da aplicação. O maior desafio foi a rede: a Azure descarta pacotes de endereços MAC que ela não conhece, então as redes do CloudStack ficaram em bridges internas, com NAT para sair. Também automatizamos o desligamento para economizar crédito e criamos uma conta somente leitura para acompanhamento.”
+
+**Ação opcional:** Abrir o painel do CloudStack (`painel.57-156-63-84.sslip.io`) com a conta de leitura e mostrar a `vm-conecta-social` em execução.
 
 **Transição:** Passar da infraestrutura para a experiência nas duas plataformas.
 
-## 7. Eventos: web e mobile — 1:10
+## 8. Eventos: web e mobile — 1:10
 
 **Objetivo:** Comparar a mesma área em dois dispositivos.
 
@@ -74,7 +86,7 @@ O roteiro de fala soma **10 minutos** antes de uma demonstração de **5 minutos
 
 **Transição:** Usar o dashboard para discutir densidade de informação.
 
-## 8. Dashboard em duas telas — 1:10
+## 9. Dashboard em duas telas — 1:10
 
 **Objetivo:** Explicar a adaptação de indicadores.
 
@@ -84,7 +96,7 @@ O roteiro de fala soma **10 minutos** antes de uma demonstração de **5 minutos
 
 **Transição:** Mostrar um fluxo de trabalho que ganha destaque no aplicativo.
 
-## 9. Operação de doações no mobile — 1:10
+## 10. Operação de doações no mobile — 1:10
 
 **Objetivo:** Preparar a demonstração do fluxo operacional.
 
@@ -94,7 +106,7 @@ O roteiro de fala soma **10 minutos** antes de uma demonstração de **5 minutos
 
 **Transição:** Registrar o espaço reservado ao material acadêmico final.
 
-## 10. Resumo expandido — 1:00
+## 11. Resumo expandido — 1:00
 
 **Objetivo:** Apresentar a síntese do resumo expandido sem reproduzir seus parágrafos na tela.
 
@@ -104,10 +116,10 @@ O roteiro de fala soma **10 minutos** antes de uma demonstração de **5 minutos
 
 **Transição:** Abrir o aplicativo real.
 
-## 11. Demonstração ao vivo — 5:00
+## 12. Demonstração ao vivo — 5:00
 
 **Objetivo:** Deixar uma transição clara e uma tela estável durante o preparo.
 
-**Roteiro sugerido:** Abrir o app mobile; mostrar a navegação por abas; consultar eventos; abrir Painel; filtrar doações; apresentar um detalhe e, se o ambiente permitir, executar uma operação segura de estoque ou distribuição; consultar logs. Ajustar a sequência às contas e aos dados disponíveis. Evitar exibir senhas, tokens ou dados pessoais na projeção.
+**Roteiro sugerido:** Antes de começar, ligar a VM na Azure (~5 min) e conferir que a `vm-conecta-social` está Running. No app, escolher no botão **API** a opção da VM CloudStack. Abrir o app mobile; mostrar a navegação por abas; consultar eventos; abrir Painel; filtrar doações; apresentar um detalhe e, se o ambiente permitir, executar uma operação segura de estoque ou distribuição; consultar logs. Ajustar a sequência às contas e aos dados disponíveis. Evitar exibir senhas, tokens ou dados pessoais na projeção.
 
 **Fechamento oral:** “Esse percurso mostra como a proposta de gestão aparece na operação do aplicativo.”

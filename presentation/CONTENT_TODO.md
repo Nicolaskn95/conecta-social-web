@@ -9,9 +9,10 @@
 
 ## Para validar antes da banca
 
-- Confirmar o endpoint efetivo configurado nos clientes web e mobile. O relatório Oracle registra o frontend apontado para esse backend como próximo passo.
-- Confirmar se S3 e Better Stack estão configurados no ambiente que será demonstrado. As integrações estão no código.
-- Confirmar estado atual do deploy Oracle; o relatório documenta testes em 06/10/2026, não disponibilidade em tempo real.
+- No dia, ligar a VM da Azure com antecedência (~5 min até a API responder) e conferir se a `vm-conecta-social` subiu: há uma corrida conhecida no boot com o roteador virtual.
+- No app mobile, selecionar no botão API a opção da VM CloudStack (`https://57-156-63-84.sslip.io`).
+- S3 e Better Stack estão no código, mas não configurados na VM do CloudStack: imagens de doações aparecem sem foto.
+- A API da VM grava no MongoDB Atlas oficial do time: evitar operações destrutivas na demonstração.
 - Rever status documental de R04: a matriz o marca como aceito, enquanto o entrypoint atual condiciona migrations e seed a flags.
 - Validar o tratamento de R02, R03, R05 e R09 por endpoint e ambiente antes de atualizar as classificações.
 - Não declarar sincronização offline como entregue: aparece como requisito no README mobile, sem implementação confirmada na inspeção.
@@ -24,6 +25,6 @@
 - O documento acadêmico de 2025 e os READMEs listam integrantes diferentes; para esta apresentação, usar os quatro nomes fornecidos diretamente pelo usuário em 20/10/2026.
 - O resumo expandido recebido em 20/10/2026 também traz autoria e agradecimentos divergentes; o slide usa somente seu conteúdo temático, sem reproduzir esses créditos.
 - O README mobile descreve requisitos e diretrizes que não devem ser confundidos com funcionalidades comprovadas.
-- O relatório de nuvem descreve PostgreSQL na Oracle; o código atual permite selecionar MongoDB.
-- A POC de setembro planejou faixas de rede pública e storage diferentes das descritas na execução de outubro. Usar o relatório de execução para qualquer valor numérico apresentado como implementado.
+- O relatório de nuvem de 06/10/2026 descreve o deploy na Oracle Cloud com PostgreSQL. Ele foi substituído pelo deploy no Apache CloudStack sobre a Azure com MongoDB Atlas (out–nov/2026), que é o que os slides mostram.
+- A POC de setembro planejou faixas de rede e storage diferentes das usadas na Azure. Valores implementados: gerência 192.168.100.0/24, pública 192.168.200.10–50, rede guest 10.1.1.0/24.
 - Um documento de riscos operacionais de maio de 2026 é anterior a componentes de auditoria hoje encontrados no código. Ele serve como contexto histórico, não como retrato automático do estado atual.
