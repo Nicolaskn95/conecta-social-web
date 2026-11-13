@@ -38,3 +38,11 @@ next-env.d.ts
 # Presentation project generated files
 /presentation/node_modules/
 /presentation/dist/
+
+# Robot Framework E2E test results
+/testes_automatizados/results/
+output.xml
+log.html
+report.html
+selenium-screenshot-*.png
+
