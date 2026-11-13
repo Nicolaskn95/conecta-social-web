@@ -9,7 +9,7 @@ Resource            variables.resource
 Abrir Navegador No Sistema
     [Documentation]    Inicializa o navegador Google Chrome no modo headless com configurações ideais de viewport
     [Arguments]    ${url}=${BASE_URL}
-    ${chrome_options}=    Set Variable    add_argument("--headless=new"); add_argument("--no-sandbox"); add_argument("--disable-dev-shm-usage"); add_argument("--disable-gpu"); add_argument("--window-size=${VIEWPORT_WIDTH},${VIEWPORT_HEIGHT}")
+    ${chrome_options}=    Set Variable    add_argument("--headless=new"); add_argument("--no-sandbox"); add_argument("--disable-dev-shm-usage"); add_argument("--disable-gpu"); add_argument("--lang=pt-BR"); add_argument("--window-size=${VIEWPORT_WIDTH},${VIEWPORT_HEIGHT}")
     Open Browser    ${url}    browser=chrome    options=${chrome_options}
     Set Selenium Timeout    ${TIMEOUT}
     Set Selenium Speed      ${SELENIUM_SPEED}

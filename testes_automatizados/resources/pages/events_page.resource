@@ -40,7 +40,13 @@ Clicar Em Novo Evento
 Preencher Formulario De Evento
     [Arguments]    ${titulo}    ${data_hora}    ${descricao}    ${cep}    ${numero}    ${instagram_url}=${TEST_INSTAGRAM_URL}
     Input Text      ${INPUT_EVENTO_TITULO}          ${titulo}
-    Press Keys      ${INPUT_EVENTO_DATA}            31122027    TAB    1500
+    ${el_data}=     Get WebElement                  ${INPUT_EVENTO_DATA}
+    Execute Javascript
+    ...    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    ...    setter.call(arguments[0], arguments[1]);
+    ...    arguments[0].dispatchEvent(new Event('input', { bubbles: true }));
+    ...    arguments[0].dispatchEvent(new Event('change', { bubbles: true }));
+    ...    ARGUMENTS    ${el_data}    ${data_hora}
     Input Text      ${TEXTAREA_EVENTO_DESCRICAO}    ${descricao}
     Input Text      ${INPUT_EVENTO_CEP}             ${cep}
     Press Keys      ${INPUT_EVENTO_CEP}             TAB
@@ -56,8 +62,9 @@ Submeter Cadastro De Evento
     Scroll Element Into View         ${btn_salvar}
     Wait Until Element Is Enabled    ${btn_salvar}    timeout=${TIMEOUT}
     Click Button                     ${btn_salvar}
-    Wait Until Location Contains     /dashboard/events       timeout=${TIMEOUT}
-    Wait Until Element Is Visible    ${TABELA_EVENTOS}       timeout=${TIMEOUT}
+    Wait Until Location Does Not Contain    /register          timeout=${TIMEOUT}
+    Wait Until Location Contains            /dashboard/events  timeout=${TIMEOUT}
+    Wait Until Element Is Visible           ${TABELA_EVENTOS}  timeout=${TIMEOUT}
 
 Pesquisar Evento Na Tabela
     [Arguments]    ${termo}

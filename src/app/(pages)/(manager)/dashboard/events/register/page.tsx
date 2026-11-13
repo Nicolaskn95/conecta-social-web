@@ -128,6 +128,7 @@ function Register() {
                            <input
                               type="datetime-local"
                               id="data"
+                              max="9999-12-31T23:59"
                               className="input"
                               {...register('date')}
                            />
