@@ -1,4 +1,5 @@
 'use client';
+import { NeedsPanel } from '@/components/DonationWorkflow/NeedsPanel';
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -341,6 +342,7 @@ export default function EditBeneficiaryPage() {
                      submitWidthClassName="w-44"
                   />
                </form>
+               {id && <NeedsPanel owner="beneficiaries" id={id} />}
             </div>
          </div>
       </div>

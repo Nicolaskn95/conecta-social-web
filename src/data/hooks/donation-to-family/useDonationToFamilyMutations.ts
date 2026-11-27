@@ -41,10 +41,10 @@ export function useCreateDonationToFamily(
             );
          }
 
-         toast.success('Doação para família registrada com sucesso!');
+         toast.success('Doação separada para a família.');
       },
       onError: (error) => {
-         toast.error(`Erro ao registrar doação para família: ${error.message}`);
+         toast.error(`Erro ao separar doação: ${error.message}`);
       },
       ...options,
    });

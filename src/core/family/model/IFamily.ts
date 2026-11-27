@@ -1,4 +1,7 @@
 export interface IFamily {
+   monthly_income_cents?: number | null;
+   housing_description?: string | null;
+   preferred_delivery_mode?: "PICKUP" | "DELIVERY" | null;
    id?: string;
    name: string;
    street: string;

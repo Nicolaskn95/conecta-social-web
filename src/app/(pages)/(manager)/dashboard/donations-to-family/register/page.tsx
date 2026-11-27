@@ -1,4 +1,10 @@
 'use client';
+import { DonationSuggestions } from '@/components/DonationWorkflow/DonationSuggestions';
+import type { Suggestion } from '@/data/services/recommendations';
+import { useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { Recipient, RecipientExtras } from '@/components/DonationWorkflow/RecipientExtras';
+import { ApiRequestError } from '@/data/services/baseService';
 
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import { donationToFamilySchema } from '@/core/donation/validation/donationToFamilySchema';
@@ -19,12 +25,19 @@ type DonationToFamilyForm = Omit<
 
 export default function RegisterDonationToFamilyPage() {
    const router = useRouter();
+   const queryClient = useQueryClient();
    const searchParams = useSearchParams();
+   const preselectedDonationId = searchParams.get('donationId') ?? '';
+   const [applied, setApplied] = useState<Suggestion>();
    const preselectedFamilyId = searchParams.get('familyId') ?? '';
    const [isLoading, setIsLoading] = useState(false);
    const { data: donationsResponse } = useDonationsWithStock();
    const { data: familiesResponse } = useFamilies();
    const { createDonationToFamily } = useDonationToFamilyMutations();
+
+   const [recipient, setRecipient] = useState<Recipient>({});
+   const [submitError, setSubmitError] = useState('');
+   const attempt = useRef<{ body: string; id: string } | null>(null);
 
    const donations = donationsResponse?.data ?? [];
    const families = familiesResponse?.data ?? [];
@@ -39,6 +52,7 @@ export default function RegisterDonationToFamilyPage() {
    } = useForm<DonationToFamilyForm>({
       resolver: zodResolver(donationToFamilySchema),
       defaultValues: {
+         id_donation: preselectedDonationId || undefined,
          id_family: preselectedFamilyId || undefined,
       },
    });
@@ -46,13 +60,20 @@ export default function RegisterDonationToFamilyPage() {
    useEffect(() => {
       if (preselectedFamilyId) {
          setValue('id_family', preselectedFamilyId);
+         setRecipient({});
+         setApplied(undefined);
       }
    }, [preselectedFamilyId, setValue]);
 
+   const familyId = watch('id_family');
    const selectedDonationId = watch('id_donation');
    const selectedDonation = donations.find(
       (donation) => donation.id === selectedDonationId
    );
+
+   const suggestion = applied && applied.id_need === recipient.id_need ? applied : undefined;
+   const exceedsSuggestedQuantity = suggestion?.max_separable_quantity != null &&
+      Number(watch('quantity')) > suggestion.max_separable_quantity;
 
    const breadcrumbItems = [
       { label: 'Início', href: '/dashboard' },
@@ -61,18 +82,34 @@ export default function RegisterDonationToFamilyPage() {
    ];
 
    const onSubmit: SubmitHandler<DonationToFamilyForm> = async (formData) => {
-      setIsLoading(true);
-
+      if (isLoading) return;
+      if (!attempt.current && exceedsSuggestedQuantity) {
+         setSubmitError('A quantidade supera o máximo separável deste pedido.');
+         return;
+      }
+      const command = { ...formData, ...recipient };
+      const body = JSON.stringify(command);
+      if (attempt.current && attempt.current.body !== body) {
+         setSubmitError('Reenvie a separação anterior com os mesmos dados antes de iniciar outra.');
+         return;
+      }
+      attempt.current ??= { body, id: crypto.randomUUID() };
+      setIsLoading(true); setSubmitError('');
       try {
-         createDonationToFamily.mutate(formData, {
-            onSuccess: () => {
-               router.push('/dashboard/donations-to-family');
-            },
-            onError: () => {
-               setIsLoading(false);
-            },
-         });
-      } catch {
+         await createDonationToFamily.mutateAsync({ ...command, request_id: attempt.current.id });
+         attempt.current = null;
+         void queryClient.invalidateQueries({ queryKey: ['donation-recommendations'] });
+         router.push('/dashboard/donations-to-family');
+      } catch (error) {
+         if (error instanceof ApiRequestError && error.status < 500) {
+            attempt.current = null;
+            if (error.status === 400 || error.status === 409) {
+               setApplied(undefined);
+               await Promise.all(['needs', 'donations', 'donations-to-family', 'donation-recommendations'].map(key => queryClient.invalidateQueries({ queryKey: [key] })));
+            }
+         }
+         setSubmitError((error as Error).message);
+      } finally {
          setIsLoading(false);
       }
    };
@@ -98,20 +135,24 @@ export default function RegisterDonationToFamilyPage() {
                            >
                               Item da Doação <span className="text-red-500">*</span>
                            </label>
-                           <select
-                              id="id_donation"
-                              className="input"
-                              {...register('id_donation')}
-                           >
-                              <option value="">Selecione uma doação</option>
-                              {donations.map((donation) => (
-                                 <option key={donation.id} value={donation.id}>
-                                    {`${donation.name} (${
-                                       donation.category?.measure_unity ?? 'UN'
-                                    })`}
-                                 </option>
-                              ))}
-                           </select>
+                           <Controller
+                              name="id_donation"
+                              control={control}
+                              render={({ field }) => (
+                                 <select id="id_donation" className="input" value={field.value ?? ''}
+                                    onBlur={field.onBlur} ref={field.ref} onChange={event => {
+                                       if (applied) { setApplied(undefined); setRecipient({}); }
+                                       field.onChange(event);
+                                    }}>
+                                    <option value="">Selecione uma doação</option>
+                                    {donations.map(donation => (
+                                       <option key={donation.id} value={donation.id}>
+                                          {donation.name} ({donation.category?.measure_unity ?? 'UN'})
+                                       </option>
+                                    ))}
+                                 </select>
+                              )}
+                           />
                            {donations.length === 0 && (
                               <p className="text-sm text-gray-500 mt-1">
                                  Nenhuma doação com estoque disponível no momento.
@@ -136,7 +177,13 @@ export default function RegisterDonationToFamilyPage() {
                                     id="id_family"
                                     className="input"
                                     value={field.value ?? ''}
-                                    onChange={field.onChange}
+                                    onChange={event => {
+                                       if (event.target.value !== field.value) {
+                                          setApplied(undefined);
+                                          setRecipient({});
+                                       }
+                                       field.onChange(event);
+                                    }}
                                     onBlur={field.onBlur}
                                     ref={field.ref}
                                  >
@@ -207,10 +254,25 @@ export default function RegisterDonationToFamilyPage() {
                      </div>
                   </div>
 
+                  {selectedDonationId && selectedDonation && <DonationSuggestions key={selectedDonationId} donationId={selectedDonationId}
+                     initialOpen={selectedDonation.id === preselectedDonationId} disabled={isLoading || !!attempt.current}
+                     onSelect={item => {
+                        setValue('id_family', item.id_family, { shouldValidate: true });
+                        setRecipient(current => ({ ...current, id_beneficiary: item.id_beneficiary ?? undefined, id_need: item.id_need }));
+                        setApplied(item);
+                        setSubmitError('');
+                     }} />}
+                  {suggestion && <p role="status" className="rounded-lg bg-blue-50 p-3">
+                     Pedido selecionado: {suggestion.need_label}{suggestion.beneficiary_name ? ' · ' + suggestion.beneficiary_name : ''}
+                     {suggestion.max_separable_quantity == null ? ' · Quantidade a confirmar' : ' · Máximo separável: ' + suggestion.max_separable_quantity}
+                  </p>}
+                  {exceedsSuggestedQuantity && <p role="alert" className="text-red-700">A quantidade supera o máximo separável deste pedido.</p>}
+                  <RecipientExtras family={familyId} value={recipient} onChange={setRecipient} />
+                  {submitError && <p role="alert" className="text-red-700">{submitError}</p>}
                   <FormActionBar
                      onCancel={() => router.push('/dashboard/donations-to-family')}
                      isLoading={isLoading}
-                     submitLabel="Confirmar Doação"
+                     submitLabel="Separar para a família"
                      loadingLabel="Registrando..."
                      submitWidthClassName="w-40"
                   />

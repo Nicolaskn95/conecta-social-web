@@ -1,3 +1,4 @@
+import type { ItemDetails } from '@/data/services/donationWorkflow';
 export interface ICategory {
    id: string;
    name: string;
@@ -6,7 +7,7 @@ export interface ICategory {
    created_at: Date;
 }
 
-export interface IDonation {
+export interface IDonation extends ItemDetails {
    id?: string;
    category_id: string;
    category?: ICategory;

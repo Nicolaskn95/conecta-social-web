@@ -1,4 +1,6 @@
 'use client';
+import { NeedsPanel } from '@/components/DonationWorkflow/NeedsPanel';
+import { FamilyExtras } from '@/components/DonationWorkflow/OptionalFields';
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -35,9 +37,10 @@ export default function EditFamilyPage() {
 
    const {
       register,
+      control,
       handleSubmit,
       setValue,
-      formState: { errors },
+      formState: { errors, dirtyFields },
       watch,
       reset,
    } = useForm<IFamily>({
@@ -78,6 +81,9 @@ export default function EditFamilyPage() {
       try {
          const { id: _id, created_at, updated_at, ...familyPayload } = data;
 
+         for (const field of ['monthly_income_cents', 'housing_description', 'preferred_delivery_mode'] as const) {
+            if (!dirtyFields[field]) delete familyPayload[field];
+         }
          updateFamily.mutate(
             { id, family: familyPayload },
             {
@@ -326,6 +332,7 @@ export default function EditFamilyPage() {
                      </div>
                   </div>
 
+                  <FamilyExtras control={control} register={register} />
                   <FormActionBar
                      onCancel={handleCancel}
                      isLoading={isLoading}
@@ -333,6 +340,7 @@ export default function EditFamilyPage() {
                      loadingLabel="Salvando..."
                   />
                </form>
+               {id && <NeedsPanel owner="families" id={id} />}
             </div>
          </div>
       </div>

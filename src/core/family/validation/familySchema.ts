@@ -1,10 +1,13 @@
-import { object, string, ZodType } from 'zod';
+import { object, string, number, z, ZodType } from 'zod';
 import { IFamily } from '../model/IFamily';
 
 // Helper function to extract only digits from a string
 const extractDigits = (value: string): string => value.replace(/\D/g, '');
 
 export const familySchema: ZodType<Omit<IFamily, 'id' | 'created_at' | 'updated_at'>> = object({
+   monthly_income_cents: number().int().min(0).max(2147483647).nullable().optional(),
+   housing_description: string().max(250).nullable().optional(),
+   preferred_delivery_mode: z.enum(["PICKUP", "DELIVERY"]).nullable().optional(),
    name: string()
       .min(3, 'O nome deve ter pelo menos 3 caracteres')
       .max(100, 'O nome não pode ter mais de 100 caracteres'),

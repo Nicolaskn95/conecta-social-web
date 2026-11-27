@@ -1,4 +1,5 @@
 'use client';
+import { FamilyExtras } from '@/components/DonationWorkflow/OptionalFields';
 
 import { familySchema } from '@/core/family/validation/familySchema';
 import { IFamily } from '@/core/family/model/IFamily';
@@ -33,6 +34,7 @@ function RegisterFamily() {
 
    const {
       register,
+      control,
       handleSubmit,
       setValue,
       formState: { errors },
@@ -65,8 +67,8 @@ function RegisterFamily() {
       setIsLoading(true);
       try {
          createFamily.mutate(data, {
-            onSuccess: () => {
-               router.push('/dashboard/families');
+            onSuccess: (result) => {
+               router.push(result.data.id ? '/dashboard/families/' + result.data.id : '/dashboard/families');
             },
             onError: () => {
                setIsLoading(false);
@@ -293,6 +295,7 @@ function RegisterFamily() {
                      </div>
                   </div>
 
+                  <FamilyExtras control={control} register={register} />
                   <FormActionBar
                      onCancel={handleCancel}
                      isLoading={isLoading}
