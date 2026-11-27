@@ -1,7 +1,10 @@
 'use client';
+import { DonationExtras } from '@/components/DonationWorkflow/OptionalFields';
+import { ItemDetails } from '@/data/services/donationWorkflow';
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import FormActionBar from '@/components/Form/FormActionBar';
 import LottieAnimation from '@/components/shared/LottieAnimation';
@@ -35,6 +38,7 @@ const STOCK_ADJUSTMENT_REASON_OPTIONS: Array<{
 export default function EditDonationPage() {
    const params = useParams();
    const router = useRouter();
+   const [details, setDetails] = useState<ItemDetails>({});
    const id = Array.isArray(params.id) ? params.id[0] : params.id;
    const [isSavingDonation, setIsSavingDonation] = useState(false);
    const [isAdjustingStock, setIsAdjustingStock] = useState(false);
@@ -52,6 +56,7 @@ export default function EditDonationPage() {
 
    const {
       register,
+      watch: watchDonation,
       handleSubmit,
       formState: { errors },
       reset,
@@ -116,6 +121,11 @@ export default function EditDonationPage() {
       }
    }, [error]);
 
+   const editedCategory = watchDonation('category_id');
+   const categoryChanged = Boolean(donation && editedCategory !== donation.category_id);
+   const effectiveDetails = { item_type_id: categoryChanged ? null : donation?.item_type_id,
+      condition: donation?.condition, specifications: categoryChanged ? null : donation?.specifications, ...details };
+
    const handleCancel = () => {
       router.push('/dashboard/donations');
    };
@@ -127,8 +137,11 @@ export default function EditDonationPage() {
 
       setIsSavingDonation(true);
 
+      const changes = Object.fromEntries(Object.entries(details).filter(([key, value]) =>
+         JSON.stringify(value ?? null) !== JSON.stringify(donation?.[key as keyof ItemDetails] ?? null)
+      ));
       updateDonation.mutate(
-         { id, donation: data },
+         { id, donation: { ...data, ...(data.category_id !== donation?.category_id ? { item_type_id: null, specifications: null } : {}), ...changes } },
          {
             onSuccess: () => {
                router.push('/dashboard/donations');
@@ -198,6 +211,9 @@ export default function EditDonationPage() {
          </div>
          <div className="flex-1 overflow-y-auto p-4">
             <div className="p-6 bg-white rounded-3xl shadow-md border border-[#4AA1D3] space-y-8 pb-24">
+               {donation && donation.available !== false && (donation.current_quantity ?? 0) > 0 &&
+                  <Link className="inline-flex rounded-lg border border-blue-700 px-4 py-2 font-semibold text-blue-900"
+                     href={'/dashboard/donations-to-family/register?donationId=' + donation.id}>Ver sugestões de destinatários</Link>}
                <form onSubmit={handleSubmit(submitDonation)} className="space-y-6">
                   <div className="space-y-4">
                      <h2 className="text-xl font-bold text-gray-800">
@@ -227,7 +243,7 @@ export default function EditDonationPage() {
                               id="category_id"
                               className="input"
                               required
-                              {...register('category_id')}
+                              {...register('category_id', { onChange: () => setDetails(previous => ({ ...previous, item_type_id: null, specifications: null })) })}
                            >
                               <option value="">Selecione uma categoria</option>
                               {categories.map((category) => (
@@ -307,6 +323,7 @@ export default function EditDonationPage() {
                         </div>
                      </div>
                   </div>
+                  <DonationExtras category={editedCategory} value={effectiveDetails} onChange={setDetails} />
                   <FormActionBar
                      onCancel={handleCancel}
                      isLoading={isSavingDonation}

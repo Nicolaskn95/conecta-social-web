@@ -1,4 +1,6 @@
 'use client';
+import { DonationExtras } from '@/components/DonationWorkflow/OptionalFields';
+import { ItemDetails } from '@/data/services/donationWorkflow';
 
 import { donationSchema } from '@/core/donation/validation/donationSchema';
 import { DonationCreatePayload } from '@/core/donation/model/IDonation';
@@ -7,14 +9,15 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
-import { useDonations } from '@/data/hooks/donation/useDonations';
+import { useDonationMutations } from '@/data/hooks/donation/useDonationMutations';
 import { useCategories } from '@/data/hooks/donation/useCategoryQueries';
 import FormActionBar from '@/components/Form/FormActionBar';
 
 export default function RegisterDonationPage() {
    const router = useRouter();
+   const [details, setDetails] = useState<ItemDetails>({});
    const [isLoading, setIsLoading] = useState(false);
-   const { addDonation } = useDonations();
+   const { createDonation } = useDonationMutations();
    const { data: categoriesData } = useCategories();
    const categories = categoriesData?.data ?? [];
 
@@ -26,6 +29,7 @@ export default function RegisterDonationPage() {
 
    const {
       register,
+      watch,
       handleSubmit,
       formState: { errors },
    } = useForm<DonationCreatePayload>({
@@ -38,7 +42,7 @@ export default function RegisterDonationPage() {
    const submit: SubmitHandler<DonationCreatePayload> = async (data) => {
       setIsLoading(true);
       try {
-         addDonation(data);
+         await createDonation.mutateAsync({ ...data, ...details });
          router.push('/dashboard/donations');
       } catch (error: any) {
          // Error handling is done in the mutation
@@ -92,7 +96,7 @@ export default function RegisterDonationPage() {
                               id="category_id"
                               className="input"
                               required
-                              {...register('category_id')}
+                              {...register('category_id', { onChange: () => setDetails(previous => ({ ...previous, item_type_id: null, specifications: null })) })}
                            >
                               <option value="">Selecione uma categoria</option>
                               {categories.map((cat) => (
@@ -205,6 +209,7 @@ export default function RegisterDonationPage() {
                      </div>
                   </div>
 
+                  <DonationExtras category={watch('category_id')} value={details} onChange={setDetails} />
                   <FormActionBar
                      onCancel={handleCancel}
                      isLoading={isLoading}
